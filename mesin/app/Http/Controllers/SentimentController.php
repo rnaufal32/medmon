@@ -2,22 +2,59 @@
 
 namespace App\Http\Controllers;
 
-use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 use Inertia\Inertia;
-use function Pest\Laravel\get;
 
-class MentionController extends Controller
+use Auth;
+use DB;
+
+class SentimentController extends Controller
 {
     private $user;
 
-    private function globalChart($type, $startDate, $endDate, $platforms)
+    public function __construct() {
+        $this->user = Auth::user();
+    }
+    public function index(Request $request)
     {
+        $type = $request->input('type', 'News');
+        $startDate = Carbon::parse($request->input('startDate', now()->subDays(7)->toDateString()));
+        $endDate = Carbon::parse($request->input('endDate', now()->toDateString()));
+        $targets = $request->input('target');
+        $platformFilters = $request->input('platform_type');
+
+        $target = DB::table('target_type')
+            ->join('user_targets', 'user_targets.type', '=', 'target_type.id')
+            ->selectRaw('target_type.*')
+            ->where('user_targets.id_user', $this->user->id)
+            ->groupBy('target_type.id')
+            ->get();
+
+        $platforms = DB::table('social_media')
+            ->where(function ($query) use ($type) {
+                if ($type == 'News') {
+                    $query->where('type', 'media');
+                } else {
+                    $query->where('type', 'sosmed');
+                }
+            })
+            ->get();
+
+        return Inertia::render('Client/Sentiment', [
+            'analytic' => fn() => $this->_globalChart($type, $startDate, $endDate, $platformFilters),
+            'data' => fn() => $this->_dataList($targets, $type, $startDate, $endDate, $platformFilters),
+            'target' => $target,
+            'platforms' => $platforms
+        ]);
+    }
+
+    private function _globalChart($type, $startDate, $endDate, $platforms) {
         $now = $endDate;
         $now7 = $startDate->copy();
         $dates = collect([]);
+        $result = [];
+
         $platfomIds = [];
         if(!empty($platforms)) {
             $platfomIds = explode(',', $platforms);
@@ -33,24 +70,25 @@ class MentionController extends Controller
                 ->join('media_user_target', 'media_user_target.id_news', '=', 'media_news.id')
                 ->join('user_targets', 'user_targets.id', '=', 'media_user_target.id_user_target')
                 ->join('target_type', 'user_targets.type', '=', 'target_type.id')
-                ->selectRaw('COUNT(*) AS jml, target_type.name, DATE(date) AS newDate')
+                ->selectRaw('COUNT(*) AS jml, target_type.name, DATE(date) AS newDate, media_news.sentiment')
+                ->where('user_targets.id_user', $this->user->id)
+                ->whereNotNull('date')
                 ->when(count($platfomIds) > 0, function($query) use ($platfomIds) {
                     return $query->whereIn('source', $platfomIds);
                 })
-                ->where('user_targets.id_user', $this->user->id)
                 ->whereDate('media_news.created_at', '>=', $startDate->toDateString())
                 ->whereDate('media_news.created_at', '<=', $endDate->toDateString())
-                ->groupBy('target_type.id', 'newDate')
+                ->groupBy('newDate')
                 ->get();
 
-            $globalAnalyticNewsData = $globalAnalyticNews->groupBy('name')->map(function ($items, $name) {
+            $globalAnalyticNewsData = $globalAnalyticNews->groupBy('sentiment')->map(function ($items, $name) {
                 return [
                     'label' => $name,
-                    'data' => $items->pluck('jml')->toArray(),
+                    'data' => $items->pluck(value: 'jml')->toArray(),
                 ];
             })->values()->toArray();
 
-            return [
+            $result = [
                 'labels' => $dates->toArray(),
                 'datasets' => $globalAnalyticNewsData,
             ];
@@ -58,16 +96,17 @@ class MentionController extends Controller
             $globalAnalytic = DB::table('social_posts')
                 ->join('user_targets', 'user_targets.id', '=', 'social_posts.id_user_target')
                 ->join('target_type', 'user_targets.type', '=', 'target_type.id')
-                ->selectRaw('target_type.name, DATE(date) AS newDate, COUNT(*) AS jml')
+                ->selectRaw('target_type.name, DATE(date) AS newDate, COUNT(*) AS jml, sentiment')
                 ->where('user_targets.id_user', $this->user->id)
+                ->whereNotNull('date')
                 ->when(count($platfomIds) > 0, function($query) use ($platfomIds) {
                     return $query->whereIn('id_socmed', $platfomIds);
                 })
                 ->whereDate('date', '>=', $startDate->toDateString())
                 ->whereDate('date', '<=', $endDate->toDateString())
-                ->groupBy('target_type.id', 'newDate')
+                ->groupBy('newDate')
                 ->get()
-                ->groupBy('name')
+                ->groupBy('sentiment')
                 ->map(function ($items, $name) use ($dates) {
                     $data = $dates->mapWithKeys(function ($date) use ($items) {
                         $item = $items->firstWhere('newDate', $date);
@@ -79,19 +118,21 @@ class MentionController extends Controller
                     ];
                 })->values()->toArray();
 
-            return [
+            $result = [
                 'labels' => $dates->toArray(),
                 'datasets' => $globalAnalytic,
             ];
         }
+
+        return $result;
     }
 
-    private function dataList($target, $type, $startDate, $endDate, $platforms)
-    {
+    private function _dataList($target, $type, $startDate, $endDate, $platforms) {
         $platfomIds = [];
         if(!empty($platforms)) {
             $platfomIds = explode(',', $platforms);
         }
+
         if ($type == 'News') {
             return DB::table('media_news')
                 ->join('media_user_target', 'media_user_target.id_news', '=', 'media_news.id')
@@ -136,40 +177,5 @@ class MentionController extends Controller
                 ->orderByDesc('social_posts.id')
                 ->paginate(10)->onEachSide(2);
         }
-    }
-
-    public function index(Request $request)
-    {
-        $this->user = Auth::user();
-
-        $type = $request->input('type', 'News');
-        $startDate = Carbon::parse($request->input('startDate', now()->subDays(7)->toDateString()));
-        $endDate = Carbon::parse($request->input('endDate', now()->toDateString()));
-        $targets = $request->input('target');
-        $platformFilters = $request->input('platform_type');
-
-        $target = DB::table('target_type')
-            ->join('user_targets', 'user_targets.type', '=', 'target_type.id')
-            ->selectRaw('target_type.*')
-            ->where('user_targets.id_user', $this->user->id)
-            ->groupBy('target_type.id')
-            ->get();
-
-        $platforms = DB::table('social_media')
-            ->where(function ($query) use ($type) {
-                if ($type == 'News') {
-                    $query->where('type', 'media');
-                } else {
-                    $query->where('type', 'sosmed');
-                }
-            })
-            ->get();
-
-        return Inertia::render('Client/Mention', [
-            'analytic' => fn() => $this->globalChart($type, $startDate, $endDate, $platformFilters),
-            'data' => fn() => $this->dataList($targets, $type, $startDate, $endDate, $platformFilters),
-            'target' => $target,
-            'platforms' => $platforms
-        ]);
     }
 }
