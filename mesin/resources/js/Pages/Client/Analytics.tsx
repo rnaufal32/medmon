@@ -13,10 +13,8 @@ const options = {
 };
 
 export default function (params: {
-    analytic: any,
-    data: any,
-    target: any,
-    platforms: any,
+    chart: any,
+    counts: any,
 }) {
     const { props: { urls } } = usePage()
     const [date, setDate] = useState({
@@ -24,23 +22,33 @@ export default function (params: {
         endDate: dayjs().toDate()
     });
 
+    const result = {
+        labels: params.chart.labels,
+        datasets: [
+            {
+                label: 'Number of Mentions',
+                data: params.chart.datasets.map((d: any) => d.data)
+            }
+        ]
+    };
     const [type, setType] = useState('News');
 
     const [target, setTarget] = useState<string | undefined>(urls.query.target);
 
-    const changeTypeDate = () => {
+
+    useEffect(() => {
         router.get(route('analytics.index'), {
             date: {
                 start: dayjs(date.startDate).format('YYYY-MM-DD'),
                 end: dayjs(date.endDate).format('YYYY-MM-DD')
             },
-            type: type,
+            source: type,
             target: target,
         }, {
             preserveState: true, // Mencegah re-render yang tidak perlu
             preserveScroll: true
         })
-    }
+    }, [date, type, target])
 
     return (
         <AdminLayout>
@@ -69,7 +77,6 @@ export default function (params: {
                                     <a className="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-gray-100"
                                         onClick={() => {
                                             setType('News');
-                                            changeTypeDate();
                                         }}>
                                         News
                                     </a>
@@ -78,7 +85,6 @@ export default function (params: {
                                     <a className="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-gray-100"
                                         onClick={() => {
                                             setType('Social Media');
-                                            changeTypeDate();
                                         }}>
                                         Social Media
                                     </a>
@@ -96,7 +102,6 @@ export default function (params: {
                                         startDate: dayjs(newValue.startDate).toDate(),
                                         endDate: dayjs(newValue.endDate).toDate()
                                     });
-                                    changeTypeDate();
                                 }
                             }}
                         />
@@ -112,7 +117,7 @@ export default function (params: {
                             <div className='h-[40vh] w-full'>
                                 <Line
                                     datasetIdKey='global_chart'
-                                    data={params.analytic} options={options} />
+                                    data={result} options={options} />
                             </div>
                         </div>
                     </div>
@@ -123,19 +128,19 @@ export default function (params: {
                             <p className="text-xl font-semibold text-center mb-3">Stats in Summary</p>
                             <div className="grid grid-cols-12">
                                 <div className="col-span-6 border flex flex-col items-center justify-center px-5 py-10">
-                                    <p className="font-semibold">258</p>
+                                    <p className="font-semibold">{params.counts.mention}</p>
                                     <p className="text-sm text-slate-500 text-center">Social Media Mentions</p>
                                 </div>
                                 <div className="col-span-6 border flex flex-col items-center justify-center px-5 py-10">
-                                    <p className="font-semibold">400</p>
+                                    <p className="font-semibold">{params.counts.like}</p>
                                     <p className="text-sm text-slate-500 text-center">Social Media Likes</p>
                                 </div>
                                 <div className="col-span-6 border flex flex-col items-center justify-center px-5 py-10">
-                                    <p className="font-semibold">400</p>
+                                    <p className="font-semibold">{params.counts.comment}</p>
                                     <p className="text-sm text-slate-500 text-center">Social Media Comments</p>
                                 </div>
                                 <div className="col-span-6 border flex flex-col items-center justify-center px-5 py-10">
-                                    <p className="font-semibold">400</p>
+                                    <p className="font-semibold">{params.counts.view}</p>
                                     <p className="text-sm text-slate-500 text-center">Social Media Views</p>
                                 </div>
                             </div>
@@ -148,15 +153,15 @@ export default function (params: {
                             <p className="text-xl font-semibold text-center mb-3">Tone Analysis</p>
                             <div className="grid grid-cols-12">
                                 <div className="col-span-4 border flex flex-col items-center justify-center px-5 py-14">
-                                    <p className="font-semibold text-slate-600 text-xl">258</p>
+                                    <p className="font-semibold text-slate-600 text-xl">{params.counts.positive}</p>
                                     <p className="text-green-600 text-center">Positive</p>
                                 </div>
                                 <div className="col-span-4 border flex flex-col items-center justify-center px-5 py-14">
-                                    <p className="font-semibold text-slate-600 text-xl">100</p>
+                                    <p className="font-semibold text-slate-600 text-xl">{params.counts.neutral}</p>
                                     <p className="text-blue-600 text-center">Neutral</p>
                                 </div>
                                 <div className="col-span-4 border flex flex-col items-center justify-center px-5 py-14">
-                                    <p className="font-semibold text-slate-600 text-xl">120</p>
+                                    <p className="font-semibold text-slate-600 text-xl">{params.counts.negative}</p>
                                     <p className="text-red-600 text-center">Negative</p>
                                 </div>
                             </div>
