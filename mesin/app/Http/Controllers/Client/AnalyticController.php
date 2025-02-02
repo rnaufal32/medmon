@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use Auth;
 use DB;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class AnalyticController extends Controller
 {
@@ -114,9 +114,9 @@ class AnalyticController extends Controller
 
         $result['labels'] = $dates;
 
-        return [
+        return Inertia::render('Client/Analytics', [
             'chart'     => $result,
             'counts'    => $counts
-        ];
+        ]);
     }
 }
