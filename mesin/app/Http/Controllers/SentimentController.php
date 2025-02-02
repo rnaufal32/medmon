@@ -43,14 +43,14 @@ class SentimentController extends Controller
             ->get();
 
         return Inertia::render('Client/Sentiment', [
-            'analytic' => fn() => $this->_globalChart($type, $startDate, $endDate, $platformFilters, $sentimentType),
+            'analytic' => fn() => $this->_globalChart($type, $startDate, $endDate, $platformFilters, $sentimentType, $targets),
             'data' => fn() => $this->_dataList($targets, $type, $startDate, $endDate, $platformFilters, $sentimentType),
             'target' => $target,
             'platforms' => $platforms
         ]);
     }
 
-    private function _globalChart($type, $startDate, $endDate, $platforms, $sentimentType) {
+    private function _globalChart($type, $startDate, $endDate, $platforms, $sentimentType, $target) {
         $now = $endDate;
         $now7 = $startDate->copy();
         $dates = collect([]);
@@ -81,6 +81,9 @@ class SentimentController extends Controller
                 ->selectRaw('target_type.name, DATE(date) AS newDate, media_news.sentiment')
                 ->where('user_targets.id_user', $this->user->id)
                 ->whereNotNull('date')
+                ->when(!empty($target), function($query) use ($target) {
+                    return $query->where('target_type.id', $target);
+                })
                 ->when(count($platfomIds) > 0, function($query) use ($platfomIds) {
                     return $query->whereIn('type', $platfomIds);
                 })
@@ -119,6 +122,9 @@ class SentimentController extends Controller
                 ->selectRaw('target_type.name, DATE(date) AS newDate, sentiment')
                 ->where('user_targets.id_user', $this->user->id)
                 ->whereNotNull('date')
+                ->when(!empty($target), function($query) use ($target) {
+                    return $query->where('target_type.id', $target);
+                })
                 ->when(count($platfomIds) > 0, function($query) use ($platfomIds) {
                     return $query->whereIn('id_socmed', $platfomIds);
                 })

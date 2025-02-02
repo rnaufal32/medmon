@@ -83,6 +83,9 @@ class AnalyticController extends Controller
                 ->join('target_type', 'user_targets.type', '=', 'target_type.id')
                 ->selectRaw('target_type.name, target_type.id, DATE(date) AS date_label, sentiment, likes, comments, views')
                 ->whereNotNull('date')
+                ->when(!empty($target), function($query) use ($target) {
+                    return $query->where('user_targets.type', $target);
+                })
                 ->where('user_targets.id_user', $this->user->id)
                 ->whereDate('date', '>=', $startDate->toDateString())
                 ->whereDate('date', '<=', $endDate->toDateString())

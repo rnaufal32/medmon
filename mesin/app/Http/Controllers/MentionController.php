@@ -13,7 +13,7 @@ class MentionController extends Controller
 {
     private $user;
 
-    private function globalChart($type, $startDate, $endDate, $platforms)
+    private function globalChart($type, $startDate, $endDate, $platforms, $target)
     {
         $now = $endDate;
         $now7 = $startDate->copy();
@@ -36,6 +36,9 @@ class MentionController extends Controller
                 ->selectRaw('target_type.name, DATE(date) AS newDate')
                 ->when(count($platfomIds) > 0, function($query) use ($platfomIds) {
                     return $query->whereIn('type', $platfomIds);
+                })
+                ->when(!empty($target), function($query) use ($target) {
+                    return $query->where('target_type.id', $target);
                 })
                 ->where('user_targets.id_user', $this->user->id)
                 ->whereDate('media_news.created_at', '>=', $startDate->toDateString())
@@ -73,6 +76,9 @@ class MentionController extends Controller
                 ->where('user_targets.id_user', $this->user->id)
                 ->when(count($platfomIds) > 0, function($query) use ($platfomIds) {
                     return $query->whereIn('id_socmed', $platfomIds);
+                })
+                ->when(!empty($target), function($query) use ($target) {
+                    return $query->where('target_type.id', $target);
                 })
                 ->whereDate('date', '>=', $startDate->toDateString())
                 ->whereDate('date', '<=', $endDate->toDateString())
@@ -179,7 +185,7 @@ class MentionController extends Controller
             ->get();
 
         return Inertia::render('Client/Mention', [
-            'analytic' => fn() => $this->globalChart($type, $startDate, $endDate, $platformFilters),
+            'analytic' => fn() => $this->globalChart($type, $startDate, $endDate, $platformFilters, $targets),
             'data' => fn() => $this->dataList($targets, $type, $startDate, $endDate, $platformFilters),
             'target' => $target,
             'platforms' => $platforms
