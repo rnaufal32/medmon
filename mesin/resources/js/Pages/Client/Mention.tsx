@@ -28,19 +28,33 @@ export default function (params: {
 
     const [target, setTarget] = useState<string | undefined>(urls.query.target);
 
-    const changeTypeDate = () => {
+    const [platform, setPlatform] = useState<any>([])
+
+    function changePlatform(e: React.ChangeEvent<HTMLInputElement>) {
+        const value = Number(e.target.value);
+        setPlatform((prev: any) =>
+            e.target.checked ? [...prev, value] : prev.filter((id: any) => id !== value)
+        );
+    }
+
+    useEffect(() => {
+        setPlatform([]);
+    }, [type]);
+
+    useEffect(() => {
         router.get(route('mentions.index'), {
             date: {
                 start: dayjs(date.startDate).format('YYYY-MM-DD'),
                 end: dayjs(date.endDate).format('YYYY-MM-DD')
             },
-            type: type,
-            target: target,
+            type,
+            target,
+            platform_type: platform.join(','),
         }, {
             preserveState: true, // Mencegah re-render yang tidak perlu
             preserveScroll: true
         })
-    }
+    }, [date, type, target, platform])
 
     return (
         <AdminLayout>
@@ -69,7 +83,6 @@ export default function (params: {
                                     <a className="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-gray-100"
                                         onClick={() => {
                                             setType('News');
-                                            changeTypeDate();
                                         }}>
                                         News
                                     </a>
@@ -78,7 +91,6 @@ export default function (params: {
                                     <a className="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-gray-100"
                                         onClick={() => {
                                             setType('Social Media');
-                                            changeTypeDate();
                                         }}>
                                         Social Media
                                     </a>
@@ -96,7 +108,6 @@ export default function (params: {
                                         startDate: dayjs(newValue.startDate).toDate(),
                                         endDate: dayjs(newValue.endDate).toDate()
                                     });
-                                    changeTypeDate();
                                 }
                             }}
                         />
@@ -156,20 +167,6 @@ export default function (params: {
                                     <p className="mt-2 text-gray-500 line-clamp-3">
                                         {e.title ?? ''} {e.caption}
                                     </p>
-                                    <div className="flex items-center gap-6 mb-1 text-gray-600">
-                                        <div className="flex items-center gap-1">
-                                            <Icon icon="solar:heart-broken" />
-                                            <span>{e.likes ?? 0}</span>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <Icon icon="fa-regular:comments" />
-                                            <span>{e.comments ?? 0}</span>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <Icon icon="fluent-mdl2:view" />
-                                            <span>{e.views ?? 0}</span>
-                                        </div>
-                                    </div>
                                     {e.platform == "Media Online" ? (
                                         <>
                                             <button
@@ -285,11 +282,27 @@ export default function (params: {
                                             </div>
                                         </>
                                     ) : (
-                                        <a className="mt-3 inline-flex items-center gap-x-1 text-sm font-semibold rounded-lg border border-transparent text-blue-600 decoration-2 hover:text-blue-700 hover:underline focus:underline focus:outline-none focus:text-blue-700 disabled:opacity-50 disabled:pointer-events-none"
-                                            href={e.url} target="_blank">
-                                            Open
-                                            <Icon icon='fluent:open-12-regular' />
-                                        </a>
+                                        <>
+                                            <div className="flex items-center gap-6 mb-1 text-gray-600">
+                                                <div className="flex items-center gap-1">
+                                                    <Icon icon="solar:heart-broken" />
+                                                    <span>{e.likes ?? 0}</span>
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <Icon icon="fa-regular:comments" />
+                                                    <span>{e.comments ?? 0}</span>
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <Icon icon="fluent-mdl2:view" />
+                                                    <span>{e.views ?? 0}</span>
+                                                </div>
+                                            </div>
+                                            <a className="mt-3 inline-flex items-center gap-x-1 text-sm font-semibold rounded-lg border border-transparent text-blue-600 decoration-2 hover:text-blue-700 hover:underline focus:underline focus:outline-none focus:text-blue-700 disabled:opacity-50 disabled:pointer-events-none"
+                                                href={e.url} target="_blank">
+                                                Open
+                                                <Icon icon='fluent:open-12-regular' />
+                                            </a>
+                                        </>
                                     )}
                                 </div>
                             </div>
@@ -375,7 +388,7 @@ export default function (params: {
                               "optionTemplate": "<div className=\"flex justify-between items-center w-full\"><span data-title></span><span className=\"hidden hs-selected:block\"></span></div>"
                             }' onChange={(e) => {
                                         setTarget(e.target.value);
-                                        changeTypeDate();
+
                                     }} value={target}>
                                     <option value="">Select Target</option>
                                     {params.target.map((e: any, i: number) => (
@@ -401,6 +414,8 @@ export default function (params: {
                                     <div className="flex" key={i}>
                                         <input type="checkbox"
                                             value={e.id}
+                                            checked={platform.includes(e.id)}
+                                            onChange={changePlatform}
                                             className="shrink-0 mt-0.5 border-gray-200 rounded text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800"
                                             id={`platforms-${e.id}`} />
                                         <label htmlFor={`platforms-${e.id}`}
