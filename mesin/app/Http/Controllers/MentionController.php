@@ -13,7 +13,7 @@ class MentionController extends Controller
 {
     private $user;
 
-    private function globalChart($type, $startDate, $endDate, $platforms)
+    private function globalChart($type, $startDate, $endDate, $platforms, $target)
     {
         $now = $endDate;
         $now7 = $startDate->copy();
@@ -33,57 +33,84 @@ class MentionController extends Controller
                 ->join('media_user_target', 'media_user_target.id_news', '=', 'media_news.id')
                 ->join('user_targets', 'user_targets.id', '=', 'media_user_target.id_user_target')
                 ->join('target_type', 'user_targets.type', '=', 'target_type.id')
-                ->selectRaw('COUNT(*) AS jml, target_type.name, DATE(date) AS newDate')
+                ->selectRaw('target_type.name, DATE(date) AS newDate')
                 ->when(count($platfomIds) > 0, function($query) use ($platfomIds) {
                     return $query->whereIn('type', $platfomIds);
+                })
+                ->when(!empty($target), function($query) use ($target) {
+                    return $query->where('target_type.id', $target);
                 })
                 ->where('user_targets.id_user', $this->user->id)
                 ->whereDate('media_news.created_at', '>=', $startDate->toDateString())
                 ->whereDate('media_news.created_at', '<=', $endDate->toDateString())
-                ->groupBy('target_type.id', 'newDate')
                 ->get();
 
-            $globalAnalyticNewsData = $globalAnalyticNews->groupBy('name')->map(function ($items, $name) {
-                return [
-                    'label' => $name,
-                    'data' => $items->pluck('jml')->toArray(),
-                ];
-            })->values()->toArray();
+            $globalAnalyticNews = $globalAnalyticNews->filter(function($row) {
+                return validateDate($row->newDate);
+            });
 
-            return [
+            $sets = [];
+            $targetList = $globalAnalyticNews->groupBy('name')->keys();
+
+            foreach ($targetList as $t) {
+                $dailyData = [];
+                foreach ($dates as $dt) {
+                    $dailyData[] = $globalAnalyticNews->where('name', $t)->where('newDate', $dt)->count();
+                }
+                
+                $sets[] = [
+                    'label'     => $t,
+                    'data'      => $dailyData
+                ];
+            }
+
+            $result = [
                 'labels' => $dates->toArray(),
-                'datasets' => $globalAnalyticNewsData,
+                'datasets' => $sets,
             ];
         } else {
             $globalAnalytic = DB::table('social_posts')
                 ->join('user_targets', 'user_targets.id', '=', 'social_posts.id_user_target')
                 ->join('target_type', 'user_targets.type', '=', 'target_type.id')
-                ->selectRaw('target_type.name, DATE(date) AS newDate, COUNT(*) AS jml')
+                ->selectRaw('target_type.name, DATE(date) AS newDate')
                 ->where('user_targets.id_user', $this->user->id)
                 ->when(count($platfomIds) > 0, function($query) use ($platfomIds) {
                     return $query->whereIn('id_socmed', $platfomIds);
                 })
+                ->when(!empty($target), function($query) use ($target) {
+                    return $query->where('target_type.id', $target);
+                })
                 ->whereDate('date', '>=', $startDate->toDateString())
                 ->whereDate('date', '<=', $endDate->toDateString())
-                ->groupBy('target_type.id', 'newDate')
-                ->get()
-                ->groupBy('name')
-                ->map(function ($items, $name) use ($dates) {
-                    $data = $dates->mapWithKeys(function ($date) use ($items) {
-                        $item = $items->firstWhere('newDate', $date);
-                        return [$date => $item ? $item->jml : 0];
-                    });
-                    return [
-                        'label' => $name,
-                        'data' => $data->values()->toArray(),
-                    ];
-                })->values()->toArray();
+                ->get();
 
-            return [
+            $globalAnalytic = $globalAnalytic->filter(function($row) {
+                return validateDate($row->newDate);
+            });
+
+
+            $sets = [];
+            $targetList = $globalAnalytic->groupBy('name')->keys();
+
+            foreach ($targetList as $t) {
+                $dailyData = [];
+                foreach ($dates as $dt) {
+                    $dailyData[] = $globalAnalytic->where('name', $t)->where('newDate', $dt)->count();
+                }
+                
+                $sets[] = [
+                    'label'     => $t,
+                    'data'      => $dailyData
+                ];
+            }
+
+            $result = [
                 'labels' => $dates->toArray(),
-                'datasets' => $globalAnalytic,
+                'datasets' => $sets,
             ];
         }
+
+        return $result;
     }
 
     private function dataList($target, $type, $startDate, $endDate, $platforms)
@@ -158,7 +185,7 @@ class MentionController extends Controller
             ->get();
 
         return Inertia::render('Client/Mention', [
-            'analytic' => fn() => $this->globalChart($type, $startDate, $endDate, $platformFilters),
+            'analytic' => fn() => $this->globalChart($type, $startDate, $endDate, $platformFilters, $targets),
             'data' => fn() => $this->dataList($targets, $type, $startDate, $endDate, $platformFilters),
             'target' => $target,
             'platforms' => $platforms

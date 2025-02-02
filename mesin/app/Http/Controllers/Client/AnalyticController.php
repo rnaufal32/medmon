@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use Auth;
 use DB;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class AnalyticController extends Controller
 {
@@ -62,7 +62,7 @@ class AnalyticController extends Controller
                 ->get();
 
                 $globalAnalyticNews = $globalAnalyticNews->filter(function($row) {
-                    return $this->validateDate($row->date_label);
+                    return validateDate($row->date_label);
                 });
 
                 $counts['mention']  = $globalAnalyticNews->count();
@@ -83,13 +83,16 @@ class AnalyticController extends Controller
                 ->join('target_type', 'user_targets.type', '=', 'target_type.id')
                 ->selectRaw('target_type.name, target_type.id, DATE(date) AS date_label, sentiment, likes, comments, views')
                 ->whereNotNull('date')
+                ->when(!empty($target), function($query) use ($target) {
+                    return $query->where('user_targets.type', $target);
+                })
                 ->where('user_targets.id_user', $this->user->id)
                 ->whereDate('date', '>=', $startDate->toDateString())
                 ->whereDate('date', '<=', $endDate->toDateString())
                 ->get();
 
                 $globalAnalytic = $globalAnalytic->filter(function($row) {
-                    return $this->validateDate($row->date_label);
+                    return validateDate($row->date_label);
                 });
 
                 $counts['mention']  = $globalAnalytic->count();
@@ -111,26 +114,9 @@ class AnalyticController extends Controller
 
         $result['labels'] = $dates;
 
-        return [
+        return Inertia::render('Client/Analytics', [
             'chart'     => $result,
             'counts'    => $counts
-        ];
-    }
-
-    private function validateDate($date) {
-        if (!$date) {
-            return false;
-        }
-    
-        $formats = ['Y-m-d H:i:s', 'Y-m-d'];
-        foreach ($formats as $format) {
-            try {
-                return Carbon::createFromFormat($format, $date)->startOfDay();;
-            } catch (\Exception $e) {
-                continue;
-            }
-        }
-    
-        return false;
+        ]);
     }
 }
