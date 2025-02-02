@@ -56,6 +56,8 @@ class SentimentController extends Controller
         $dates = collect([]);
         $result = [];
 
+        $sentiments = ['positive', 'neutral', 'negative'];
+
         $platfomIds = [];
         if(!empty($platforms)) {
             $platfomIds = explode(',', $platforms);
@@ -76,7 +78,7 @@ class SentimentController extends Controller
                 ->join('media_user_target', 'media_user_target.id_news', '=', 'media_news.id')
                 ->join('user_targets', 'user_targets.id', '=', 'media_user_target.id_user_target')
                 ->join('target_type', 'user_targets.type', '=', 'target_type.id')
-                ->selectRaw('COUNT(*) AS jml, target_type.name, DATE(date) AS newDate, media_news.sentiment')
+                ->selectRaw('target_type.name, DATE(date) AS newDate, media_news.sentiment')
                 ->where('user_targets.id_user', $this->user->id)
                 ->whereNotNull('date')
                 ->when(count($platfomIds) > 0, function($query) use ($platfomIds) {
@@ -87,25 +89,34 @@ class SentimentController extends Controller
                 })
                 ->whereDate('media_news.created_at', '>=', $startDate->toDateString())
                 ->whereDate('media_news.created_at', '<=', $endDate->toDateString())
-                ->groupBy('newDate')
                 ->get();
 
-            $globalAnalyticNewsData = $globalAnalyticNews->groupBy('sentiment')->map(function ($items, $name) {
-                return [
-                    'label' => $name,
-                    'data' => $items->pluck(value: 'jml')->toArray(),
+            $globalAnalyticNews = $globalAnalyticNews->filter(function($row) {
+                return validateDate($row->newDate);
+            });
+
+            $sets = [];
+            foreach($sentiments as $sentiment) {
+                $dailyData = [];
+                foreach ($dates as $dt) {
+                    $dailyData[] = $globalAnalyticNews->where('sentiment', $sentiment)->where('newDate', $dt)->count();
+                }
+                
+                $sets[] = [
+                    'label'     => $sentiment,
+                    'data'      => $dailyData
                 ];
-            })->values()->toArray();
+            }
 
             $result = [
                 'labels' => $dates->toArray(),
-                'datasets' => $globalAnalyticNewsData,
+                'datasets' => $sets,
             ];
         } else {
             $globalAnalytic = DB::table('social_posts')
                 ->join('user_targets', 'user_targets.id', '=', 'social_posts.id_user_target')
                 ->join('target_type', 'user_targets.type', '=', 'target_type.id')
-                ->selectRaw('target_type.name, DATE(date) AS newDate, COUNT(*) AS jml, sentiment')
+                ->selectRaw('target_type.name, DATE(date) AS newDate, sentiment')
                 ->where('user_targets.id_user', $this->user->id)
                 ->whereNotNull('date')
                 ->when(count($platfomIds) > 0, function($query) use ($platfomIds) {
@@ -116,23 +127,28 @@ class SentimentController extends Controller
                 })
                 ->whereDate('date', '>=', $startDate->toDateString())
                 ->whereDate('date', '<=', $endDate->toDateString())
-                ->groupBy('newDate')
-                ->get()
-                ->groupBy('sentiment')
-                ->map(function ($items, $name) use ($dates) {
-                    $data = $dates->mapWithKeys(function ($date) use ($items) {
-                        $item = $items->firstWhere('newDate', $date);
-                        return [$date => $item ? $item->jml : 0];
-                    });
-                    return [
-                        'label' => $name,
-                        'data' => $data->values()->toArray(),
-                    ];
-                })->values()->toArray();
+                ->get();
+            
+            $globalAnalytic = $globalAnalytic->filter(function($row) {
+                return validateDate($row->newDate);
+            });
+
+            $sets = [];
+            foreach($sentiments as $sentiment) {
+                $dailyData = [];
+                foreach ($dates as $dt) {
+                    $dailyData[] = $globalAnalytic->where('sentiment', $sentiment)->where('newDate', $dt)->count();
+                }
+                
+                $sets[] = [
+                    'label'     => $sentiment,
+                    'data'      => $dailyData
+                ];
+            }
 
             $result = [
                 'labels' => $dates->toArray(),
-                'datasets' => $globalAnalytic,
+                'datasets' => $sets,
             ];
         }
 

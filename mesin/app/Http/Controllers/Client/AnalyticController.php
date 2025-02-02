@@ -62,7 +62,7 @@ class AnalyticController extends Controller
                 ->get();
 
                 $globalAnalyticNews = $globalAnalyticNews->filter(function($row) {
-                    return $this->validateDate($row->date_label);
+                    return validateDate($row->date_label);
                 });
 
                 $counts['mention']  = $globalAnalyticNews->count();
@@ -89,7 +89,7 @@ class AnalyticController extends Controller
                 ->get();
 
                 $globalAnalytic = $globalAnalytic->filter(function($row) {
-                    return $this->validateDate($row->date_label);
+                    return validateDate($row->date_label);
                 });
 
                 $counts['mention']  = $globalAnalytic->count();
@@ -115,22 +115,5 @@ class AnalyticController extends Controller
             'chart'     => $result,
             'counts'    => $counts
         ];
-    }
-
-    private function validateDate($date) {
-        if (!$date) {
-            return false;
-        }
-    
-        $formats = ['Y-m-d H:i:s', 'Y-m-d'];
-        foreach ($formats as $format) {
-            try {
-                return Carbon::createFromFormat($format, $date)->startOfDay();;
-            } catch (\Exception $e) {
-                continue;
-            }
-        }
-    
-        return false;
     }
 }
