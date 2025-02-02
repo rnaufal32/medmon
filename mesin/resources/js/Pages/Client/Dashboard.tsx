@@ -28,7 +28,7 @@ export default function (params: {
 
     const [type, setType] = useState('News');
 
-    const changeTypeDate = () => {
+    useEffect(() => {
         router.get(route('dashboard.index'), {
             type: type,
             startDate: date.startDate,
@@ -37,7 +37,7 @@ export default function (params: {
             preserveState: true,
             preserveScroll: true,
         })
-    }
+    }, [type, date])
 
     return (
         <AdminLayout>
@@ -66,7 +66,6 @@ export default function (params: {
                                     <a className="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-gray-100"
                                         href="#" onClick={(e) => {
                                             setType('News');
-                                            changeTypeDate();
                                         }}>
                                         News
                                     </a>
@@ -75,7 +74,6 @@ export default function (params: {
                                     <a className="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-gray-100"
                                         href="#" onClick={(e) => {
                                             setType('Social Media');
-                                            changeTypeDate();
                                         }}>
                                         Social Media
                                     </a>
@@ -93,7 +91,6 @@ export default function (params: {
                                         startDate: dayjs(newValue.startDate).toDate(),
                                         endDate: dayjs(newValue.endDate).toDate()
                                     });
-                                    changeTypeDate();
                                 }
                             }}
                         />

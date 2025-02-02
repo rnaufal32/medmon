@@ -35,7 +35,7 @@ class MentionController extends Controller
                 ->join('target_type', 'user_targets.type', '=', 'target_type.id')
                 ->selectRaw('target_type.name, DATE(date) AS newDate')
                 ->when(count($platfomIds) > 0, function($query) use ($platfomIds) {
-                    return $query->whereIn('type', $platfomIds);
+                    return $query->whereIn('media_news.type', $platfomIds);
                 })
                 ->when(!empty($target), function($query) use ($target) {
                     return $query->where('target_type.id', $target);
@@ -131,7 +131,7 @@ class MentionController extends Controller
                 })
                 ->where('user_targets.id_user', $this->user->id)
                 ->when(count($platfomIds) > 0, function($query) use ($platfomIds) {
-                    return $query->whereIn('type', $platfomIds);
+                    return $query->whereIn('media_news.type', $platfomIds);
                 })
                 ->whereDate('media_news.created_at', '>=', $startDate->toDateString())
                 ->whereDate('media_news.created_at', '<=', $endDate->toDateString())

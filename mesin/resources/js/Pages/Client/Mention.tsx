@@ -51,7 +51,7 @@ export default function (params: {
             target,
             platform_type: platform.join(','),
         }, {
-            preserveState: true, // Mencegah re-render yang tidak perlu
+            preserveState: true,
             preserveScroll: true
         })
     }, [date, type, target, platform])
@@ -126,253 +126,261 @@ export default function (params: {
             </div>
 
             <div className="grid grid-cols-3 gap-5">
-                <div className='col-span-2 grid grid-cols-1 gap-5'>
-                    {params.data.data.map((e: any, i: number) => (
-                        <div key={i} className="flex flex-col bg-white border shadow-sm rounded-xl p-4 md:p-5">
-                            <div className='flex flex-row gap-3'>
-                                <div className="flex">
-                                    {e.platform == "Facebook" && <Icon icon="logos:facebook" width={40} height={40} />}
-                                    {e.platform == "Instagram" &&
-                                        <Icon icon="skill-icons:instagram" width={40} height={40} />}
-                                    {e.platform == "Twitter" &&
-                                        <Icon icon="fa6-brands:square-x-twitter" width={40}
-                                            height={40} />}
-                                    {e.platform == "Youtube" &&
-                                        <Icon icon="logos:youtube-icon" width={40} height={40} />}
-                                    {e.platform == "Tiktok" &&
-                                        <Icon icon="logos:tiktok-icon" width={40} height={40} />}
-                                    {e.platform == "Media Online" &&
-                                        <Icon icon="mdi:web" width={40} height={40} />}
-                                </div>
-                                <div className='flex flex-col w-full'>
-                                    <div className='flex flex-row justify-between'>
-                                        <h3 className="text-lg font-bold text-gray-800">
-                                            {e.username}
-                                        </h3>
-                                        {e.sentiment == "positive" && (<span
-                                            className="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-green-500 text-white">Positive</span>)}
-                                        {e.sentiment == "negative" && (
-                                            <span
-                                                className="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-red-500 text-white">Negative</span>
-                                        )}
-                                        {e.sentiment == "neutral" && (
-                                            <span
-                                                className="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-white/10 dark:text-white">Neutral</span>
-                                        )}
+                {params.data.data.length > 0 ? (
+                    <div className='col-span-2 grid grid-cols-1 gap-5'>
+                        {params.data.data.map((e: any, i: number) => (
+                            <div key={i} className="flex flex-col bg-white border shadow-sm rounded-xl p-4 md:p-5">
+                                <div className='flex flex-row gap-3'>
+                                    <div className="flex">
+                                        {e.platform == "Facebook" && <Icon icon="logos:facebook" width={40} height={40} />}
+                                        {e.platform == "Instagram" &&
+                                            <Icon icon="skill-icons:instagram" width={40} height={40} />}
+                                        {e.platform == "Twitter" &&
+                                            <Icon icon="fa6-brands:square-x-twitter" width={40}
+                                                height={40} />}
+                                        {e.platform == "Youtube" &&
+                                            <Icon icon="logos:youtube-icon" width={40} height={40} />}
+                                        {e.platform == "Tiktok" &&
+                                            <Icon icon="logos:tiktok-icon" width={40} height={40} />}
+                                        {e.platform == "Media Online" &&
+                                            <Icon icon="mdi:web" width={40} height={40} />}
                                     </div>
-                                    <p
-                                        className="mt-1 text-xs font-medium uppercase text-gray-500 dark:text-neutral-500">
-                                        {e.date}
-                                    </p>
-                                    <p className="mt-2 text-gray-500 line-clamp-3">
-                                        {e.title ?? ''} {e.caption}
-                                    </p>
-                                    {e.platform == "Media Online" ? (
-                                        <>
-                                            <button
-                                                aria-haspopup="dialog" aria-expanded="false"
-                                                aria-controls={`media-detail-${e.id}`}
-                                                data-hs-overlay={`#media-detail-${e.id}`}
-                                                className="mt-3 inline-flex items-center gap-x-1 text-sm font-semibold rounded-lg border border-transparent text-blue-600 decoration-2 hover:text-blue-700 hover:underline focus:underline focus:outline-none focus:text-blue-700 disabled:opacity-50 disabled:pointer-events-none">
-                                                Open
-                                                <Icon icon='fluent:open-12-regular' />
-                                            </button>
-                                            <div id={`media-detail-${e.id}`}
-                                                className="hs-overlay hidden size-full fixed top-0 start-0 z-[80] overflow-x-hidden overflow-y-auto pointer-events-none"
-                                                role="dialog" tabIndex={-1} aria-labelledby="hs-large-modal-label">
-                                                <div
-                                                    className="hs-overlay-open:mt-7 hs-overlay-open:opacity-100 hs-overlay-open:duration-500 mt-0 opacity-0 ease-out transition-all lg:max-w-4xl lg:w-full m-3 lg:mx-auto">
+                                    <div className='flex flex-col w-full'>
+                                        <div className='flex flex-row justify-between'>
+                                            <h3 className="text-lg font-bold text-gray-800">
+                                                {e.username}
+                                            </h3>
+                                            {e.sentiment == "positive" && (<span
+                                                className="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-green-500 text-white">Positive</span>)}
+                                            {e.sentiment == "negative" && (
+                                                <span
+                                                    className="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-red-500 text-white">Negative</span>
+                                            )}
+                                            {e.sentiment == "neutral" && (
+                                                <span
+                                                    className="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-white/10 dark:text-white">Neutral</span>
+                                            )}
+                                        </div>
+                                        <p
+                                            className="mt-1 text-xs font-medium uppercase text-gray-500 dark:text-neutral-500">
+                                            {e.date}
+                                        </p>
+                                        <p className="mt-2 text-gray-500 line-clamp-3">
+                                            {e.title ?? ''} {e.caption}
+                                        </p>
+                                        {e.platform == "Media Online" ? (
+                                            <>
+                                                <button
+                                                    aria-haspopup="dialog" aria-expanded="false"
+                                                    aria-controls={`media-detail-${e.id}`}
+                                                    data-hs-overlay={`#media-detail-${e.id}`}
+                                                    className="mt-3 inline-flex items-center gap-x-1 text-sm font-semibold rounded-lg border border-transparent text-blue-600 decoration-2 hover:text-blue-700 hover:underline focus:underline focus:outline-none focus:text-blue-700 disabled:opacity-50 disabled:pointer-events-none">
+                                                    Open
+                                                    <Icon icon='fluent:open-12-regular' />
+                                                </button>
+                                                <div id={`media-detail-${e.id}`}
+                                                    className="hs-overlay hidden size-full fixed top-0 start-0 z-[80] overflow-x-hidden overflow-y-auto pointer-events-none"
+                                                    role="dialog" tabIndex={-1} aria-labelledby="hs-large-modal-label">
                                                     <div
-                                                        className="flex flex-col bg-white border shadow-sm rounded-xl pointer-events-auto dark:bg-neutral-800 dark:border-neutral-700 dark:shadow-neutral-700/70">
+                                                        className="hs-overlay-open:mt-7 hs-overlay-open:opacity-100 hs-overlay-open:duration-500 mt-0 opacity-0 ease-out transition-all lg:max-w-4xl lg:w-full m-3 lg:mx-auto">
                                                         <div
-                                                            className="flex justify-between items-center py-3 px-4 border-b dark:border-neutral-700">
-                                                            <h3 id="hs-large-modal-label"
-                                                                className="font-bold text-gray-800 dark:text-white">
-                                                                {e.title}
-                                                            </h3>
-                                                            <button type="button"
-                                                                className="size-8 inline-flex justify-center items-center gap-x-2 rounded-full border border-transparent bg-gray-100 text-gray-800 hover:bg-gray-200 focus:outline-none focus:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-700 dark:hover:bg-neutral-600 dark:text-neutral-400 dark:focus:bg-neutral-600"
-                                                                aria-label="Close"
-                                                                data-hs-overlay={`#media-detail-${e.id}`}>
-                                                                <span className="sr-only">Close</span>
-                                                                <svg className="shrink-0 size-4"
-                                                                    xmlns="http://www.w3.org/2000/svg" width="24"
-                                                                    height="24" viewBox="0 0 24 24" fill="none"
-                                                                    stroke="currentColor" stroke-width="2"
-                                                                    stroke-linecap="round" stroke-linejoin="round">
-                                                                    <path d="M18 6 6 18"></path>
-                                                                    <path d="m6 6 12 12"></path>
-                                                                </svg>
-                                                            </button>
-                                                        </div>
-                                                        <div className="p-4 overflow-y-auto">
-                                                            <div className='grid grid-cols-3 mx-3 my-5'>
-                                                                <div>
-                                                                    <p className='font-bold'>Open
-                                                                        Link</p>
-                                                                    <a href={e.url} target="_blank"
-                                                                        className='text-blue-500'>Open</a>
-                                                                </div>
-                                                                <div>
-                                                                    <p className='font-bold'>Media</p>
-                                                                    <p>{e.username}</p>
-                                                                </div>
+                                                            className="flex flex-col bg-white border shadow-sm rounded-xl pointer-events-auto dark:bg-neutral-800 dark:border-neutral-700 dark:shadow-neutral-700/70">
+                                                            <div
+                                                                className="flex justify-between items-center py-3 px-4 border-b dark:border-neutral-700">
+                                                                <h3 id="hs-large-modal-label"
+                                                                    className="font-bold text-gray-800 dark:text-white">
+                                                                    {e.title}
+                                                                </h3>
+                                                                <button type="button"
+                                                                    className="size-8 inline-flex justify-center items-center gap-x-2 rounded-full border border-transparent bg-gray-100 text-gray-800 hover:bg-gray-200 focus:outline-none focus:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-700 dark:hover:bg-neutral-600 dark:text-neutral-400 dark:focus:bg-neutral-600"
+                                                                    aria-label="Close"
+                                                                    data-hs-overlay={`#media-detail-${e.id}`}>
+                                                                    <span className="sr-only">Close</span>
+                                                                    <svg className="shrink-0 size-4"
+                                                                        xmlns="http://www.w3.org/2000/svg" width="24"
+                                                                        height="24" viewBox="0 0 24 24" fill="none"
+                                                                        stroke="currentColor" stroke-width="2"
+                                                                        stroke-linecap="round" stroke-linejoin="round">
+                                                                        <path d="M18 6 6 18"></path>
+                                                                        <path d="m6 6 12 12"></path>
+                                                                    </svg>
+                                                                </button>
                                                             </div>
-                                                            <hr />
+                                                            <div className="p-4 overflow-y-auto">
+                                                                <div className='grid grid-cols-3 mx-3 my-5'>
+                                                                    <div>
+                                                                        <p className='font-bold'>Open
+                                                                            Link</p>
+                                                                        <a href={e.url} target="_blank"
+                                                                            className='text-blue-500'>Open</a>
+                                                                    </div>
+                                                                    <div>
+                                                                        <p className='font-bold'>Media</p>
+                                                                        <p>{e.username}</p>
+                                                                    </div>
+                                                                </div>
+                                                                <hr />
 
-                                                            <div className='grid grid-cols-3 mx-3 my-5'>
-                                                                <div>
-                                                                    <p className='font-bold'>Date</p>
-                                                                    <p>{e.date}</p>
+                                                                <div className='grid grid-cols-3 mx-3 my-5'>
+                                                                    <div>
+                                                                        <p className='font-bold'>Date</p>
+                                                                        <p>{e.date}</p>
+                                                                    </div>
+                                                                    <div>
+                                                                        <p className='font-bold'>Sentiment</p>
+                                                                        {e.sentiment == "positive" && (
+                                                                            <span
+                                                                                className="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-green-500 text-white">Positive</span>)}
+                                                                        {e.sentiment == "negative" && (
+                                                                            <span
+                                                                                className="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-red-500 text-white">Negative</span>
+                                                                        )}
+                                                                        {e.sentiment == "neutral" && (
+                                                                            <span
+                                                                                className="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-white/10 dark:text-white">Neutral</span>
+                                                                        )}
+                                                                    </div>
                                                                 </div>
-                                                                <div>
-                                                                    <p className='font-bold'>Sentiment</p>
-                                                                    {e.sentiment == "positive" && (
-                                                                        <span
-                                                                            className="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-green-500 text-white">Positive</span>)}
-                                                                    {e.sentiment == "negative" && (
-                                                                        <span
-                                                                            className="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-red-500 text-white">Negative</span>
-                                                                    )}
-                                                                    {e.sentiment == "neutral" && (
-                                                                        <span
-                                                                            className="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-white/10 dark:text-white">Neutral</span>
-                                                                    )}
-                                                                </div>
-                                                            </div>
-                                                            <hr />
+                                                                <hr />
 
-                                                            <div className='grid grid-cols-3 mx-3 my-5'>
-                                                                <div>
-                                                                    <p>PR Value</p>
-                                                                    <p>{e.pr_value}</p>
+                                                                <div className='grid grid-cols-3 mx-3 my-5'>
+                                                                    <div>
+                                                                        <p>PR Value</p>
+                                                                        <p>{e.pr_value}</p>
+                                                                    </div>
+                                                                    <div>
+                                                                        <p>Ad Value</p>
+                                                                        <p>{e.ad_value}</p>
+                                                                    </div>
+                                                                    <div>
+                                                                        <p>Viewership</p>
+                                                                        <p>{e.viewership}</p>
+                                                                    </div>
                                                                 </div>
-                                                                <div>
-                                                                    <p>Ad Value</p>
-                                                                    <p>{e.ad_value}</p>
-                                                                </div>
-                                                                <div>
-                                                                    <p>Viewership</p>
-                                                                    <p>{e.viewership}</p>
-                                                                </div>
-                                                            </div>
-                                                            <hr />
+                                                                <hr />
 
-                                                            <div className='grid grid-cols-3 mx-3 my-5'>
-                                                                <div>
-                                                                    <p>Reporters</p>
-                                                                    <p>{e.journalist}</p>
+                                                                <div className='grid grid-cols-3 mx-3 my-5'>
+                                                                    <div>
+                                                                        <p>Reporters</p>
+                                                                        <p>{e.journalist}</p>
+                                                                    </div>
+                                                                    <div>
+                                                                        <p>Spoke Person</p>
+                                                                        <p>{e.spookerperson}</p>
+                                                                    </div>
                                                                 </div>
-                                                                <div>
-                                                                    <p>Spoke Person</p>
-                                                                    <p>{e.spookerperson}</p>
-                                                                </div>
-                                                            </div>
 
-                                                            <div className='text-center mt-2'>
-                                                                <img src={e.images} alt={e.title}
-                                                                    className='max-h-[250px] mx-auto' />
+                                                                <div className='text-center mt-2'>
+                                                                    <img src={e.images} alt={e.title}
+                                                                        className='max-h-[250px] mx-auto' />
+                                                                </div>
+                                                                <p className="mt-2 text-gray-800 dark:text-neutral-400">
+                                                                    {e.caption}
+                                                                </p>
                                                             </div>
-                                                            <p className="mt-2 text-gray-800 dark:text-neutral-400">
-                                                                {e.caption}
-                                                            </p>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <div className="flex items-center gap-6 mb-1 text-gray-600">
-                                                <div className="flex items-center gap-1">
-                                                    <Icon icon="solar:heart-broken" />
-                                                    <span>{e.likes ?? 0}</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <div className="flex items-center gap-6 mb-1 text-gray-600">
+                                                    <div className="flex items-center gap-1">
+                                                        <Icon icon="solar:heart-broken" />
+                                                        <span>{e.likes ?? 0}</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-2">
+                                                        <Icon icon="fa-regular:comments" />
+                                                        <span>{e.comments ?? 0}</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-2">
+                                                        <Icon icon="fluent-mdl2:view" />
+                                                        <span>{e.views ?? 0}</span>
+                                                    </div>
                                                 </div>
-                                                <div className="flex items-center gap-2">
-                                                    <Icon icon="fa-regular:comments" />
-                                                    <span>{e.comments ?? 0}</span>
-                                                </div>
-                                                <div className="flex items-center gap-2">
-                                                    <Icon icon="fluent-mdl2:view" />
-                                                    <span>{e.views ?? 0}</span>
-                                                </div>
-                                            </div>
-                                            <a className="mt-3 inline-flex items-center gap-x-1 text-sm font-semibold rounded-lg border border-transparent text-blue-600 decoration-2 hover:text-blue-700 hover:underline focus:underline focus:outline-none focus:text-blue-700 disabled:opacity-50 disabled:pointer-events-none"
-                                                href={e.url} target="_blank">
-                                                Open
-                                                <Icon icon='fluent:open-12-regular' />
-                                            </a>
-                                        </>
-                                    )}
+                                                <a className="mt-3 inline-flex items-center gap-x-1 text-sm font-semibold rounded-lg border border-transparent text-blue-600 decoration-2 hover:text-blue-700 hover:underline focus:underline focus:outline-none focus:text-blue-700 disabled:opacity-50 disabled:pointer-events-none"
+                                                    href={e.url} target="_blank">
+                                                    Open
+                                                    <Icon icon='fluent:open-12-regular' />
+                                                </a>
+                                            </>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    ))}
+                        ))}
 
-                    <div className="mt-4">
-                        <nav className="flex items-center gap-x-1" aria-label="Pagination">
-                            {params.data.links[0] && (
-                                <button type="button"
-                                    className="min-h-[38px] min-w-[38px] py-2 px-2.5 inline-flex justify-center items-center gap-x-1.5 text-sm rounded-lg text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none"
-                                    aria-label="Previous"
-                                    disabled={params.data.links[0].url == null}
-                                    onClick={(_) => {
-                                        router.get(params.data.links[0].url)
-                                    }}>
-                                    <svg className="shrink-0 size-3.5" xmlns="http://www.w3.org/2000/svg" width="24"
-                                        height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round" strokeLinejoin="round">
-                                        <path d="m15 18-6-6 6-6"></path>
-                                    </svg>
-                                    <span>Previous</span>
-                                </button>
-                            )}
-                            <div className="flex items-center gap-x-1">
-                                {params.data.links.slice(1, -1).map((e: any, i: number) => {
-                                    if (e.active) {
-                                        return (
-                                            <button key={i}
-                                                type="button"
-                                                onClick={(_) => {
-                                                    router.get(e.url)
-                                                }}
-                                                className="min-h-[38px] min-w-[38px] flex justify-center items-center bg-gray-200 text-gray-800 py-2 px-3 text-sm rounded-lg focus:outline-none focus:bg-gray-300 disabled:opacity-50 disabled:pointer-events-none"
-                                                aria-current="page">{e.label}
-                                            </button>
-                                        )
-                                    } else {
-                                        return (
-                                            <button type="button"
-                                                key={i}
-                                                onClick={(_) => {
-                                                    router.get(e.url)
-                                                }}
-                                                className="min-h-[38px] min-w-[38px] flex justify-center items-center text-gray-800 hover:bg-gray-100 py-2 px-3 text-sm rounded-lg focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-white dark:hover:bg-white/10 dark:focus:bg-white/10">{e.label}</button>
-                                        )
-                                    }
-                                })}
-                            </div>
-                            {params.data.links.length > 10 && params.data.links[params.data.links.length - 1] && (
-                                <button type="button"
-                                    className="min-h-[38px] min-w-[38px] py-2 px-2.5 inline-flex justify-center items-center gap-x-1.5 text-sm rounded-lg text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none"
-                                    aria-label="Next"
-                                    onClick={(_) => {
-                                        router.get(params.data.links[params.data.links.length - 1].url)
-                                    }}
-                                    disabled={params.data.links[params.data.links.length - 1].url == null}>
-                                    <span>Next</span>
-                                    <svg className="shrink-0 size-3.5" xmlns="http://www.w3.org/2000/svg" width="24"
-                                        height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round" strokeLinejoin="round">
-                                        <path d="m9 18 6-6-6-6"></path>
-                                    </svg>
-                                </button>
-                            )}
-                        </nav>
+                        <div className="mt-4">
+                            <nav className="flex items-center gap-x-1" aria-label="Pagination">
+                                {params.data.links[0] && (
+                                    <button type="button"
+                                        className="min-h-[38px] min-w-[38px] py-2 px-2.5 inline-flex justify-center items-center gap-x-1.5 text-sm rounded-lg text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none"
+                                        aria-label="Previous"
+                                        disabled={params.data.links[0].url == null}
+                                        onClick={(_) => {
+                                            router.get(params.data.links[0].url)
+                                        }}>
+                                        <svg className="shrink-0 size-3.5" xmlns="http://www.w3.org/2000/svg" width="24"
+                                            height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                            strokeWidth="2"
+                                            strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="m15 18-6-6 6-6"></path>
+                                        </svg>
+                                        <span>Previous</span>
+                                    </button>
+                                )}
+                                <div className="flex items-center gap-x-1">
+                                    {params.data.links.slice(1, -1).map((e: any, i: number) => {
+                                        if (e.active) {
+                                            return (
+                                                <button key={i}
+                                                    type="button"
+                                                    onClick={(_) => {
+                                                        router.get(e.url)
+                                                    }}
+                                                    className="min-h-[38px] min-w-[38px] flex justify-center items-center bg-gray-200 text-gray-800 py-2 px-3 text-sm rounded-lg focus:outline-none focus:bg-gray-300 disabled:opacity-50 disabled:pointer-events-none"
+                                                    aria-current="page">{e.label}
+                                                </button>
+                                            )
+                                        } else {
+                                            return (
+                                                <button type="button"
+                                                    key={i}
+                                                    onClick={(_) => {
+                                                        router.get(e.url)
+                                                    }}
+                                                    className="min-h-[38px] min-w-[38px] flex justify-center items-center text-gray-800 hover:bg-gray-100 py-2 px-3 text-sm rounded-lg focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-white dark:hover:bg-white/10 dark:focus:bg-white/10">{e.label}</button>
+                                            )
+                                        }
+                                    })}
+                                </div>
+                                {params.data.links.length > 10 && params.data.links[params.data.links.length - 1] && (
+                                    <button type="button"
+                                        className="min-h-[38px] min-w-[38px] py-2 px-2.5 inline-flex justify-center items-center gap-x-1.5 text-sm rounded-lg text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none"
+                                        aria-label="Next"
+                                        onClick={(_) => {
+                                            router.get(params.data.links[params.data.links.length - 1].url)
+                                        }}
+                                        disabled={params.data.links[params.data.links.length - 1].url == null}>
+                                        <span>Next</span>
+                                        <svg className="shrink-0 size-3.5" xmlns="http://www.w3.org/2000/svg" width="24"
+                                            height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                            strokeWidth="2"
+                                            strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="m9 18 6-6-6-6"></path>
+                                        </svg>
+                                    </button>
+                                )}
+                            </nav>
+                        </div>
                     </div>
-                </div>
+                ) : (
+                    <div className='col-span-2 grid grid-cols-1 gap-5'>
+                        <div className="flex flex-col items-center justify-center">
+                            <h1>Currently, There's no data to display</h1>
+                        </div>
+                    </div>
+                )}
                 <div>
                     <div className="flex flex-col bg-white border shadow-sm rounded-xl p-4 md:p-5">
                         <div>

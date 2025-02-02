@@ -85,7 +85,7 @@ class SentimentController extends Controller
                     return $query->where('target_type.id', $target);
                 })
                 ->when(count($platfomIds) > 0, function($query) use ($platfomIds) {
-                    return $query->whereIn('type', $platfomIds);
+                    return $query->whereIn('media_news.type', $platfomIds);
                 })
                 ->when(count($sentimentTypes) > 0, function($query) use ($sentimentTypes) {
                     return $query->whereIn('sentiment', $sentimentTypes);
@@ -184,7 +184,7 @@ class SentimentController extends Controller
                     return $query->where('target_type.id', $target);
                 })
                 ->when(count($platfomIds) > 0, function($query) use ($platfomIds) {
-                    return $query->whereIn('type', $platfomIds);
+                    return $query->whereIn('media_news.type', $platfomIds);
                 })
                 ->when(count($sentimentTypes) > 0, function($query) use ($sentimentTypes) {
                     return $query->whereIn('sentiment', $sentimentTypes);
