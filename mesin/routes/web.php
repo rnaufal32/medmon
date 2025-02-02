@@ -27,6 +27,8 @@ Route::group([
         return redirect('/signin');
     })->name('signout');
 
+    Route::get('/analytics', [\App\Http\Controllers\Client\AnalyticController::class, 'index'])->name('analytics.index');
+
     Route::get('/roles', [\App\Http\Controllers\Client\DashboardController::class, 'index'])->name('roles.index');
     Route::get('/permissions', [\App\Http\Controllers\Client\DashboardController::class, 'index'])->name('permissions.index');
     Route::get('/users', [\App\Http\Controllers\Client\DashboardController::class, 'index'])->name('users.index');

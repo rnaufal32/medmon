@@ -18,11 +18,12 @@ class SentimentController extends Controller
     }
     public function index(Request $request)
     {
-        $type = $request->input('type', 'News');
-        $startDate = Carbon::parse($request->input('startDate', now()->subDays(7)->toDateString()));
-        $endDate = Carbon::parse($request->input('endDate', now()->toDateString()));
-        $targets = $request->input('target');
-        $platformFilters = $request->input('platform_type');
+        $type           = $request->input('type', 'News');
+        $sentimentType  = $request->input('sentiment_type', null);
+        $startDate      = Carbon::parse($request->input('startDate', now()->subDays(7)->toDateString()));
+        $endDate        = Carbon::parse($request->input('endDate', now()->toDateString()));
+        $targets        = $request->input('target');
+        $platformFilters    = $request->input('platform_type');
 
         $target = DB::table('target_type')
             ->join('user_targets', 'user_targets.type', '=', 'target_type.id')
@@ -42,14 +43,14 @@ class SentimentController extends Controller
             ->get();
 
         return Inertia::render('Client/Sentiment', [
-            'analytic' => fn() => $this->_globalChart($type, $startDate, $endDate, $platformFilters),
-            'data' => fn() => $this->_dataList($targets, $type, $startDate, $endDate, $platformFilters),
+            'analytic' => fn() => $this->_globalChart($type, $startDate, $endDate, $platformFilters, $sentimentType),
+            'data' => fn() => $this->_dataList($targets, $type, $startDate, $endDate, $platformFilters, $sentimentType),
             'target' => $target,
             'platforms' => $platforms
         ]);
     }
 
-    private function _globalChart($type, $startDate, $endDate, $platforms) {
+    private function _globalChart($type, $startDate, $endDate, $platforms, $sentimentType) {
         $now = $endDate;
         $now7 = $startDate->copy();
         $dates = collect([]);
@@ -58,6 +59,11 @@ class SentimentController extends Controller
         $platfomIds = [];
         if(!empty($platforms)) {
             $platfomIds = explode(',', $platforms);
+        }
+
+        $sentimentTypes = [];
+        if(!empty($sentimentType)) {
+            $sentimentTypes = explode(',', $sentimentType);
         }
 
         while ($now7 <= $now) {
@@ -74,7 +80,10 @@ class SentimentController extends Controller
                 ->where('user_targets.id_user', $this->user->id)
                 ->whereNotNull('date')
                 ->when(count($platfomIds) > 0, function($query) use ($platfomIds) {
-                    return $query->whereIn('source', $platfomIds);
+                    return $query->whereIn('type', $platfomIds);
+                })
+                ->when(count($sentimentTypes) > 0, function($query) use ($sentimentTypes) {
+                    return $query->whereIn('sentiment', $sentimentTypes);
                 })
                 ->whereDate('media_news.created_at', '>=', $startDate->toDateString())
                 ->whereDate('media_news.created_at', '<=', $endDate->toDateString())
@@ -102,6 +111,9 @@ class SentimentController extends Controller
                 ->when(count($platfomIds) > 0, function($query) use ($platfomIds) {
                     return $query->whereIn('id_socmed', $platfomIds);
                 })
+                ->when(count($sentimentTypes) > 0, function($query) use ($sentimentTypes) {
+                    return $query->whereIn('sentiment', $sentimentTypes);
+                })
                 ->whereDate('date', '>=', $startDate->toDateString())
                 ->whereDate('date', '<=', $endDate->toDateString())
                 ->groupBy('newDate')
@@ -127,10 +139,15 @@ class SentimentController extends Controller
         return $result;
     }
 
-    private function _dataList($target, $type, $startDate, $endDate, $platforms) {
+    private function _dataList($target, $type, $startDate, $endDate, $platforms, $sentimentType) {
         $platfomIds = [];
         if(!empty($platforms)) {
             $platfomIds = explode(',', $platforms);
+        }
+
+        $sentimentTypes = [];
+        if(!empty($sentimentType)) {
+            $sentimentTypes = explode(',', $sentimentType);
         }
 
         if ($type == 'News') {
@@ -140,20 +157,19 @@ class SentimentController extends Controller
                 ->join('target_type', 'user_targets.type', '=', 'target_type.id')
                 ->leftJoin('news_source', 'news_source.site', '=', 'media_news.source')
                 ->selectRaw('media_news.id, COALESCE(news_source.viewership, 0) AS viewership, COALESCE(news_source.pr_value, 0) AS pr_value, COALESCE(news_source.ad_value, 0) AS ad_value, COALESCE(news_source.tier, 3) AS tier, media_news.title, media_news.source AS username, media_news.content AS caption, media_news.created_at AS date, media_news.images, media_news.journalist, media_news.spookerperson, media_news.sentiment, media_news.url, "Media Online" AS platform')
-                ->where(function ($query) use ($target) {
-                    if (!empty($target)) {
-                        $query->where('target_type.id', $target);
-                    } else {
-                        $query->where('user_targets.id_user', $this->user->id);
-                    }
+                ->where('user_targets.id_user', $this->user->id)
+                ->when(!empty($target), function($query) use ($target) {
+                    return $query->where('target_type.id', $target);
                 })
                 ->when(count($platfomIds) > 0, function($query) use ($platfomIds) {
-                    return $query->whereIn('source', $platfomIds);
+                    return $query->whereIn('type', $platfomIds);
+                })
+                ->when(count($sentimentTypes) > 0, function($query) use ($sentimentTypes) {
+                    return $query->whereIn('sentiment', $sentimentTypes);
                 })
                 ->whereDate('media_news.created_at', '>=', $startDate->toDateString())
                 ->whereDate('media_news.created_at', '<=', $endDate->toDateString())
                 ->orderByDesc('media_news.id')
-                ->groupBy('media_news.id')
                 ->paginate(10)->onEachSide(2);
         } else {
             return DB::table('social_posts')
@@ -161,17 +177,16 @@ class SentimentController extends Controller
                 ->join('target_type', 'user_targets.type', '=', 'target_type.id')
                 ->join('social_media', 'social_media.id', '=', 'social_posts.id_socmed')
                 ->selectRaw('social_posts.username, social_posts.caption, social_posts.date, social_posts.sentiment, social_posts.likes, social_posts.comments, social_posts.views, social_media.name AS platform, social_posts.url')
-                ->where(function ($query) use ($target) {
-                    if (!empty($target)) {
-                        $query->where('target_type.id', $target);
-                    } else {
-                        $query->where('user_targets.id_user', $this->user->id);
-                    }
+                ->where('user_targets.id_user', $this->user->id)
+                ->when(!empty($target), function($query) use ($target) {
+                    return $query->where('target_type.id', $target);
                 })
                 ->when(count($platfomIds) > 0, function($query) use ($platfomIds) {
                     return $query->whereIn('id_socmed', $platfomIds);
                 })
-                ->where('social_posts.id_socmed', '<>', '6')
+                ->when(count($sentimentTypes) > 0, function($query) use ($sentimentTypes) {
+                    return $query->whereIn('sentiment', $sentimentTypes);
+                })
                 ->whereDate('date', '>=', $startDate->toDateString())
                 ->whereDate('date', '<=', $endDate->toDateString())
                 ->orderByDesc('social_posts.id')
