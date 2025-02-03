@@ -7,11 +7,13 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "illuminate/collections": "*",
         "inertiajs/inertia-laravel": "^2.0",
         "laravel/framework": "^11.31",
         "laravel/pail": "^1.2",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
+        "maatwebsite/excel": "^3.1",
         "nasrulfaizin/php-word-counter": "dev-master",
         "spatie/laravel-permission": "^6.10",
         "tightenco/ziggy": "^2.0"
