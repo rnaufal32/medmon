@@ -131,7 +131,7 @@ class MentionController extends Controller
                 })
                 ->where('user_targets.id_user', $this->user->id)
                 ->when(count($platfomIds) > 0, function($query) use ($platfomIds) {
-                    return $query->whereIn('type', $platfomIds);
+                    return $query->whereIn('media_news.type', $platfomIds);
                 })
                 ->whereDate('media_news.created_at', '>=', $startDate->toDateString())
                 ->whereDate('media_news.created_at', '<=', $endDate->toDateString())
@@ -162,8 +162,8 @@ class MentionController extends Controller
         $this->user = Auth::user();
 
         $type = $request->input('type', 'News');
-        $startDate = Carbon::parse($request->input('startDate', now()->subDays(7)->toDateString()));
-        $endDate = Carbon::parse($request->input('endDate', now()->toDateString()));
+        $startDate = Carbon::parse($request->input('start_date', now()->subDays(7)->toDateString()));
+        $endDate = Carbon::parse($request->input('end_date', now()->toDateString()));
         $targets = $request->input('target');
         $platformFilters = $request->input('platform_type');
 
