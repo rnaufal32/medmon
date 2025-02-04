@@ -18,7 +18,6 @@ Route::group([
     Route::get('/mentions', [\App\Http\Controllers\MentionController::class, 'index'])->name('mentions.index');
     Route::get('/summary', [\App\Http\Controllers\Client\DashboardController::class, 'index'])->name('summary.index');
     Route::get('/sentiment', [\App\Http\Controllers\SentimentController::class, 'index'])->name('sentiment.index');
-    Route::get('/excel', [\App\Http\Controllers\Client\DashboardController::class, 'index'])->name('excel.index');
 
     // UTILITY
     Route::post('/select-type-media', [\App\Http\Controllers\SelectTypeMediaController::class, 'store'])->name('select-type-media.store');
@@ -40,7 +39,9 @@ Route::group([
     Route::get('/news', [\App\Http\Controllers\Client\DashboardController::class, 'index'])->name('news.index');
     Route::get('/crawling', [\App\Http\Controllers\Client\DashboardController::class, 'index'])->name('crawling.index');
 
-    Route::get('/analytics-report', [ReportController::class, 'reportView']);
-    Route::get('/analytics/export', [ReportController::class, 'exportToExcel']);
+    Route::get('/excel', [ReportController::class, 'reportView'])->name('excel.index');
+    Route::get('/excel/export', [ReportController::class, 'exportToExcel'])->name('excel.export');
+    // Route::get('/excel', [ReportController::class, 'index'])->name('excel.index');
+
 
 });

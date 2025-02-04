@@ -26,7 +26,7 @@ class ReportController extends Controller
                     ->groupBy('target_type.id')
                     ->get();
 
-        return Inertia::render('Client/Report', [
+        return Inertia::render('Client/Excel', [
             'targets'   => $targets,
         ]);
     }
