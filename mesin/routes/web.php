@@ -15,7 +15,7 @@ Route::group([
     Route::get('/dashboard', [\App\Http\Controllers\Client\DashboardController::class, 'index'])->name('dashboard.index');
     Route::get('/mentions', [\App\Http\Controllers\MentionController::class, 'index'])->name('mentions.index');
     Route::get('/summary', [\App\Http\Controllers\Client\DashboardController::class, 'index'])->name('summary.index');
-    Route::get('/sentiment', [\App\Http\Controllers\Client\DashboardController::class, 'index'])->name('sentiment.index');
+    Route::get('/sentiment', [\App\Http\Controllers\SentimentController::class, 'index'])->name('sentiment.index');
     Route::get('/excel', [\App\Http\Controllers\Client\DashboardController::class, 'index'])->name('excel.index');
 
     // UTILITY
@@ -26,6 +26,8 @@ Route::group([
 
         return redirect('/signin');
     })->name('signout');
+
+    Route::get('/analytics', [\App\Http\Controllers\Client\AnalyticController::class, 'index'])->name('analytics.index');
 
     Route::get('/roles', [\App\Http\Controllers\Client\DashboardController::class, 'index'])->name('roles.index');
     Route::get('/permissions', [\App\Http\Controllers\Client\DashboardController::class, 'index'])->name('permissions.index');

@@ -1,11 +1,11 @@
 import AdminLayout from "@/Layouts/AdminLayout";
-import {Bar, Line, Pie} from "react-chartjs-2";
+import { Bar, Line, Pie } from "react-chartjs-2";
 // @ts-ignore
 import faker from "faker";
-import {Head, router, usePage} from "@inertiajs/react";
-import {useEffect, useState} from "react";
+import { Head, router, usePage } from "@inertiajs/react";
+import { useEffect, useState } from "react";
 import Datepicker from "react-tailwindcss-datepicker";
-import {hasPermission} from "@/utils/Permission";
+import { hasPermission } from "@/utils/Permission";
 import dayjs from "dayjs";
 import WordCloud from 'react-d3-cloud';
 
@@ -28,7 +28,7 @@ export default function (params: {
 
     const [type, setType] = useState('News');
 
-    const changeTypeDate = () => {
+    useEffect(() => {
         router.get(route('dashboard.index'), {
             type: type,
             startDate: date.startDate,
@@ -37,24 +37,24 @@ export default function (params: {
             preserveState: true,
             preserveScroll: true,
         })
-    }
+    }, [type, date])
 
     return (
         <AdminLayout>
-            <Head title="Dashboard"/>
+            <Head title="Dashboard" />
 
             <div className='flex flex-row align-middle justify-between'>
                 <h1 className='text-2xl font-bold'>Dashboard</h1>
                 <div className="flex flex-row gap-4">
                     <div className="hs-dropdown relative inline-flex">
                         <button id="hs-dropdown-default" type="button"
-                                className="hs-dropdown-toggle py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
-                                aria-haspopup="menu" aria-expanded="false" aria-label="Dropdown">
+                            className="hs-dropdown-toggle py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
+                            aria-haspopup="menu" aria-expanded="false" aria-label="Dropdown">
                             {type}
                             <svg className="hs-dropdown-open:rotate-180 size-4" xmlns="http://www.w3.org/2000/svg"
-                                 width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                 strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="m6 9 6 6 6-6"/>
+                                width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="m6 9 6 6 6-6" />
                             </svg>
                         </button>
 
@@ -64,19 +64,17 @@ export default function (params: {
                             <div className="p-1 space-y-0.5">
                                 {(hasPermission("User Media") || hasPermission("User Media Sosmed")) &&
                                     <a className="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-gray-100"
-                                       href="#" onClick={(e) => {
-                                        setType('News');
-                                        changeTypeDate();
-                                    }}>
+                                        href="#" onClick={(e) => {
+                                            setType('News');
+                                        }}>
                                         News
                                     </a>
                                 }
                                 {(hasPermission("User Sosmed") || hasPermission("User Media Sosmed")) &&
                                     <a className="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-gray-100"
-                                       href="#" onClick={(e) => {
-                                        setType('Social Media');
-                                        changeTypeDate();
-                                    }}>
+                                        href="#" onClick={(e) => {
+                                            setType('Social Media');
+                                        }}>
                                         Social Media
                                     </a>
                                 }
@@ -93,7 +91,6 @@ export default function (params: {
                                         startDate: dayjs(newValue.startDate).toDate(),
                                         endDate: dayjs(newValue.endDate).toDate()
                                     });
-                                    changeTypeDate();
                                 }
                             }}
                         />
@@ -111,7 +108,7 @@ export default function (params: {
                     <div className='h-[30vh] w-full'>
                         <Line
                             datasetIdKey='global_chart'
-                            data={params.global_chart} options={options}/>
+                            data={params.global_chart} options={options} />
                     </div>
                 </div>
             </div>
@@ -124,7 +121,7 @@ export default function (params: {
                         </h3>
                     </div>
                     <div className="p-4 md:p-5 h-full">
-                        <Pie datasetIdKey='topic_chart' data={params.total_chart} options={options}/>
+                        <Pie datasetIdKey='topic_chart' data={params.total_chart} options={options} />
                     </div>
                 </div>
                 <div className="flex flex-col bg-white border shadow-sm rounded-xl w-full">
@@ -137,7 +134,7 @@ export default function (params: {
                         <Bar datasetIdKey='sentiment_chart' data={params.sentiment_chart} options={{
                             ...options,
                             indexAxis: 'y'
-                        }}/>
+                        }} />
                     </div>
                 </div>
             </div>
@@ -154,7 +151,7 @@ export default function (params: {
                             data={params.wordcloud_caption}
                             height={100}
                             rotate={0}
-                            fontSize={(word) => Math.log2(word.value) * 5}
+                            fontSize={(word: any) => Math.log2(word.value) * 5}
                         />
                     </div>
                 </div>
