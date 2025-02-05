@@ -36,17 +36,14 @@ class AnalyticController extends Controller
             'datasets'   => [],
         ];
 
-        $counts = [
-            'mention'   => '-',
-            'like'      => '-',
-            'comment'   => '-',
-            'view'      => '-',
-            'positive'  => '-',
-            'negative'  => '-',
-            'neutral'   => '-',
-        ];
-
         $summaries = [];
+
+        $targetList = DB::table('target_type')
+                        ->join('user_targets', 'user_targets.type', '=', 'target_type.id')
+                        ->selectRaw('target_type.*')
+                        ->where('user_targets.id_user', $this->user->id)
+                        ->groupBy('target_type.id')
+                        ->get();
 
         if ($source == 'News') {
             $globalAnalyticNews = DB::table('media_news')
@@ -67,20 +64,28 @@ class AnalyticController extends Controller
                     return validateDate($row->date_label);
                 });
 
-                $counts['mention']  = $globalAnalyticNews->count();
-
-                $counts['positive'] = $globalAnalyticNews->where('sentiment', 'positive')->count();
-                $counts['negative'] = $globalAnalyticNews->where('sentiment', 'negative')->count();
-                $counts['neutral']  = $globalAnalyticNews->where('sentiment', 'neutral')->count();
-
-                $targetList = $globalAnalyticNews->groupBy('name')->keys();
-
                 foreach ($targetList as $key => $t) {
+                    $result['datasets'][$key]['label'] = $t->name;
                     foreach ($dates as $dt) {
-                        $result['datasets'][$key]['label'] = $t;
-                        $result['datasets'][$key]['data'][] = $globalAnalyticNews->where('name', $t)->where('date_label', $dt)->count();
+                        $result['datasets'][$key]['data'][] = $globalAnalyticNews->where('name', $t->name)->where('date_label', $dt)->count();
                     }
                 }
+
+                foreach ($targetList as $key => $t) {
+                    $summaries[] = [
+                        'target' => $t->name,
+                        'counts' => [
+                            'mention' => $globalAnalyticNews->where('name', $t->name)->count(),
+                            'positive' => $globalAnalyticNews->where('sentiment', 'positive')->where('name', $t->name)->count(),
+                            'negative' => $globalAnalyticNews->where('sentiment', 'negative')->where('name', $t->name)->count(),
+                            'neutral' => $globalAnalyticNews->where('sentiment', 'neutral')->where('name', $t->name)->count(),
+                            'like' => $globalAnalyticNews->where('name', $t->name)->sum('likes'),
+                            'comment' => $globalAnalyticNews->where('name', $t->name)->sum('comments'),
+                            'view' => $globalAnalyticNews->where('name', $t->name)->sum('views'),
+                        ]
+                    ];
+                }
+                
         }else {
             $globalAnalytic = DB::table('social_posts')
                 ->join('user_targets', 'user_targets.id', '=', 'social_posts.id_user_target')
@@ -99,58 +104,41 @@ class AnalyticController extends Controller
                     return validateDate($row->date_label);
                 });
 
-                $counts['mention']  = $globalAnalytic->count();
-
-                $counts['positive'] = $globalAnalytic->where('sentiment', 'positive')->count();
-                $counts['negative'] = $globalAnalytic->where('sentiment', 'negative')->count();
-                $counts['neutral']  = $globalAnalytic->where('sentiment', 'neutral')->count();
-                $counts['like']     = $globalAnalytic->sum('likes');
-                $counts['comment']  = $globalAnalytic->sum('comments');
-                $counts['view']     = $globalAnalytic->sum('views');
-
-                $targetList = $globalAnalytic->groupBy('name')->keys();
-
                 foreach ($targetList as $key => $t) {
+                    $result['datasets'][$key]['label'] = $t->name;
                     foreach ($dates as $dt) {
-                        $result['datasets'][$key]['label'] = $t;
-                        $result['datasets'][$key]['data'][] = $globalAnalytic->where('name', $t)->where('date_label', $dt)->count();
+                        $result['datasets'][$key]['data'][] = $globalAnalytic->where('name', $t->name)->where('date_label', $dt)->count();
                     }
                 }
                 
                 foreach ($targetList as $key => $t) {
                     $summaries[] = [
-                        'target' => $t,
+                        'target' => $t->name,
                         'counts' => [
-                            'positive' => $globalAnalytic->where('sentiment', 'positive')->where('name', $t)->count(),
-                            'negative' => $globalAnalytic->where('sentiment', 'negative')->where('name', $t)->count(),
-                            'neutral' => $globalAnalytic->where('sentiment', 'neutral')->where('name', $t)->count(),
-                            'like' => $globalAnalytic->where('name', $t)->sum('likes'),
-                            'comment' => $globalAnalytic->where('name', $t)->sum('comments'),
-                            'view' => $globalAnalytic->where('name', $t)->sum('views'),
+                            'mention' => $globalAnalytic->where('name', $t->name)->count(),
+                            'positive' => $globalAnalytic->where('sentiment', 'positive')->where('name', $t->name)->count(),
+                            'negative' => $globalAnalytic->where('sentiment', 'negative')->where('name', $t->name)->count(),
+                            'neutral' => $globalAnalytic->where('sentiment', 'neutral')->where('name', $t->name)->count(),
+                            'like' => $globalAnalytic->where('name', $t->name)->sum('likes'),
+                            'comment' => $globalAnalytic->where('name', $t->name)->sum('comments'),
+                            'view' => $globalAnalytic->where('name', $t->name)->sum('views'),
                         ]
                     ];
                 }
         }
 
         $result['labels'] = $dates;
-        $targets = DB::table('target_type')
-                        ->join('user_targets', 'user_targets.type', '=', 'target_type.id')
-                        ->selectRaw('target_type.*')
-                        ->where('user_targets.id_user', $this->user->id)
-                        ->groupBy('target_type.id')
-                        ->get();
-
             
-        // return [
-        //     'chart'     => $result,
-        //     'summaries' => $summaries,
-        //     'targets'   => $targets,
-        // ];
-
-        return Inertia::render('Client/Analytics', [
+        return [
             'chart'     => $result,
             'summaries' => $summaries,
-            'targets'   => $targets,
-        ]);
+            'targets'   => $targetList,
+        ];
+
+        // return Inertia::render('Client/Analytics', [
+        //     'chart'     => $result,
+        //     'summaries' => $summaries,
+        //     'targets'   => $targetList,
+        // ]);
     }
 }
