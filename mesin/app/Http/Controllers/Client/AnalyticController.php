@@ -71,11 +71,13 @@ class AnalyticController extends Controller
                 $counts['negative'] = $globalAnalyticNews->where('sentiment', 'negative')->count();
                 $counts['neutral']  = $globalAnalyticNews->where('sentiment', 'neutral')->count();
 
-                foreach ($dates as $dt) {
-                    $result['datasets'][] = [
-                        'label'     => $dt,
-                        'data'      => $globalAnalyticNews->where('date_label', $dt)->count()
-                    ];
+                $targetList = $globalAnalyticNews->groupBy('name')->keys();
+
+                foreach ($targetList as $key => $t) {
+                    foreach ($dates as $dt) {
+                        $result['datasets'][$key]['label'] = $t;
+                        $result['datasets'][$key]['data'][] = $globalAnalyticNews->where('name', $t)->where('date_label', $dt)->count();
+                    }
                 }
         }else {
             $globalAnalytic = DB::table('social_posts')
@@ -104,11 +106,13 @@ class AnalyticController extends Controller
                 $counts['comment']  = $globalAnalytic->sum('comments');
                 $counts['view']     = $globalAnalytic->sum('views');
 
-                foreach ($dates as $dt) {
-                    $result['datasets'][] = [
-                        'label'     => $dt,
-                        'data'      => $globalAnalytic->where('date_label', $dt)->count()
-                    ];
+                $targetList = $globalAnalytic->groupBy('name')->keys();
+
+                foreach ($targetList as $key => $t) {
+                    foreach ($dates as $dt) {
+                        $result['datasets'][$key]['label'] = $t;
+                        $result['datasets'][$key]['data'][] = $globalAnalytic->where('name', $t)->where('date_label', $dt)->count();
+                    }
                 }
         }
 
@@ -119,6 +123,13 @@ class AnalyticController extends Controller
                         ->where('user_targets.id_user', $this->user->id)
                         ->groupBy('target_type.id')
                         ->get();
+
+            
+        return [
+            'chart'     => $result,
+            'counts'    => $counts,
+            'targets'   => $targets,
+        ];
 
         return Inertia::render('Client/Analytics', [
             'chart'     => $result,
