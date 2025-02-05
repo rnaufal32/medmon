@@ -122,6 +122,10 @@ export default function (params: {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
+    function exportExcel() {
+        router.get(route('excel.export'))
+    }
+
     useEffect(() => {
         console.log(params.targets)
 
@@ -131,6 +135,7 @@ export default function (params: {
             preserveScroll: true
         });
     }, []);
+
     return (
         <AdminLayout>
             <Head title="Sentiment" />
@@ -204,14 +209,24 @@ export default function (params: {
                     </div>
                     <div className='w-[300px]'>
                         <Datepicker
+                            showShortcuts={true}
+                            showFooter={true}
                             primaryColor={"blue"}
                             value={date}
                             onChange={(newValue) => {
                                 if (newValue != null) {
-                                    setDate({
-                                        startDate: dayjs(newValue.startDate).toDate(),
-                                        endDate: dayjs(newValue.endDate).toDate()
-                                    });
+                                    const startDate = dayjs(newValue.startDate);
+                                    const endDate = dayjs(newValue.endDate);
+                                    const diffInDays = endDate.diff(startDate, 'day');
+
+                                    if (diffInDays > 30) {
+                                        alert("The maximum allowed date range is 30 days.");
+                                    } else {
+                                        setDate({
+                                            startDate: startDate.toDate(),
+                                            endDate: endDate.toDate()
+                                        });
+                                    }
                                 }
                             }}
                         />
@@ -249,6 +264,7 @@ export default function (params: {
                     </div>
                     <button
                         className="px-4 py-2  rounded-md shadow-md flex items-center bg-green-500 text-white"
+                        onClick={() => exportExcel()}
                     >
                         <Icon icon='fa-solid:file-excel' className="mr-2" color="#FFFFFF" />
                         Export

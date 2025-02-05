@@ -4,13 +4,13 @@ import { hasPermission } from "@/utils/Permission";
 import Datepicker from "react-tailwindcss-datepicker";
 import dayjs from "dayjs";
 import { useCallback, useEffect, useState } from "react";
-import { Line } from "react-chartjs-2";
+import { Line, Pie } from "react-chartjs-2";
 import { Icon } from "@iconify-icon/react";
 
-import { Chart } from "chart.js";
+import { Chart, ArcElement, Tooltip, Legend } from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 
-Chart.register(ChartDataLabels);
+Chart.register(ChartDataLabels, ArcElement, Tooltip, Legend);
 
 const options = {
     responsive: true,
@@ -53,6 +53,51 @@ export default function (params: {
 
     const [target, setTarget] = useState<string | undefined>(urls.query.target);
 
+    const [tone, setTone] = useState({
+        positive: 20,
+        neutral: 30,
+        negative: 14,
+    })
+
+    const total = Object.values(tone).reduce((acc, value) => acc + value, 0);
+
+    const pieData = {
+        labels: ['Positive', 'Neutral', 'Negative'],
+        datasets: [
+            {
+                data: Object.values(tone).map((value) => ((value / total) * 100).toFixed(2)),
+                backgroundColor: ['#22C55E', '#3B82F6', '#EF4444'],
+                hoverBackgroundColor: ['#45A049', '#FFB300', '#D32F2F'],
+                borderColor: '#ffffff',
+                borderWidth: 2,
+            },
+        ],
+    };
+
+    const pieOptions = {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'bottom' as const,
+            },
+            tooltip: {
+                callbacks: {
+                    label: function (tooltipItem: any) {
+                        return `${tooltipItem.label}: ${tooltipItem.raw}%`;
+                    },
+                },
+            },
+            datalabels: {
+                display: true,
+                color: '#FFFFFF',
+                font: {
+                    size: 12,
+                    weight: 'bold'
+                }
+            }
+        },
+    };
+
 
     useEffect(() => {
         router.get(route('analytics.index'), {
@@ -63,6 +108,12 @@ export default function (params: {
         }, {
             preserveState: true,
             preserveScroll: true
+        })
+
+        setTone({
+            positive: params.counts.positive,
+            neutral: params.counts.neutral,
+            negative: params.counts.negative,
         })
     }, [date, type, target])
 
@@ -138,14 +189,24 @@ export default function (params: {
                     </div>
                     <div className='w-[300px]'>
                         <Datepicker
+                            showShortcuts={true}
+                            showFooter={true}
                             primaryColor={"blue"}
                             value={date}
                             onChange={(newValue) => {
                                 if (newValue != null) {
-                                    setDate({
-                                        startDate: dayjs(newValue.startDate).toDate(),
-                                        endDate: dayjs(newValue.endDate).toDate()
-                                    });
+                                    const startDate = dayjs(newValue.startDate);
+                                    const endDate = dayjs(newValue.endDate);
+                                    const diffInDays = endDate.diff(startDate, 'day');
+
+                                    if (diffInDays > 30) {
+                                        alert("The maximum allowed date range is 30 days.");
+                                    } else {
+                                        setDate({
+                                            startDate: startDate.toDate(),
+                                            endDate: endDate.toDate()
+                                        });
+                                    }
                                 }
                             }}
                         />
@@ -168,25 +229,43 @@ export default function (params: {
                         </div>
                     </div>
                 </div>
-                <div className="col-span-5">
-                    <div className="rounded-lg shadow-md p-5 mt-5">
+                {/* <div className="col-span-6">
+                    <div className="border p-5 mt-5 rounded-lg shadow-md">
                         <div className="flex flex-col">
-                            <p className="text-xl font-semibold text-center mb-3 text-blue-600">Stats in Summary</p>
+                            <h1 className='text-xl font-semibold text-blue-600'>Number of Mentions</h1>
+                            <div className='h-[40vh] w-full'>
+                                <Line
+                                    datasetIdKey='global_chart'
+                                    data={result}
+                                    options={options}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div> */}
+                <div className="col-span-5">
+                    <div className="border p-5 mt-5">
+                        <div className="flex flex-col">
+                            <p className="text-xl font-semibold text-center mb-3">Stats in Summary</p>
                             <div className="grid grid-cols-12">
-                                <div className="col-span-6 border flex flex-col items-center justify-center px-5 py-10">
-                                    <p className="font-semibold text-green-600">{params.counts.mention}</p>
+                                <div className="col-span-6 border flex flex-col items-center justify-normal px-5 py-10 rounded-lg shadow-md m-2">
+                                    <Icon icon="solar:mention-square-outline" width={40} height={40} />
+                                    <p className="font-semibold text-green-600 text-lg mt-2">{params.counts.mention}</p>
                                     <p className="text-sm text-slate-500 text-center">{type === 'News' ? 'News' : 'Social Media'} Mentions</p>
                                 </div>
-                                <div className="col-span-6 border flex flex-col items-center justify-center px-5 py-10">
-                                    <p className="font-semibold text-green-600">{params.counts.like}</p>
+                                <div className="col-span-6 border flex flex-col items-center justify-center px-5 py-10 rounded-lg shadow-md m-2">
+                                    <Icon icon="solar:like-broken" width={40} height={40} />
+                                    <p className="font-semibold text-green-600 text-lg mt-2">{params.counts.like}</p>
                                     <p className="text-sm text-slate-500 text-center">{type === 'News' ? 'News' : 'Social Media'} Likes</p>
                                 </div>
-                                <div className="col-span-6 border flex flex-col items-center justify-center px-5 py-10">
-                                    <p className="font-semibold text-green-600">{params.counts.comment}</p>
+                                <div className="col-span-6 border flex flex-col items-center justify-center px-5 py-10 rounded-lg shadow-md m-2">
+                                    <Icon icon="fa-regular:comments" width={40} height={40} />
+                                    <p className="font-semibold text-green-600 text-lg mt-2">{params.counts.comment}</p>
                                     <p className="text-sm text-slate-500 text-center">{type === 'News' ? 'News' : 'Social Media'} Comments</p>
                                 </div>
-                                <div className="col-span-6 border flex flex-col items-center justify-center px-5 py-10">
-                                    <p className="font-semibold text-green-600">{params.counts.view}</p>
+                                <div className="col-span-6 border flex flex-col items-center justify-center px-5 py-10 rounded-lg shadow-md m-2">
+                                    <Icon icon="solar:eye-broken" width={40} height={40} />
+                                    <p className="font-semibold text-green-600 text-lg mt-2">{params.counts.view}</p>
                                     <p className="text-sm text-slate-500 text-center">{type === 'News' ? 'News' : 'Social Media'} Views</p>
                                 </div>
                             </div>
@@ -194,21 +273,24 @@ export default function (params: {
                     </div>
                 </div>
                 <div className="col-span-7">
-                    <div className="rounded-lg shadow-md p-5 mt-5">
+                    <div className="border p-5 mt-5">
                         <div className="flex flex-col">
-                            <p className="text-xl font-semibold text-center mb-3 text-blue-600">Tone Analysis</p>
+                            <p className="text-xl font-semibold text-center mb-3 ">Tone Analysis</p>
+                            <div className="h-[40vh] w-full flex items-center justify-center">
+                                <Pie data={pieData} options={pieOptions} />
+                            </div>
                             <div className="grid grid-cols-12">
-                                <div className="col-span-4 border flex flex-col items-center justify-center px-5 py-14">
-                                    <p className="font-semibold text-green-600 text-xl">{params.counts.positive}</p>
-                                    <p className="text-green-400 text-center">Positive</p>
+                                <div className="col-span-4 border flex flex-col items-center justify-center px-5 py-14 rounded-lg shadow-md m-2 bg-green-500">
+                                    <p className="font-semibold text-white text-2xl">{params.counts.positive}</p>
+                                    <p className="text-white text-center">Positive</p>
                                 </div>
-                                <div className="col-span-4 border flex flex-col items-center justify-center px-5 py-14">
-                                    <p className="font-semibold text-blue-600 text-xl">{params.counts.neutral}</p>
-                                    <p className="text-blue-400 text-center">Neutral</p>
+                                <div className="col-span-4 border flex flex-col items-center justify-center px-5 py-14 rounded-lg shadow-md m-2 bg-blue-500">
+                                    <p className="font-semibold text-white text-2xl">{params.counts.neutral}</p>
+                                    <p className="text-white text-center">Neutral</p>
                                 </div>
-                                <div className="col-span-4 border flex flex-col items-center justify-center px-5 py-14">
-                                    <p className="font-semibold text-red-600 text-xl">{params.counts.negative}</p>
-                                    <p className="text-red-400 text-center">Negative</p>
+                                <div className="col-span-4 border flex flex-col items-center justify-center px-5 py-14 rounded-lg shadow-md m-2 bg-red-500">
+                                    <p className="font-semibold text-white text-2xl">{params.counts.negative}</p>
+                                    <p className="text-white text-center">Negative</p>
                                 </div>
                             </div>
                         </div>

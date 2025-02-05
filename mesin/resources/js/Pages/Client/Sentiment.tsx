@@ -100,14 +100,24 @@ export default function (params: {
                     </div>
                     <div className='w-[300px]'>
                         <Datepicker
+                            showShortcuts={true}
+                            showFooter={true}
                             primaryColor={"blue"}
                             value={date}
                             onChange={(newValue) => {
                                 if (newValue != null) {
-                                    setDate({
-                                        startDate: dayjs(newValue.startDate).toDate(),
-                                        endDate: dayjs(newValue.endDate).toDate()
-                                    });
+                                    const startDate = dayjs(newValue.startDate);
+                                    const endDate = dayjs(newValue.endDate);
+                                    const diffInDays = endDate.diff(startDate, 'day');
+
+                                    if (diffInDays > 30) {
+                                        alert("The maximum allowed date range is 30 days.");
+                                    } else {
+                                        setDate({
+                                            startDate: startDate.toDate(),
+                                            endDate: endDate.toDate()
+                                        });
+                                    }
                                 }
                             }}
                         />
