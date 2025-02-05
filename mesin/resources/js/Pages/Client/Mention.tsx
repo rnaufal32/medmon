@@ -24,7 +24,7 @@ export default function (params: {
         endDate: dayjs().toDate()
     });
 
-    const [type, setType] = useState('News');
+    const [type, setType] = useState(urls.query?.type ?? 'News');
 
     const [target, setTarget] = useState<string | undefined>(urls.query.target);
 
@@ -43,10 +43,8 @@ export default function (params: {
 
     useEffect(() => {
         router.get(route('mentions.index'), {
-            date: {
-                start: dayjs(date.startDate).format('YYYY-MM-DD'),
-                end: dayjs(date.endDate).format('YYYY-MM-DD')
-            },
+            start_date: dayjs(date.startDate).format('YYYY-MM-DD'),
+            end_date: dayjs(date.endDate).format('YYYY-MM-DD'),
             type,
             target,
             platform_type: platform.join(','),
@@ -65,7 +63,7 @@ export default function (params: {
                 <div className="flex flex-row gap-4">
                     <div className="hs-dropdown relative inline-flex">
                         <button id="hs-dropdown-default" type="button"
-                            className="hs-dropdown-toggle py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
+                            className="hs-dropdown-toggle py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
                             aria-haspopup="menu" aria-expanded="false" aria-label="Dropdown">
                             {type}
                             <svg className="hs-dropdown-open:rotate-180 size-4" xmlns="http://www.w3.org/2000/svg"
@@ -100,14 +98,24 @@ export default function (params: {
                     </div>
                     <div className='w-[300px]'>
                         <Datepicker
+                            showShortcuts={true}
+                            showFooter={true}
                             primaryColor={"blue"}
                             value={date}
                             onChange={(newValue) => {
                                 if (newValue != null) {
-                                    setDate({
-                                        startDate: dayjs(newValue.startDate).toDate(),
-                                        endDate: dayjs(newValue.endDate).toDate()
-                                    });
+                                    const startDate = dayjs(newValue.startDate);
+                                    const endDate = dayjs(newValue.endDate);
+                                    const diffInDays = endDate.diff(startDate, 'day');
+
+                                    if (diffInDays > 30) {
+                                        alert("The maximum allowed date range is 30 days.");
+                                    } else {
+                                        setDate({
+                                            startDate: startDate.toDate(),
+                                            endDate: endDate.toDate()
+                                        });
+                                    }
                                 }
                             }}
                         />
@@ -376,8 +384,8 @@ export default function (params: {
                     </div>
                 ) : (
                     <div className='col-span-2 grid grid-cols-1 gap-5'>
-                        <div className="flex flex-col items-center justify-center">
-                            <h1>Currently, There's no data to display</h1>
+                        <div className="flex flex-col items-center justify-center border shadow-sm rounded-xl p-4 md:p-5">
+                            <h1>Currently, There's no data <span className="font-semibold">Mentions</span> to display</h1>
                         </div>
                     </div>
                 )}

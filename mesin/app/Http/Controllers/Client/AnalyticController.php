@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
 use Auth;
+use Carbon\Carbon;
 use DB;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -17,9 +18,8 @@ class AnalyticController extends Controller
     }
 
     public function index(Request $request) {
-        $now = now();
-        $startDate  = $request->input('start_date', $now->copy()->subDays(7));
-        $endDate    = $request->input('end_date', $now);
+        $startDate = Carbon::parse($request->input('start_date', now()->subDays(7)->toDateString()));
+        $endDate = Carbon::parse($request->input('end_date', now()->toDateString()));
         $target     = $request->input('target', null);
         $source     = $request->input('source', 'News');
 
@@ -55,7 +55,7 @@ class AnalyticController extends Controller
                 ->whereNotNull('date')
                 ->where('user_targets.id_user', $this->user->id)
                 ->when(!empty($target), function($query) use ($target) {
-                    return $query->where('user_targets.type', $target);
+                    return $query->where('target_type.id', $target);
                 })
                 ->whereDate('media_news.created_at', '>=', $startDate->toDateString())
                 ->whereDate('media_news.created_at', '<=', $endDate->toDateString())
@@ -84,7 +84,7 @@ class AnalyticController extends Controller
                 ->selectRaw('target_type.name, target_type.id, DATE(date) AS date_label, sentiment, likes, comments, views')
                 ->whereNotNull('date')
                 ->when(!empty($target), function($query) use ($target) {
-                    return $query->where('user_targets.type', $target);
+                    return $query->where('target_type.id', $target);
                 })
                 ->where('user_targets.id_user', $this->user->id)
                 ->whereDate('date', '>=', $startDate->toDateString())
@@ -113,10 +113,17 @@ class AnalyticController extends Controller
         }
 
         $result['labels'] = $dates;
+        $targets = DB::table('target_type')
+                        ->join('user_targets', 'user_targets.type', '=', 'target_type.id')
+                        ->selectRaw('target_type.*')
+                        ->where('user_targets.id_user', $this->user->id)
+                        ->groupBy('target_type.id')
+                        ->get();
 
         return Inertia::render('Client/Analytics', [
             'chart'     => $result,
-            'counts'    => $counts
+            'counts'    => $counts,
+            'targets'   => $targets,
         ]);
     }
 }
