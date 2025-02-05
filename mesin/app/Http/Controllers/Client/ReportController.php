@@ -38,6 +38,9 @@ class ReportController extends Controller
         $target     = $request->input('target', null);
         $sentiment  = $request->input('sentiment', null);
         $source     = $request->input('source', 'News');
+        $platforms  = $request->input('platforms', '');
+
+        $platformIds = explode(',', $platforms);
 
         $targetName = "";
         if($target) {
@@ -50,6 +53,6 @@ class ReportController extends Controller
             ->first();
         }
 
-        return Excel::download(new AnalyticExport($this->user, $source, $target, $sentiment, $startDate, $endDate),  "report-analytic-$startDate-$endDate-$targetName-$source-".($sentiment ? "$sentiment-" : "") .time(). ".xlsx");
+        return Excel::download(new AnalyticExport($this->user, $source, $target, $sentiment, $startDate, $endDate, $platformIds),  "report-analytic-$startDate-$endDate-$targetName-$source-".($sentiment ? "$sentiment-" : "") .time(). ".xlsx");
     }
 }
