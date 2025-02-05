@@ -129,16 +129,16 @@ class AnalyticController extends Controller
 
         $result['labels'] = $dates;
             
-        return [
-            'chart'     => $result,
-            'summaries' => $summaries,
-            'targets'   => $targetList,
-        ];
-
-        // return Inertia::render('Client/Analytics', [
+        // return [
         //     'chart'     => $result,
         //     'summaries' => $summaries,
         //     'targets'   => $targetList,
-        // ]);
+        // ];
+
+        return Inertia::render('Client/Analytics', [
+            'chart'     => $result,
+            'summaries' => $summaries,
+            'targets'   => $targetList,
+        ]);
     }
 }
