@@ -46,6 +46,8 @@ class AnalyticController extends Controller
             'neutral'   => '-',
         ];
 
+        $summaries = [];
+
         if ($source == 'News') {
             $globalAnalyticNews = DB::table('media_news')
                 ->join('media_user_target', 'media_user_target.id_news', '=', 'media_news.id')
@@ -114,6 +116,20 @@ class AnalyticController extends Controller
                         $result['datasets'][$key]['data'][] = $globalAnalytic->where('name', $t)->where('date_label', $dt)->count();
                     }
                 }
+                
+                foreach ($targetList as $key => $t) {
+                    $summaries[] = [
+                        'target' => $t,
+                        'counts' => [
+                            'positive' => $globalAnalytic->where('sentiment', 'positive')->where('name', $t)->count(),
+                            'negative' => $globalAnalytic->where('sentiment', 'negative')->where('name', $t)->count(),
+                            'neutral' => $globalAnalytic->where('sentiment', 'neutral')->where('name', $t)->count(),
+                            'like' => $globalAnalytic->where('name', $t)->sum('likes'),
+                            'comment' => $globalAnalytic->where('name', $t)->sum('comments'),
+                            'view' => $globalAnalytic->where('name', $t)->sum('views'),
+                        ]
+                    ];
+                }
         }
 
         $result['labels'] = $dates;
@@ -125,15 +141,15 @@ class AnalyticController extends Controller
                         ->get();
 
             
-        return [
-            'chart'     => $result,
-            'counts'    => $counts,
-            'targets'   => $targets,
-        ];
+        // return [
+        //     'chart'     => $result,
+        //     'summaries' => $summaries,
+        //     'targets'   => $targets,
+        // ];
 
         return Inertia::render('Client/Analytics', [
             'chart'     => $result,
-            'counts'    => $counts,
+            'summaries' => $summaries,
             'targets'   => $targets,
         ]);
     }
