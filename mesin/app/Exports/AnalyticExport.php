@@ -5,8 +5,9 @@ namespace App\Exports;
 use DB;
 use Illuminate\Database\Eloquent\Collection;
 use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\WithHeadings;
 
-class AnalyticExport implements FromCollection
+class AnalyticExport implements FromCollection, WithHeadings
 {
     protected $user;
     protected $type;
@@ -71,7 +72,7 @@ class AnalyticExport implements FromCollection
         return $result;
     }
 
-    public function headings() {
+    public function headings(): array {
         return ['Caption','Username','Hashtags','Likes','Comments','Views','Url','Sentiment'];
     }
 }

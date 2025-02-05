@@ -38,12 +38,16 @@ class AnalyticController extends Controller
 
         $summaries = [];
 
-        $targetList = DB::table('target_type')
+        $targets = DB::table('target_type')
                         ->join('user_targets', 'user_targets.type', '=', 'target_type.id')
                         ->selectRaw('target_type.*')
                         ->where('user_targets.id_user', $this->user->id)
                         ->groupBy('target_type.id')
                         ->get();
+        
+        $targetList = $targets->filter(function($item) use ($target) {
+            return $item->id == $target || $target == null;
+        });
 
         if ($source == 'News') {
             $globalAnalyticNews = DB::table('media_news')
@@ -64,17 +68,16 @@ class AnalyticController extends Controller
                     return validateDate($row->date_label);
                 });
 
-                foreach ($targetList as $key => $t) {
-                    if($target == $t->id || $target == null) {
-                        $result['datasets'][$key]['label'] = $t->name;
-                        foreach ($dates as $dt) {
-                            $result['datasets'][$key]['data'][] = $globalAnalyticNews->where('name', $t->name)->where('date_label', $dt)->count();
-                        }
+                $index = 0;
+                foreach ($targetList as $t) {
+                    $result['datasets'][$index]['label'] = $t->name;
+                    foreach ($dates as $dt) {
+                        $result['datasets'][$index]['data'][] = $globalAnalyticNews->where('name', $t->name)->where('date_label', $dt)->count();
                     }
+                    $index++;
                 }
 
                 foreach ($targetList as $key => $t) {
-                    if($target == $t->id || $target == null) {
                         $summaries[] = [
                             'target' => $t->name,
                             'counts' => [
@@ -88,7 +91,6 @@ class AnalyticController extends Controller
                             ]
                         ];
                     }
-                }
                 
         }else {
             $globalAnalytic = DB::table('social_posts')
@@ -108,30 +110,28 @@ class AnalyticController extends Controller
                     return validateDate($row->date_label);
                 });
 
-                foreach ($targetList as $key => $t) {
-                    if($target == $t->id || $target == null) {
-                        $result['datasets'][$key]['label'] = $t->name;
-                        foreach ($dates as $dt) {
-                            $result['datasets'][$key]['data'][] = $globalAnalytic->where('name', $t->name)->where('date_label', $dt)->count();
-                        }
+                $index = 0;
+                foreach ($targetList as $t) {
+                    $result['datasets'][$index]['label'] = $t->name;
+                    foreach ($dates as $dt) {
+                        $result['datasets'][$index]['data'][] = $globalAnalytic->where('name', $t->name)->where('date_label', $dt)->count();
                     }
                 }
                 
+                
                 foreach ($targetList as $key => $t) {
-                    if($target == $t->id || $target == null) {
-                        $summaries[] = [
-                            'target' => $t->name,
-                            'counts' => [
-                                'mention' => $globalAnalytic->where('name', $t->name)->count(),
-                                'positive' => $globalAnalytic->where('sentiment', 'positive')->where('name', $t->name)->count(),
-                                'negative' => $globalAnalytic->where('sentiment', 'negative')->where('name', $t->name)->count(),
-                                'neutral' => $globalAnalytic->where('sentiment', 'neutral')->where('name', $t->name)->count(),
-                                'like' => $globalAnalytic->where('name', $t->name)->sum('likes'),
-                                'comment' => $globalAnalytic->where('name', $t->name)->sum('comments'),
-                                'view' => $globalAnalytic->where('name', $t->name)->sum('views'),
-                            ]
-                        ];
-                    }
+                    $summaries[] = [
+                        'target' => $t->name,
+                        'counts' => [
+                            'mention' => $globalAnalytic->where('name', $t->name)->count(),
+                            'positive' => $globalAnalytic->where('sentiment', 'positive')->where('name', $t->name)->count(),
+                            'negative' => $globalAnalytic->where('sentiment', 'negative')->where('name', $t->name)->count(),
+                            'neutral' => $globalAnalytic->where('sentiment', 'neutral')->where('name', $t->name)->count(),
+                            'like' => $globalAnalytic->where('name', $t->name)->sum('likes'),
+                            'comment' => $globalAnalytic->where('name', $t->name)->sum('comments'),
+                            'view' => $globalAnalytic->where('name', $t->name)->sum('views'),
+                        ]
+                    ];
                 }
         }
 
@@ -140,13 +140,13 @@ class AnalyticController extends Controller
         return [
             'chart'     => $result,
             'summaries' => $summaries,
-            'targets'   => $targetList,
+            'targets'   => $targets,
         ];
 
         return Inertia::render('Client/Analytics', [
             'chart'     => $result,
             'summaries' => $summaries,
-            'targets'   => $targetList,
+            'targets'   => $targets,
         ]);
     }
 }
