@@ -70,4 +70,8 @@ class AnalyticExport implements FromCollection
 
         return $result;
     }
+
+    public function headings() {
+        return ['Caption','Username','Hashtags','Likes','Comments','Views','Url','Sentiment'];
+    }
 }
