@@ -119,6 +119,7 @@ class ReportController extends Controller
         $sentiment  = $request->input('sentiment', null);
         $source     = $request->input('source', 'News');
         $platforms  = $request->input('platforms', null);
+        $format     = $request->input('format', 'xlsx');
 
         $sortBy     = $request->input('sort_by', 'desc');
         $sortColumn = $request->input('sort_column', '');
@@ -146,6 +147,10 @@ class ReportController extends Controller
             ->first()->name;
         }
 
-        return Excel::download(new AnalyticExport($this->user, $source, $target, $sentiment, $startDate, $endDate, $platformIds, $sortColumn, $sortBy),  "report-analytic-$startDate-$endDate-$targetName-$source-".($sentiment ? "$sentiment-" : "") .time(). ".xlsx");
+        if ($format === 'csv') {
+            return Excel::download(new AnalyticExport($this->user, $source, $target, $sentiment, $startDate, $endDate, $platformIds, $sortColumn, $sortBy),  "report-analytic-$startDate-$endDate-$targetName-$source-".($sentiment ? "$sentiment-" : "") .time(). ".csv", \Maatwebsite\Excel\Excel::CSV);
+        }
+
+        return Excel::download(new AnalyticExport($this->user, $source, $target, $sentiment, $startDate, $endDate, $platformIds, $sortColumn, $sortBy),  "report-analytic-$startDate-$endDate-$targetName-$source-".($sentiment ? "$sentiment-" : "") .time(). ".xlsx", \Maatwebsite\Excel\Excel::XLSX);
     }
 }
