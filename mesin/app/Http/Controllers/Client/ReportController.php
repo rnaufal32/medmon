@@ -109,7 +109,10 @@ class ReportController extends Controller
         $source     = $request->input('source', 'News');
         $platforms  = $request->input('platforms', '');
 
-        $platformIds = explode(',', $platforms);
+        $platformIds = [];
+        if(!empty($platforms)) {
+            $platformIds = explode(',', $platforms);
+        }
 
         $targetName = "";
         if($target) {
