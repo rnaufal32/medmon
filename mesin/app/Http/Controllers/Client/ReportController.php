@@ -106,6 +106,16 @@ class ReportController extends Controller
         //     'result'    => $result
         // ];
 
+        $platforms = DB::table('social_media')
+            ->where(function ($query) use ($source) {
+                if ($source == 'News') {
+                    $query->where('type', 'media');
+                } else {
+                    $query->where('type', 'sosmed');
+                }
+            })
+            ->get();
+
         return Inertia::render('Client/Excel', [
             'targets'   => $targets,
             'result'    => $result
@@ -122,13 +132,13 @@ class ReportController extends Controller
         $format     = $request->input('format', 'xlsx');
 
         $sortBy     = $request->input('sort_by', 'desc');
-        $sortColumn = $request->input('sort_column', '');
+        $sortColumn = $request->input('sort_column', null);
 
         $allowedColumns = ['social_posts.date, social_posts.caption, social_posts.username, social_posts.hashtags, social_posts.likes, social_posts.comments, social_posts.views, social_posts.url, social_posts.sentiment, social_media.name',
                             'media_news.date, media_news.title, media_news.summary, social_media.name, media_news.sentiment, media_news.images, media_news.url, media_news.journalist'];
 
         if (collect($allowedColumns)->search($sortColumn)) {
-            $sortColumn = $source === 'News' ? 'media_news.date' : 'social_posts.date';
+            $sortColumn = $source == 'News' ? 'media_news.date' : 'social_posts.date';
         }
 
         $platformIds = [];
