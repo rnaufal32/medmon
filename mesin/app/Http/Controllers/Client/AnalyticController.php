@@ -107,8 +107,8 @@ class AnalyticController extends Controller
                     $pieData[$index]['target'] = $t->name;
                     $sources = $globalAnalyticNews->where('name', $t->name)->groupBy('source')->map->count();
 
-                    $pieData[$index]['datasets']['labels'][] = collect($sources)->keys();
-                    $pieData[$index]['datasets']['data'][] = collect($sources)->values();;
+                    $pieData[$index]['datasets']['labels'] = collect($sources)->keys();
+                    $pieData[$index]['datasets']['data'] = collect($sources)->values();;
 
                     $index++;
                 }
