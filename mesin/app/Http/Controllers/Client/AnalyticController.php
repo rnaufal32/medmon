@@ -181,13 +181,13 @@ class AnalyticController extends Controller
         })
         ->get();
             
-        return [
-            'chart'     => $result,
-            'summaries' => $summaries,
-            'targets'   => $targets,
-            'pieData'   => $pieData,
-            'platforms' => $platformList
-        ];
+        // return [
+        //     'chart'     => $result,
+        //     'summaries' => $summaries,
+        //     'targets'   => $targets,
+        //     'pieData'   => $pieData,
+        //     'platforms' => $platformList
+        // ];
 
         return Inertia::render('Client/Analytics', [
             'chart'     => $result,

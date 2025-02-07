@@ -16,7 +16,7 @@ export default function (params: {
     analytic: any,
     data: any,
     target: any,
-    platforms: any,
+    platforms: any
 }) {
     const { props: { urls } } = usePage()
     const [date, setDate] = useState({
@@ -28,9 +28,9 @@ export default function (params: {
 
     const [sentimentType, setSentimentType] = useState(urls.query?.sentiment_type ?? '');
 
-    const [target, setTarget] = useState<string | undefined>(urls.query.target);
 
     const [platform, setPlatform] = useState<any>([])
+    const [page, setPage] = useState(params.data.current_page)
 
     function changePlatform(e: React.ChangeEvent<HTMLInputElement>) {
         const value = Number(e.target.value);
@@ -50,11 +50,12 @@ export default function (params: {
             type,
             sentiment_type: sentimentType,
             platform_type: platform.join(','),
+            page
         }, {
             preserveState: true,
             preserveScroll: true
         });
-    }, [date, type, sentimentType, platform]);
+    }, [date, type, sentimentType, platform, page]);
 
     return (
         <AdminLayout>
@@ -344,7 +345,7 @@ export default function (params: {
                                         aria-label="Previous"
                                         disabled={params.data.links[0].url == null}
                                         onClick={(_) => {
-                                            router.get(params.data.links[0].url)
+                                            setPage(params.data.current_page - 1)
                                         }}>
                                         <svg className="shrink-0 size-3.5" xmlns="http://www.w3.org/2000/svg" width="24"
                                             height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -356,36 +357,21 @@ export default function (params: {
                                     </button>
                                 )}
                                 <div className="flex items-center gap-x-1">
-                                    {params.data.links.slice(1, -1).map((e: any, i: number) => {
-                                        if (e.active) {
-                                            return (
-                                                <button key={i}
-                                                    type="button"
-                                                    onClick={(_) => {
-                                                        router.get(e.url)
-                                                    }}
-                                                    className="min-h-[38px] min-w-[38px] flex justify-center items-center bg-gray-200 text-gray-800 py-2 px-3 text-sm rounded-lg focus:outline-none focus:bg-gray-300 disabled:opacity-50 disabled:pointer-events-none"
-                                                    aria-current="page">{e.label}
-                                                </button>
-                                            )
-                                        } else {
-                                            return (
-                                                <button type="button"
-                                                    key={i}
-                                                    onClick={(_) => {
-                                                        router.get(e.url)
-                                                    }}
-                                                    className="min-h-[38px] min-w-[38px] flex justify-center items-center text-gray-800 hover:bg-gray-100 py-2 px-3 text-sm rounded-lg focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-white dark:hover:bg-white/10 dark:focus:bg-white/10">{e.label}</button>
-                                            )
-                                        }
-                                    })}
+                                    {params.data.links.slice(1, -1).map((e: any, i: number) => (
+                                        <button type="button"
+                                            key={i}
+                                            onClick={(_) => {
+                                                setPage(e.label)
+                                            }}
+                                            className={`min-h-[38px] min-w-[38px] flex justify-center items-center py-2 px-3 text-sm rounded-lg ${e.active? 'bg-gray-200 text-gray-800 focus:outline-none focus:bg-gray-300 disabled:opacity-50 disabled:pointer-events-none' : 'text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-white dark:hover:bg-white/10 dark:focus:bg-white/10'}`}>{e.label}</button>
+                                    ))}
                                 </div>
                                 {params.data.links.length > 10 && params.data.links[params.data.links.length - 1] && (
                                     <button type="button"
                                         className="min-h-[38px] min-w-[38px] py-2 px-2.5 inline-flex justify-center items-center gap-x-1.5 text-sm rounded-lg text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none"
                                         aria-label="Next"
-                                        onClick={(_) => {
-                                            router.get(params.data.links[params.data.links.length - 1].url)
+                                        onClick={() => {
+                                            setPage(params.data.current_page + 1)
                                         }}
                                         disabled={params.data.links[params.data.links.length - 1].url == null}>
                                         <span>Next</span>
