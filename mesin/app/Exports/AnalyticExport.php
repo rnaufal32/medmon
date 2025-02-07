@@ -41,7 +41,7 @@ class AnalyticExport implements FromCollection, WithHeadings
                 ->join('target_type', 'user_targets.type', '=', 'target_type.id')
                 ->leftJoin('social_media', 'media_news.type', '=', 'social_media.id')
                 ->selectRaw('media_news.date, media_news.title, media_news.summary, social_media.name, media_news.sentiment, media_news.images, media_news.url, media_news.journalist')
-                ->whereNotNull('date')
+                ->whereNotNull('media_news.date')
                 ->where('user_targets.id_user', $this->user->id)
                 ->when(!empty($this->target), function($query) {
                     return $query->where('target_type.id', $this->target);
@@ -65,11 +65,11 @@ class AnalyticExport implements FromCollection, WithHeadings
                 ->join('target_type', 'user_targets.type', '=', 'target_type.id')
                 ->join('social_media', 'social_posts.id_socmed', '=', 'social_media.id')
                 ->selectRaw('social_posts.date, social_posts.caption, social_posts.username, social_posts.hashtags, social_posts.likes, social_posts.comments, social_posts.views, social_posts.url, social_posts.sentiment, social_media.name')
-                ->whereNotNull('date')
-                ->when(!empty($target), function($query)  {
+                ->whereNotNull('social_posts.date')
+                ->when(!empty($this->target), function($query)  {
                     return $query->where('target_type.id', $this->target);
                 })
-                ->when(!empty($sentiment), function($query)  {
+                ->when(!empty($this->sentiment), function($query)  {
                     return $query->where('social_posts.sentiment', $this->sentiment);
                 })
                 ->when(count($this->platformIDs) > 0, function($query)  {
