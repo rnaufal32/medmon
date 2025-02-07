@@ -45,7 +45,7 @@ class AnalyticExport implements FromCollection, WithHeadings
                 ->join('user_targets', 'user_targets.id', '=', 'media_user_target.id_user_target')
                 ->join('target_type', 'user_targets.type', '=', 'target_type.id')
                 ->leftJoin('social_media', 'media_news.type', '=', 'social_media.id')
-                ->selectRaw('media_news.date, media_news.title, media_news.summary, social_media.name, media_news.sentiment, media_news.images, media_news.url, media_news.journalist')
+                ->selectRaw('CAST(media_news.date as DATETIME) as date, media_news.title, media_news.summary, social_media.name, media_news.sentiment, media_news.images, media_news.url, media_news.journalist')
                 ->whereNotNull('media_news.date')
                 ->where('user_targets.id_user', $this->user->id)
                 ->when(!empty($this->target), function($query) {
@@ -57,8 +57,8 @@ class AnalyticExport implements FromCollection, WithHeadings
                 ->when(count($this->platformIDs) > 0, function($query) {
                     return $query->whereIn('media_news.type', $this->platformIDs);
                 })
-                ->whereDate('media_news.created_at', '>=', $this->startDate)
-                ->whereDate('media_news.created_at', '<=', $this->endDate)
+                ->whereDate('media_news.date', '>=', $this->startDate)
+                ->whereDate('media_news.date', '<=', $this->endDate)
                 ->orderBy($this->sortColumn, $this->sortBy)
                 ->get();
                 // $result = $globalAnalyticNews;
@@ -70,7 +70,7 @@ class AnalyticExport implements FromCollection, WithHeadings
                 ->join('user_targets', 'user_targets.id', '=', 'social_posts.id_user_target')
                 ->join('target_type', 'user_targets.type', '=', 'target_type.id')
                 ->join('social_media', 'social_posts.id_socmed', '=', 'social_media.id')
-                ->selectRaw('social_posts.date, social_posts.caption, social_posts.username, social_posts.hashtags, social_posts.likes, social_posts.comments, social_posts.views, social_posts.url, social_posts.sentiment, social_media.name')
+                ->selectRaw('CAST(social_posts.date as DATETIME) as date, social_posts.caption, social_posts.username, social_posts.hashtags, social_posts.likes, social_posts.comments, social_posts.views, social_posts.url, social_posts.sentiment, social_media.name')
                 ->whereNotNull('social_posts.date')
                 ->when(!empty($this->target), function($query)  {
                     return $query->where('target_type.id', $this->target);
@@ -82,8 +82,8 @@ class AnalyticExport implements FromCollection, WithHeadings
                     return $query->whereIn('social_posts.id_socmed', $this->platformIDs);
                 })
                 ->where('user_targets.id_user', $this->user->id)
-                ->whereDate('social_posts.created_at', '>=', $this->startDate)
-                ->whereDate('social_posts.created_at', '<=', $this->endDate)
+                ->whereDate('social_posts.date', '>=', $this->startDate)
+                ->whereDate('social_posts.date', '<=', $this->endDate)
                 ->orderBy($this->sortColumn, $this->sortBy)
                 ->get();
                 

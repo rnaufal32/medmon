@@ -27,12 +27,12 @@ class ReportController extends Controller
         $source     = $request->input('source', 'News');
         $platforms  = $request->input('platforms', '');
         $sortBy     = $request->input('sort_by', 'desc');
-        $sortColumn = $request->input('sort_column', '');
+        $sortColumn = $request->input('sort_column', null);
 
         $allowedColumns = ['social_posts.date, social_posts.caption, social_posts.username, social_posts.hashtags, social_posts.likes, social_posts.comments, social_posts.views, social_posts.url, social_posts.sentiment, social_media.name',
                             'media_news.date, media_news.title, media_news.summary, social_media.name, media_news.sentiment, media_news.images, media_news.url, media_news.journalist'];
 
-        if (!in_array($sortColumn, $allowedColumns)) {
+        if (collect($allowedColumns)->search($sortColumn)) {
             $sortColumn = $source === 'News' ? 'media_news.date' : 'social_posts.date';
         }
 
@@ -54,8 +54,8 @@ class ReportController extends Controller
                 ->join('user_targets', 'user_targets.id', '=', 'media_user_target.id_user_target')
                 ->join('target_type', 'user_targets.type', '=', 'target_type.id')
                 ->leftJoin('social_media', 'media_news.type', '=', 'social_media.id')
-                ->selectRaw('media_news.date, media_news.title, media_news.summary, social_media.name, media_news.sentiment, media_news.images, media_news.url, media_news.journalist')
-                ->whereNotNull('date')
+                ->selectRaw('CAST(media_news.date as DATETIME) as date, media_news.title, media_news.summary, social_media.name, media_news.sentiment, media_news.images, media_news.url, media_news.journalist')
+                ->whereNotNull('media_news.date')
                 ->where('user_targets.id_user', $this->user->id)
                 ->when(!empty($target), function($query) use ($target) {
                     return $query->where('target_type.id', $target);
@@ -66,8 +66,8 @@ class ReportController extends Controller
                 ->when(count($platformIds) > 0, function($query) use($platformIds) {
                     return $query->whereIn('media_news.type', $platformIds);
                 })
-                ->whereDate('media_news.created_at', '>=', $startDate)
-                ->whereDate('media_news.created_at', '<=', $endDate)
+                ->whereDate('media_news.date', '>=', $startDate)
+                ->whereDate('media_news.date', '<=', $endDate)
                 ->orderBy($sortColumn, $sortBy)
                 ->get();
 
@@ -79,7 +79,7 @@ class ReportController extends Controller
                 ->join('user_targets', 'user_targets.id', '=', 'social_posts.id_user_target')
                 ->join('target_type', 'user_targets.type', '=', 'target_type.id')
                 ->join('social_media', 'social_posts.id_socmed', '=', 'social_media.id')
-                ->selectRaw('social_posts.date, social_posts.caption, social_posts.username, social_posts.hashtags, social_posts.likes, social_posts.comments, social_posts.views, social_posts.url, social_posts.sentiment, social_media.name')
+                ->selectRaw('CAST(social_posts.date as DATETIME) as date, social_posts.caption, social_posts.username, social_posts.hashtags, social_posts.likes, social_posts.comments, social_posts.views, social_posts.url, social_posts.sentiment, social_media.name')
                 ->whereNotNull('date')
                 ->when(!empty($target), function($query) use ($target) {
                     return $query->where('target_type.id', $target);
@@ -91,8 +91,8 @@ class ReportController extends Controller
                     return $query->whereIn('social_posts.id_socmed', $platformIds);
                 })
                 ->where('user_targets.id_user', $this->user->id)
-                ->whereDate('social_posts.created_at', '>=', $startDate)
-                ->whereDate('social_posts.created_at', '<=', $endDate)
+                ->whereDate('social_posts.date', '>=', $startDate)
+                ->whereDate('social_posts.date', '<=', $endDate)
                 ->orderBy($sortColumn, $sortBy)
                 ->get();
                 
@@ -118,7 +118,7 @@ class ReportController extends Controller
         $target     = $request->input('target', null);
         $sentiment  = $request->input('sentiment', null);
         $source     = $request->input('source', 'News');
-        $platforms  = $request->input('platforms', '');
+        $platforms  = $request->input('platforms', null);
 
         $sortBy     = $request->input('sort_by', 'desc');
         $sortColumn = $request->input('sort_column', '');
@@ -126,7 +126,7 @@ class ReportController extends Controller
         $allowedColumns = ['social_posts.date, social_posts.caption, social_posts.username, social_posts.hashtags, social_posts.likes, social_posts.comments, social_posts.views, social_posts.url, social_posts.sentiment, social_media.name',
                             'media_news.date, media_news.title, media_news.summary, social_media.name, media_news.sentiment, media_news.images, media_news.url, media_news.journalist'];
 
-        if (!in_array($sortColumn, $allowedColumns)) {
+        if (collect($allowedColumns)->search($sortColumn)) {
             $sortColumn = $source === 'News' ? 'media_news.date' : 'social_posts.date';
         }
 
