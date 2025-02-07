@@ -61,8 +61,10 @@ class AnalyticExport implements FromCollection, WithHeadings
                 ->join('user_targets', 'user_targets.id', '=', 'social_posts.id_user_target')
                 ->join('target_type', 'user_targets.type', '=', 'target_type.id')
                 ->leftJoin('social_media', 'social_posts.id_socmed', '=', 'social_media.id')
-                ->selectRaw('social_posts.date, social_posts.caption, social_posts.username, social_posts.hashtags, social_posts.likes, social_posts.comments, social_posts.views, social_posts.url, social_posts.sentiment, social_media.name')
-                ->whereNotNull('date')
+                ->selectRaw('social_posts.date, social_posts.caption, social_posts.username, 
+                                social_posts.hashtags, social_posts.likes, social_posts.comments, social_posts.views,
+                                social_posts.url, social_posts.sentiment, social_media.name')
+                ->whereNotNull('social_posts.date')
                 ->when(!empty($target), function($query) {
                     return $query->where('target_type.id', $this->target);
                 })

@@ -60,10 +60,10 @@ class ReportController extends Controller
                 ->whereDate('media_news.created_at', '>=', $startDate)
                 ->whereDate('media_news.created_at', '<=', $endDate)
                 ->get();
-
-                $result = $globalAnalyticNews->filter(function($row) {
+                // $result = $globalAnalyticNews;
+                $result = collect($globalAnalyticNews)->filter(function($row) {
                     return validateDate($row->date);
-                });
+                })->values();
         }else {
             $globalAnalytic = DB::table('social_posts')
                 ->join('user_targets', 'user_targets.id', '=', 'social_posts.id_user_target')
@@ -84,16 +84,16 @@ class ReportController extends Controller
                 ->whereDate('social_posts.created_at', '>=', $startDate)
                 ->whereDate('social_posts.created_at', '<=', $endDate)
                 ->get();
-
+                
                 $result = $globalAnalytic->filter(function($row) {
                     return validateDate($row->date);
-                });
+                })->values();
         }
 
-        // return [
-        //     'targets'   => $targets,
-        //     'result'    => $result
-        // ];
+        return [
+            'targets'   => $targets,
+            'result'    => $result
+        ];
 
         return Inertia::render('Client/Excel', [
             'targets'   => $targets,
@@ -115,11 +115,11 @@ class ReportController extends Controller
         if($target) {
             $targetName = DB::table('target_type')
             ->join('user_targets', 'user_targets.type', '=', 'target_type.id')
-            ->selectRaw('name')
+            ->selectRaw('target_type.name')
             ->where('user_targets.id_user', $this->user->id)
-            ->where('id', $target)
+            ->where('target_type.id', $target)
             ->groupBy('target_type.id')
-            ->first();
+            ->first()->name;
         }
 
         return Excel::download(new AnalyticExport($this->user, $source, $target, $sentiment, $startDate, $endDate, $platformIds),  "report-analytic-$startDate-$endDate-$targetName-$source-".($sentiment ? "$sentiment-" : "") .time(). ".xlsx");
