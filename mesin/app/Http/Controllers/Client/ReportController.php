@@ -90,10 +90,10 @@ class ReportController extends Controller
                 })->values();
         }
 
-        return [
-            'targets'   => $targets,
-            'result'    => $result
-        ];
+        // return [
+        //     'targets'   => $targets,
+        //     'result'    => $result
+        // ];
 
         return Inertia::render('Client/Excel', [
             'targets'   => $targets,
