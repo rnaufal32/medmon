@@ -77,7 +77,7 @@ class AnalyticController extends Controller
                     $index++;
                 }
 
-                foreach ($targetList as $key => $t) {
+                foreach ($targetList as $t) {
                         $summaries[] = [
                             'target' => $t->name,
                             'counts' => [
@@ -116,10 +116,11 @@ class AnalyticController extends Controller
                     foreach ($dates as $dt) {
                         $result['datasets'][$index]['data'][] = $globalAnalytic->where('name', $t->name)->where('date_label', $dt)->count();
                     }
+                    $index++;
                 }
                 
                 
-                foreach ($targetList as $key => $t) {
+                foreach ($targetList as $t) {
                     $summaries[] = [
                         'target' => $t->name,
                         'counts' => [
@@ -137,11 +138,11 @@ class AnalyticController extends Controller
 
         $result['labels'] = $dates;
             
-        return [
-            'chart'     => $result,
-            'summaries' => $summaries,
-            'targets'   => $targets,
-        ];
+        // return [
+        //     'chart'     => $result,
+        //     'summaries' => $summaries,
+        //     'targets'   => $targets,
+        // ];
 
         return Inertia::render('Client/Analytics', [
             'chart'     => $result,
