@@ -118,7 +118,8 @@ class ReportController extends Controller
 
         return Inertia::render('Client/Excel', [
             'targets'   => $targets,
-            'result'    => $result
+            'result'    => $result,
+            'platforms' => $platforms
         ]);
     }
 

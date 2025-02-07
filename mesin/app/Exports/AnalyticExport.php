@@ -21,7 +21,7 @@ class AnalyticExport implements FromCollection, WithHeadings
 
 
 
-    public function __construct($user, $type = 'News', $target, $sentiment, $startDate = null, $endDate = null, $platformIDs = [], $sortColumn, $sortBy) {
+    public function __construct($user, $type = 'News', $target, $sentiment, $startDate = null, $endDate = null, $platformIDs = [], $sortColumn = null, $sortBy = 'desc') {
         $this->user         = $user;
         $this->type         = $type;
         $this->target       = $target;
