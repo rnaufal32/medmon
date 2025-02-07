@@ -22,6 +22,12 @@ class AnalyticController extends Controller
         $endDate = Carbon::parse($request->input('end_date', now()->toDateString()));
         $target     = $request->input('target', null);
         $source     = $request->input('source', 'News');
+        $platforms  = $request->input('platform', null);
+
+        $platfomIds = [];
+        if(!empty($platforms)) {
+            $platfomIds = explode(',', $platforms);
+        }
 
         $dates = collect([]);
         $currentDate = $startDate->copy();
@@ -32,7 +38,7 @@ class AnalyticController extends Controller
         }
         
         $result     = [
-            'labels'     => '',
+            'labels'     => $dates,
             'datasets'   => [],
         ];
 
@@ -59,6 +65,9 @@ class AnalyticController extends Controller
                 ->where('user_targets.id_user', $this->user->id)
                 ->when(!empty($target), function($query) use ($target) {
                     return $query->where('target_type.id', $target);
+                })
+                ->when(count($platfomIds) > 0, function($query) use ($platfomIds) {
+                    return $query->whereIn('media_news.type', $platfomIds);
                 })
                 ->whereDate('media_news.created_at', '>=', $startDate->toDateString())
                 ->whereDate('media_news.created_at', '<=', $endDate->toDateString())
@@ -112,6 +121,9 @@ class AnalyticController extends Controller
                 ->when(!empty($target), function($query) use ($target) {
                     return $query->where('target_type.id', $target);
                 })
+                ->when(count($platfomIds) > 0, function($query) use ($platfomIds) {
+                    return $query->whereIn('id_socmed', $platfomIds);
+                })
                 ->where('user_targets.id_user', $this->user->id)
                 ->whereDate('date', '>=', $startDate->toDateString())
                 ->whereDate('date', '<=', $endDate->toDateString())
@@ -150,29 +162,39 @@ class AnalyticController extends Controller
                 $index = 0;
                 foreach ($targetList as $t) {
                     $pieData[$index]['target'] = $t->name;
-                    $sources = $globalAnalytic->where('name', $t->name)->groupBy('username')->map->count();
+                    $sources = $globalAnalytic->where('name', $t->name)->groupBy('username')->map->count()->sortDesc()->take(5);
 
-                    $pieData[$index]['datasets']['labels'][] = collect($sources)->keys();
-                    $pieData[$index]['datasets']['data'][] = collect($sources)->values();;
+                    $pieData[$index]['datasets']['labels'] = collect($sources)->keys();
+                    $pieData[$index]['datasets']['data'] = collect($sources)->values();;
 
                     $index++;
                 }
         }
 
-        $result['labels'] = $dates;
+        $platformList     = DB::table('social_media')
+        ->where(function ($query) use ($source) {
+            if ($source == 'News') {
+                $query->where('type', 'media');
+            } else {
+                $query->where('type', 'sosmed');
+            }
+        })
+        ->get();
             
-        // return [
-        //     'chart'     => $result,
-        //     'summaries' => $summaries,
-        //     'targets'   => $targets,
-        //     'pieData'   => $pieData,
-        // ];
+        return [
+            'chart'     => $result,
+            'summaries' => $summaries,
+            'targets'   => $targets,
+            'pieData'   => $pieData,
+            'platforms' => $platformList
+        ];
 
         return Inertia::render('Client/Analytics', [
             'chart'     => $result,
             'summaries' => $summaries,
             'targets'   => $targets,
             'pieData'   => $pieData,
+            'platforms' => $platformList,
         ]);
     }
 }
