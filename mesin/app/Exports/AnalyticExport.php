@@ -16,9 +16,12 @@ class AnalyticExport implements FromCollection, WithHeadings
     protected $startDate;
     protected $endDate;
     protected $platformIDs;
+    protected $sortColumn;
+    protected $sortBy;
 
 
-    public function __construct($user, $type = 'News', $target, $sentiment, $startDate = null, $endDate = null, $platformIDs = []) {
+
+    public function __construct($user, $type = 'News', $target, $sentiment, $startDate = null, $endDate = null, $platformIDs = [], $sortColumn, $sortBy) {
         $this->user         = $user;
         $this->type         = $type;
         $this->target       = $target;
@@ -26,6 +29,8 @@ class AnalyticExport implements FromCollection, WithHeadings
         $this->startDate    = $startDate;
         $this->endDate      = $endDate;
         $this->platformIDs  = $platformIDs;
+        $this->sortColumn   = $sortColumn;
+        $this->sortBy       = $sortBy;
     }
     /**
     * @return \Illuminate\Support\Collection
@@ -54,6 +59,7 @@ class AnalyticExport implements FromCollection, WithHeadings
                 })
                 ->whereDate('media_news.created_at', '>=', $this->startDate)
                 ->whereDate('media_news.created_at', '<=', $this->endDate)
+                ->orderBy($this->sortColumn, $this->sortBy)
                 ->get();
                 // $result = $globalAnalyticNews;
                 $result = collect($globalAnalyticNews)->filter(function($row) {
@@ -78,6 +84,7 @@ class AnalyticExport implements FromCollection, WithHeadings
                 ->where('user_targets.id_user', $this->user->id)
                 ->whereDate('social_posts.created_at', '>=', $this->startDate)
                 ->whereDate('social_posts.created_at', '<=', $this->endDate)
+                ->orderBy($this->sortColumn, $this->sortBy)
                 ->get();
                 
                 $result = $globalAnalytic->filter(function($row) {

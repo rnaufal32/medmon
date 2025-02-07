@@ -26,6 +26,15 @@ class ReportController extends Controller
         $sentiment  = $request->input('sentiment', null);
         $source     = $request->input('source', 'News');
         $platforms  = $request->input('platforms', '');
+        $sortBy     = $request->input('sort_by', 'desc');
+        $sortColumn = $request->input('sort_column', '');
+
+        $allowedColumns = ['social_posts.date, social_posts.caption, social_posts.username, social_posts.hashtags, social_posts.likes, social_posts.comments, social_posts.views, social_posts.url, social_posts.sentiment, social_media.name',
+                            'media_news.date, media_news.title, media_news.summary, social_media.name, media_news.sentiment, media_news.images, media_news.url, media_news.journalist'];
+
+        if (!in_array($sortColumn, $allowedColumns)) {
+            $sortColumn = $source === 'News' ? 'media_news.date' : 'social_posts.date';
+        }
 
         $platformIds = [];
         if(!empty($platforms)) {
@@ -59,8 +68,9 @@ class ReportController extends Controller
                 })
                 ->whereDate('media_news.created_at', '>=', $startDate)
                 ->whereDate('media_news.created_at', '<=', $endDate)
+                ->orderBy($sortColumn, $sortBy)
                 ->get();
-                // $result = $globalAnalyticNews;
+
                 $result = collect($globalAnalyticNews)->filter(function($row) {
                     return validateDate($row->date);
                 })->values();
@@ -83,6 +93,7 @@ class ReportController extends Controller
                 ->where('user_targets.id_user', $this->user->id)
                 ->whereDate('social_posts.created_at', '>=', $startDate)
                 ->whereDate('social_posts.created_at', '<=', $endDate)
+                ->orderBy($sortColumn, $sortBy)
                 ->get();
                 
                 $result = $globalAnalytic->filter(function($row) {
@@ -109,6 +120,16 @@ class ReportController extends Controller
         $source     = $request->input('source', 'News');
         $platforms  = $request->input('platforms', '');
 
+        $sortBy     = $request->input('sort_by', 'desc');
+        $sortColumn = $request->input('sort_column', '');
+
+        $allowedColumns = ['social_posts.date, social_posts.caption, social_posts.username, social_posts.hashtags, social_posts.likes, social_posts.comments, social_posts.views, social_posts.url, social_posts.sentiment, social_media.name',
+                            'media_news.date, media_news.title, media_news.summary, social_media.name, media_news.sentiment, media_news.images, media_news.url, media_news.journalist'];
+
+        if (!in_array($sortColumn, $allowedColumns)) {
+            $sortColumn = $source === 'News' ? 'media_news.date' : 'social_posts.date';
+        }
+
         $platformIds = [];
         if(!empty($platforms)) {
             $platformIds = explode(',', $platforms);
@@ -125,6 +146,6 @@ class ReportController extends Controller
             ->first()->name;
         }
 
-        return Excel::download(new AnalyticExport($this->user, $source, $target, $sentiment, $startDate, $endDate, $platformIds),  "report-analytic-$startDate-$endDate-$targetName-$source-".($sentiment ? "$sentiment-" : "") .time(). ".xlsx");
+        return Excel::download(new AnalyticExport($this->user, $source, $target, $sentiment, $startDate, $endDate, $platformIds, $sortColumn, $sortBy),  "report-analytic-$startDate-$endDate-$targetName-$source-".($sentiment ? "$sentiment-" : "") .time(). ".xlsx");
     }
 }
