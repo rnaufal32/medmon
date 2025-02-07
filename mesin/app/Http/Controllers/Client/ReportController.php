@@ -27,7 +27,7 @@ class ReportController extends Controller
         $source     = $request->input('source', 'News');
         $platforms  = $request->input('platforms', '');
         $sortBy     = $request->input('sort_by', 'desc');
-        $sortColumn = $request->input('sort_column', null);
+        $sortColumn = $request->input('sort_column', $source === 'News' ? 'media_news.date' : 'social_posts.date');
 
         $allowedColumns = ['social_posts.date, social_posts.caption, social_posts.username, social_posts.hashtags, social_posts.likes, social_posts.comments, social_posts.views, social_posts.url, social_posts.sentiment, social_media.name',
                             'media_news.date, media_news.title, media_news.summary, social_media.name, media_news.sentiment, media_news.images, media_news.url, media_news.journalist'];
@@ -133,7 +133,7 @@ class ReportController extends Controller
         $format     = $request->input('format', 'xlsx');
 
         $sortBy     = $request->input('sort_by', 'desc');
-        $sortColumn = $request->input('sort_column', null);
+        $sortColumn = $request->input('sort_column', $source === 'News' ? 'media_news.date' : 'social_posts.date');
 
         $allowedColumns = ['social_posts.date, social_posts.caption, social_posts.username, social_posts.hashtags, social_posts.likes, social_posts.comments, social_posts.views, social_posts.url, social_posts.sentiment, social_media.name',
                             'media_news.date, media_news.title, media_news.summary, social_media.name, media_news.sentiment, media_news.images, media_news.url, media_news.journalist'];
