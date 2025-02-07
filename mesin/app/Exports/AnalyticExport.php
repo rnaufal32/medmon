@@ -25,7 +25,7 @@ class AnalyticExport implements FromCollection, WithHeadings
         $this->sentiment    = $sentiment;
         $this->startDate    = $startDate;
         $this->endDate      = $endDate;
-        $this->platformIDs      = $platformIDs;
+        $this->platformIDs  = $platformIDs;
     }
     /**
     * @return \Illuminate\Support\Collection
@@ -43,8 +43,11 @@ class AnalyticExport implements FromCollection, WithHeadings
                 ->selectRaw('media_news.date, media_news.title, media_news.summary, social_media.name, media_news.sentiment, media_news.images, media_news.url, media_news.journalist')
                 ->whereNotNull('date')
                 ->where('user_targets.id_user', $this->user->id)
-                ->when(!empty($target), function($query) {
+                ->when(!empty($this->target), function($query) {
                     return $query->where('target_type.id', $this->target);
+                })
+                ->when(!empty($this->sentiment), function($query) {
+                    return $query->where('media_news.sentiment', $this->sentiment);
                 })
                 ->when(count($this->platformIDs) > 0, function($query) {
                     return $query->whereIn('media_news.type', $this->platformIDs);
@@ -52,30 +55,34 @@ class AnalyticExport implements FromCollection, WithHeadings
                 ->whereDate('media_news.created_at', '>=', $this->startDate)
                 ->whereDate('media_news.created_at', '<=', $this->endDate)
                 ->get();
-
-                $result = $globalAnalyticNews->filter(function($row) {
+                // $result = $globalAnalyticNews;
+                $result = collect($globalAnalyticNews)->filter(function($row) {
                     return validateDate($row->date);
-                });
+                })->values();
         }else {
             $globalAnalytic = DB::table('social_posts')
                 ->join('user_targets', 'user_targets.id', '=', 'social_posts.id_user_target')
                 ->join('target_type', 'user_targets.type', '=', 'target_type.id')
-                ->leftJoin('social_media', 'social_posts.id_socmed', '=', 'social_media.id')
-                ->selectRaw('social_posts.date, social_posts.caption, social_posts.username, 
-                                social_posts.hashtags, social_posts.likes, social_posts.comments, social_posts.views,
-                                social_posts.url, social_posts.sentiment, social_media.name')
-                ->whereNotNull('social_posts.date')
-                ->when(!empty($target), function($query) {
+                ->join('social_media', 'social_posts.id_socmed', '=', 'social_media.id')
+                ->selectRaw('social_posts.date, social_posts.caption, social_posts.username, social_posts.hashtags, social_posts.likes, social_posts.comments, social_posts.views, social_posts.url, social_posts.sentiment, social_media.name')
+                ->whereNotNull('date')
+                ->when(!empty($target), function($query)  {
                     return $query->where('target_type.id', $this->target);
+                })
+                ->when(!empty($sentiment), function($query)  {
+                    return $query->where('social_posts.sentiment', $this->sentiment);
+                })
+                ->when(count($this->platformIDs) > 0, function($query)  {
+                    return $query->whereIn('social_posts.id_socmed', $this->platformIDs);
                 })
                 ->where('user_targets.id_user', $this->user->id)
                 ->whereDate('social_posts.created_at', '>=', $this->startDate)
                 ->whereDate('social_posts.created_at', '<=', $this->endDate)
                 ->get();
-
+                
                 $result = $globalAnalytic->filter(function($row) {
                     return validateDate($row->date);
-                });
+                })->values();
         }
 
         return $result;
