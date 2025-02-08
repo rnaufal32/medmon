@@ -20,8 +20,8 @@ class SentimentController extends Controller
     {
         $type           = $request->input('type', 'News');
         $sentimentType  = $request->input('sentiment_type', null);
-        $startDate      = Carbon::parse($request->input('startDate', now()->subDays(7)->toDateString()));
-        $endDate        = Carbon::parse($request->input('endDate', now()->toDateString()));
+        $startDate      = Carbon::parse($request->input('start_date', now()->subDays(7)->toDateString()));
+        $endDate        = Carbon::parse($request->input('end_date', now()->toDateString()));
         $targets        = $request->input('target');
         $platformFilters    = $request->input('platform_type');
 

@@ -6,6 +6,7 @@ import dayjs from "dayjs";
 import { useCallback, useEffect, useState } from "react";
 import { Line } from "react-chartjs-2";
 import { Icon } from "@iconify-icon/react";
+import { ChartData } from "chart.js";
 
 const options = {
     responsive: true,
@@ -24,7 +25,9 @@ export default function (params: {
         endDate: dayjs().toDate()
     });
 
-    const [type, setType] = useState('News');
+    const [page, setPage] = useState(params.data.current_page)
+
+    const [type, setType] = useState(urls.query?.type ?? 'News');
 
     const [target, setTarget] = useState<string | undefined>(urls.query.target);
 
@@ -37,24 +40,39 @@ export default function (params: {
         );
     }
 
+
+    const getColorByLabel = (label: string) => {
+        if (label === 'Corporate') return '#3B82F6';
+        if (label === 'Competitor') return '#EF4444';
+        return '#22C55E';
+    };
+
+    const chartData: ChartData = {
+        ...params.analytic,
+        datasets: params.analytic.datasets.map((dataset: any) => ({
+            ...dataset,
+            borderColor: getColorByLabel(dataset.label || ''),
+            backgroundColor: getColorByLabel(dataset.label || ''),
+        })),
+    };
+
     useEffect(() => {
         setPlatform([]);
     }, [type]);
 
     useEffect(() => {
         router.get(route('mentions.index'), {
-            date: {
-                start: dayjs(date.startDate).format('YYYY-MM-DD'),
-                end: dayjs(date.endDate).format('YYYY-MM-DD')
-            },
+            start_date: dayjs(date.startDate).format('YYYY-MM-DD'),
+            end_date: dayjs(date.endDate).format('YYYY-MM-DD'),
             type,
-            target,
+            target: target !== "all" ? target : "",
             platform_type: platform.join(','),
+            page
         }, {
             preserveState: true,
             preserveScroll: true
         })
-    }, [date, type, target, platform])
+    }, [page, date, type, target, platform])
 
     return (
         <AdminLayout>
@@ -65,7 +83,7 @@ export default function (params: {
                 <div className="flex flex-row gap-4">
                     <div className="hs-dropdown relative inline-flex">
                         <button id="hs-dropdown-default" type="button"
-                            className="hs-dropdown-toggle py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
+                            className="hs-dropdown-toggle py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
                             aria-haspopup="menu" aria-expanded="false" aria-label="Dropdown">
                             {type}
                             <svg className="hs-dropdown-open:rotate-180 size-4" xmlns="http://www.w3.org/2000/svg"
@@ -100,14 +118,24 @@ export default function (params: {
                     </div>
                     <div className='w-[300px]'>
                         <Datepicker
+                            showShortcuts={true}
+                            showFooter={true}
                             primaryColor={"blue"}
                             value={date}
                             onChange={(newValue) => {
                                 if (newValue != null) {
-                                    setDate({
-                                        startDate: dayjs(newValue.startDate).toDate(),
-                                        endDate: dayjs(newValue.endDate).toDate()
-                                    });
+                                    const startDate = dayjs(newValue.startDate);
+                                    const endDate = dayjs(newValue.endDate);
+                                    const diffInDays = endDate.diff(startDate, 'day');
+
+                                    if (diffInDays > 30) {
+                                        alert("The maximum allowed date range is 30 days.");
+                                    } else {
+                                        setDate({
+                                            startDate: startDate.toDate(),
+                                            endDate: endDate.toDate()
+                                        });
+                                    }
                                 }
                             }}
                         />
@@ -120,7 +148,7 @@ export default function (params: {
                     <div className='h-[30vh] w-full'>
                         <Line
                             datasetIdKey='global_chart'
-                            data={params.analytic} options={options} />
+                            data={chartData} options={options} />
                     </div>
                 </div>
             </div>
@@ -318,7 +346,7 @@ export default function (params: {
                                         aria-label="Previous"
                                         disabled={params.data.links[0].url == null}
                                         onClick={(_) => {
-                                            router.get(params.data.links[0].url)
+                                            setPage(params.data.current_page - 1)
                                         }}>
                                         <svg className="shrink-0 size-3.5" xmlns="http://www.w3.org/2000/svg" width="24"
                                             height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -330,36 +358,21 @@ export default function (params: {
                                     </button>
                                 )}
                                 <div className="flex items-center gap-x-1">
-                                    {params.data.links.slice(1, -1).map((e: any, i: number) => {
-                                        if (e.active) {
-                                            return (
-                                                <button key={i}
-                                                    type="button"
-                                                    onClick={(_) => {
-                                                        router.get(e.url)
-                                                    }}
-                                                    className="min-h-[38px] min-w-[38px] flex justify-center items-center bg-gray-200 text-gray-800 py-2 px-3 text-sm rounded-lg focus:outline-none focus:bg-gray-300 disabled:opacity-50 disabled:pointer-events-none"
-                                                    aria-current="page">{e.label}
-                                                </button>
-                                            )
-                                        } else {
-                                            return (
-                                                <button type="button"
-                                                    key={i}
-                                                    onClick={(_) => {
-                                                        router.get(e.url)
-                                                    }}
-                                                    className="min-h-[38px] min-w-[38px] flex justify-center items-center text-gray-800 hover:bg-gray-100 py-2 px-3 text-sm rounded-lg focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-white dark:hover:bg-white/10 dark:focus:bg-white/10">{e.label}</button>
-                                            )
-                                        }
-                                    })}
+                                    {params.data.links.slice(1, -1).map((e: any, i: number) => (
+                                        <button type="button"
+                                            key={i}
+                                            onClick={(_) => {
+                                                setPage(e.label)
+                                            }}
+                                            className={`min-h-[38px] min-w-[38px] flex justify-center items-center py-2 px-3 text-sm rounded-lg ${e.active ? 'bg-gray-200 text-gray-800 focus:outline-none focus:bg-gray-300 disabled:opacity-50 disabled:pointer-events-none' : 'text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-white dark:hover:bg-white/10 dark:focus:bg-white/10'}`}>{e.label}</button>
+                                    ))}
                                 </div>
                                 {params.data.links.length > 10 && params.data.links[params.data.links.length - 1] && (
                                     <button type="button"
                                         className="min-h-[38px] min-w-[38px] py-2 px-2.5 inline-flex justify-center items-center gap-x-1.5 text-sm rounded-lg text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none"
                                         aria-label="Next"
-                                        onClick={(_) => {
-                                            router.get(params.data.links[params.data.links.length - 1].url)
+                                        onClick={() => {
+                                            setPage(params.data.current_page + 1)
                                         }}
                                         disabled={params.data.links[params.data.links.length - 1].url == null}>
                                         <span>Next</span>
@@ -376,8 +389,8 @@ export default function (params: {
                     </div>
                 ) : (
                     <div className='col-span-2 grid grid-cols-1 gap-5'>
-                        <div className="flex flex-col items-center justify-center">
-                            <h1>Currently, There's no data to display</h1>
+                        <div className="flex flex-col items-center justify-center border shadow-sm rounded-xl p-4 md:p-5">
+                            <h1>Currently, There's no data <span className="font-semibold">Mentions</span> to display</h1>
                         </div>
                     </div>
                 )}
@@ -398,7 +411,7 @@ export default function (params: {
                                         setTarget(e.target.value);
 
                                     }} value={target}>
-                                    <option value="">Select Target</option>
+                                    <option value="all">All Target</option>
                                     {params.target.map((e: any, i: number) => (
                                         <option key={i} value={e.id}>{e.name}</option>))}
                                 </select>

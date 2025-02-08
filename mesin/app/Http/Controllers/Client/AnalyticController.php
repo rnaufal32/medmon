@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
 use Auth;
+use Carbon\Carbon;
 use DB;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -17,11 +18,16 @@ class AnalyticController extends Controller
     }
 
     public function index(Request $request) {
-        $now = now();
-        $startDate  = $request->input('start_date', $now->copy()->subDays(7));
-        $endDate    = $request->input('end_date', $now);
+        $startDate = Carbon::parse($request->input('start_date', now()->subDays(7)->toDateString()));
+        $endDate = Carbon::parse($request->input('end_date', now()->toDateString()));
         $target     = $request->input('target', null);
         $source     = $request->input('source', 'News');
+        $platforms  = $request->input('platform', null);
+
+        $platfomIds = [];
+        if(!empty($platforms)) {
+            $platfomIds = explode(',', $platforms);
+        }
 
         $dates = collect([]);
         $currentDate = $startDate->copy();
@@ -32,30 +38,36 @@ class AnalyticController extends Controller
         }
         
         $result     = [
-            'labels'     => '',
+            'labels'     => $dates,
             'datasets'   => [],
         ];
 
-        $counts = [
-            'mention'   => '-',
-            'like'      => '-',
-            'comment'   => '-',
-            'view'      => '-',
-            'positive'  => '-',
-            'negative'  => '-',
-            'neutral'   => '-',
-        ];
+        $summaries = [];
+
+        $targets = DB::table('target_type')
+                        ->join('user_targets', 'user_targets.type', '=', 'target_type.id')
+                        ->selectRaw('target_type.*')
+                        ->where('user_targets.id_user', $this->user->id)
+                        ->groupBy('target_type.id')
+                        ->get();
+        
+        $targetList = $targets->filter(function($item) use ($target) {
+            return $item->id == $target || $target == null;
+        });
 
         if ($source == 'News') {
             $globalAnalyticNews = DB::table('media_news')
                 ->join('media_user_target', 'media_user_target.id_news', '=', 'media_news.id')
                 ->join('user_targets', 'user_targets.id', '=', 'media_user_target.id_user_target')
                 ->join('target_type', 'user_targets.type', '=', 'target_type.id')
-                ->selectRaw('target_type.name, target_type.id, DATE(date) AS date_label, media_news.sentiment')
+                ->selectRaw('target_type.name, target_type.id, DATE(date) AS date_label, media_news.sentiment, media_news.source')
                 ->whereNotNull('date')
                 ->where('user_targets.id_user', $this->user->id)
                 ->when(!empty($target), function($query) use ($target) {
-                    return $query->where('user_targets.type', $target);
+                    return $query->where('target_type.id', $target);
+                })
+                ->when(count($platfomIds) > 0, function($query) use ($platfomIds) {
+                    return $query->whereIn('media_news.type', $platfomIds);
                 })
                 ->whereDate('media_news.created_at', '>=', $startDate->toDateString())
                 ->whereDate('media_news.created_at', '<=', $endDate->toDateString())
@@ -65,26 +77,52 @@ class AnalyticController extends Controller
                     return validateDate($row->date_label);
                 });
 
-                $counts['mention']  = $globalAnalyticNews->count();
+                $index = 0;
+                foreach ($targetList as $t) {
+                    $result['datasets'][$index]['label'] = $t->name;
+                    foreach ($dates as $dt) {
+                        $result['datasets'][$index]['data'][] = $globalAnalyticNews->where('name', $t->name)->where('date_label', $dt)->count();
+                    }
+                    $index++;
+                }
 
-                $counts['positive'] = $globalAnalyticNews->where('sentiment', 'positive')->count();
-                $counts['negative'] = $globalAnalyticNews->where('sentiment', 'negative')->count();
-                $counts['neutral']  = $globalAnalyticNews->where('sentiment', 'neutral')->count();
-
-                foreach ($dates as $dt) {
-                    $result['datasets'][] = [
-                        'label'     => $dt,
-                        'data'      => $globalAnalyticNews->where('date_label', $dt)->count()
+                foreach ($targetList as $t) {
+                    $summaries[] = [
+                            'target' => $t->name,
+                            'counts' => [
+                            'mention' => $globalAnalyticNews->where('name', $t->name)->count(),
+                            'positive' => $globalAnalyticNews->where('sentiment', 'positive')->where('name', $t->name)->count(),
+                            'negative' => $globalAnalyticNews->where('sentiment', 'negative')->where('name', $t->name)->count(),
+                            'neutral' => $globalAnalyticNews->where('sentiment', 'neutral')->where('name', $t->name)->count(),
+                            'like' => $globalAnalyticNews->where('name', $t->name)->sum('likes'),
+                            'comment' => $globalAnalyticNews->where('name', $t->name)->sum('comments'),
+                            'view' => $globalAnalyticNews->where('name', $t->name)->sum('views'),
+                        ]
                     ];
+                }
+
+                $pieData = [];
+                $index = 0;
+                foreach ($targetList as $t) {
+                    $pieData[$index]['target'] = $t->name;
+                    $sources = $globalAnalyticNews->where('name', $t->name)->groupBy('source')->map->count()->sortDesc()->take(5);
+
+                    $pieData[$index]['datasets']['labels'] = collect($sources)->keys();
+                    $pieData[$index]['datasets']['data'] = collect($sources)->values();;
+
+                    $index++;
                 }
         }else {
             $globalAnalytic = DB::table('social_posts')
                 ->join('user_targets', 'user_targets.id', '=', 'social_posts.id_user_target')
                 ->join('target_type', 'user_targets.type', '=', 'target_type.id')
-                ->selectRaw('target_type.name, target_type.id, DATE(date) AS date_label, sentiment, likes, comments, views')
+                ->selectRaw('target_type.name, target_type.id, DATE(date) AS date_label, sentiment, likes, comments, views, username')
                 ->whereNotNull('date')
                 ->when(!empty($target), function($query) use ($target) {
-                    return $query->where('user_targets.type', $target);
+                    return $query->where('target_type.id', $target);
+                })
+                ->when(count($platfomIds) > 0, function($query) use ($platfomIds) {
+                    return $query->whereIn('id_socmed', $platfomIds);
                 })
                 ->where('user_targets.id_user', $this->user->id)
                 ->whereDate('date', '>=', $startDate->toDateString())
@@ -95,28 +133,68 @@ class AnalyticController extends Controller
                     return validateDate($row->date_label);
                 });
 
-                $counts['mention']  = $globalAnalytic->count();
-
-                $counts['positive'] = $globalAnalytic->where('sentiment', 'positive')->count();
-                $counts['negative'] = $globalAnalytic->where('sentiment', 'negative')->count();
-                $counts['neutral']  = $globalAnalytic->where('sentiment', 'neutral')->count();
-                $counts['like']     = $globalAnalytic->sum('likes');
-                $counts['comment']  = $globalAnalytic->sum('comments');
-                $counts['view']     = $globalAnalytic->sum('views');
-
-                foreach ($dates as $dt) {
-                    $result['datasets'][] = [
-                        'label'     => $dt,
-                        'data'      => $globalAnalytic->where('date_label', $dt)->count()
+                $index = 0;
+                foreach ($targetList as $t) {
+                    $result['datasets'][$index]['label'] = $t->name;
+                    foreach ($dates as $dt) {
+                        $result['datasets'][$index]['data'][] = $globalAnalytic->where('name', $t->name)->where('date_label', $dt)->count();
+                    }
+                    $index++;
+                }
+                
+                
+                foreach ($targetList as $t) {
+                    $summaries[] = [
+                        'target' => $t->name,
+                        'counts' => [
+                            'mention' => $globalAnalytic->where('name', $t->name)->count(),
+                            'positive' => $globalAnalytic->where('sentiment', 'positive')->where('name', $t->name)->count(),
+                            'negative' => $globalAnalytic->where('sentiment', 'negative')->where('name', $t->name)->count(),
+                            'neutral' => $globalAnalytic->where('sentiment', 'neutral')->where('name', $t->name)->count(),
+                            'like' => $globalAnalytic->where('name', $t->name)->sum('likes'),
+                            'comment' => $globalAnalytic->where('name', $t->name)->sum('comments'),
+                            'view' => $globalAnalytic->where('name', $t->name)->sum('views'),
+                        ]
                     ];
+                }
+
+                $pieData = [];
+                $index = 0;
+                foreach ($targetList as $t) {
+                    $pieData[$index]['target'] = $t->name;
+                    $sources = $globalAnalytic->where('name', $t->name)->groupBy('username')->map->count()->sortDesc()->take(5);
+
+                    $pieData[$index]['datasets']['labels'] = collect($sources)->keys();
+                    $pieData[$index]['datasets']['data'] = collect($sources)->values();;
+
+                    $index++;
                 }
         }
 
-        $result['labels'] = $dates;
+        $platformList     = DB::table('social_media')
+        ->where(function ($query) use ($source) {
+            if ($source == 'News') {
+                $query->where('type', 'media');
+            } else {
+                $query->where('type', 'sosmed');
+            }
+        })
+        ->get();
+            
+        // return [
+        //     'chart'     => $result,
+        //     'summaries' => $summaries,
+        //     'targets'   => $targets,
+        //     'pieData'   => $pieData,
+        //     'platforms' => $platformList
+        // ];
 
         return Inertia::render('Client/Analytics', [
             'chart'     => $result,
-            'counts'    => $counts
+            'summaries' => $summaries,
+            'targets'   => $targets,
+            'pieData'   => $pieData,
+            'platforms' => $platformList,
         ]);
     }
 }

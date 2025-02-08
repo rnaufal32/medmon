@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Client\AnalyticController;
+use App\Http\Controllers\Client\ReportController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -16,7 +18,6 @@ Route::group([
     Route::get('/mentions', [\App\Http\Controllers\MentionController::class, 'index'])->name('mentions.index');
     Route::get('/summary', [\App\Http\Controllers\Client\DashboardController::class, 'index'])->name('summary.index');
     Route::get('/sentiment', [\App\Http\Controllers\SentimentController::class, 'index'])->name('sentiment.index');
-    Route::get('/excel', [\App\Http\Controllers\Client\DashboardController::class, 'index'])->name('excel.index');
 
     // UTILITY
     Route::post('/select-type-media', [\App\Http\Controllers\SelectTypeMediaController::class, 'store'])->name('select-type-media.store');
@@ -37,4 +38,10 @@ Route::group([
     Route::get('/keywords', [\App\Http\Controllers\Client\DashboardController::class, 'index'])->name('keywords.index');
     Route::get('/news', [\App\Http\Controllers\Client\DashboardController::class, 'index'])->name('news.index');
     Route::get('/crawling', [\App\Http\Controllers\Client\DashboardController::class, 'index'])->name('crawling.index');
+
+    Route::get('/excel', [ReportController::class, 'reportView'])->name('excel.index');
+    Route::get('/excel/export', [ReportController::class, 'exportToExcel'])->name('excel.export');
+    // Route::get('/excel', [ReportController::class, 'index'])->name('excel.index');
+
+
 });
