@@ -27,18 +27,17 @@ class ReportController extends Controller
         $source     = $request->input('source', 'News');
         $platforms  = $request->input('platforms', '');
         $sortBy     = $request->input('sort_by', 'desc');
-        $sortColumn = $request->input('sort_column', $source === 'News' ? 'media_news.date' : 'social_posts.date');
+        $sortColumn = $request->input('sort_column', 'date');
 
-        $allowedColumns = ['social_posts.date, social_posts.caption, social_posts.username, social_posts.hashtags, social_posts.likes, social_posts.comments, social_posts.views, social_posts.url, social_posts.sentiment, social_media.name',
-                            'media_news.date, media_news.title, media_news.summary, social_media.name, media_news.sentiment, media_news.images, media_news.url, media_news.journalist'];
+        $allowedColumns = ['caption', 'username', 'hashtags', 'likes', 'comments', 'views', 'url', 'title', 'summary', 'name', 'sentiment', 'images', 'url', 'journalist'];
 
         if (collect($allowedColumns)->search($sortColumn)) {
-            $sortColumn = $source === 'News' ? 'media_news.date' : 'social_posts.date';
+            $sortColumn = 'date';
         }
 
-        $platformIds = [];
+        $platformIDs = [];
         if(!empty($platforms)) {
-            $platformIds = explode(',', $platforms);
+            $platformIDs = explode(',', $platforms);
         }
 
         $targets = DB::table('target_type')
@@ -49,28 +48,45 @@ class ReportController extends Controller
                     ->get();
                 
         if ($source == 'News') {
-            $globalAnalyticNews = DB::table('media_news')
-                ->join('media_user_target', 'media_user_target.id_news', '=', 'media_news.id')
-                ->join('user_targets', 'user_targets.id', '=', 'media_user_target.id_user_target')
-                ->join('target_type', 'user_targets.type', '=', 'target_type.id')
-                ->leftJoin('social_media', 'media_news.type', '=', 'social_media.id')
-                ->selectRaw('CAST(media_news.date as DATETIME) as date, media_news.title, media_news.summary, social_media.name, media_news.sentiment, media_news.images, media_news.url, media_news.journalist')
-                ->whereNotNull('media_news.date')
-                ->where('user_targets.id_user', $this->user->id)
-                ->when(!empty($target), function($query) use ($target) {
-                    return $query->where('target_type.id', $target);
-                })
-                ->when(!empty($sentiment), function($query) use ($sentiment) {
-                    return $query->where('media_news.sentiment', $sentiment);
-                })
-                ->when(count($platformIds) > 0, function($query) use($platformIds) {
-                    return $query->whereIn('media_news.type', $platformIds);
-                })
-                ->whereDate('media_news.date', '>=', $startDate)
-                ->whereDate('media_news.date', '<=', $endDate)
-                ->orderBy($sortColumn, $sortBy)
-                ->get();
+            $globalAnalyticNews = DB::table('user_targets as ut')
+                        ->join('media_user_target as mut', 'mut.id_user_target', '=', 'ut.id')
+                        ->join('media_news as mn', 'mn.id', '=', 'mut.id_news')
+                        ->leftJoin('news_source as ns', 'ns.site', '=', 'mn.source')
+                        ->join('target_type as tt', 'tt.id', '=', 'ut.type')
+                        ->select(
+                            'mn.date',
+                            'tt.name as target_type',
+                            'ut.name as user_target',
+                            'mn.title',
+                            'mn.source',
+                            'mn.url',
+                            DB::raw('COALESCE(ns.tier, 0) as tier'),
+                            'mn.sentiment',
+                            'mn.summary',
+                            'mn.spookerperson',
+                            'mn.journalist',
+                            DB::raw('COALESCE(ns.ad_value, 0) as ad'),
+                            DB::raw('COALESCE(ns.pr_value, 0) as pr'),
+                            DB::raw('COALESCE(ns.viewership, 0) as viewership')
+                        )
+                        ->where(function ($query) use($startDate, $endDate) {
+                            $query->whereBetween(DB::raw('DATE(mn.date)'), [$startDate, $endDate])
+                                ->orWhereBetween(DB::raw('DATE(mn.created_at)'), [$startDate, $endDate]);
+                        })
+                        ->where('ut.id_user', $this->user->id)
+                        ->when(!empty($target), function($query) use($target) {
+                            return $query->where('tt.id', $target);
+                        })
+                        ->when(!empty($sentiment), function($query) use($sentiment) {
+                            return $query->where('mn.sentiment', $sentiment);
+                        })
+                        ->when(count($platformIDs) > 0, function($query)use($platformIDs) {
+                            return $query->whereIn('mn.type', $platformIDs);
+                        })
+                        // ->orderBy($sortColumn, $sortBy)
+                        ->get();
 
+                // $result = $globalAnalyticNews;
                 $result = collect($globalAnalyticNews)->filter(function($row) {
                     return validateDate($row->date);
                 })->values();
@@ -79,27 +95,29 @@ class ReportController extends Controller
                 ->join('user_targets', 'user_targets.id', '=', 'social_posts.id_user_target')
                 ->join('target_type', 'user_targets.type', '=', 'target_type.id')
                 ->join('social_media', 'social_posts.id_socmed', '=', 'social_media.id')
-                ->selectRaw('CAST(social_posts.date as DATETIME) as date, social_posts.caption, social_posts.username, social_posts.hashtags, social_posts.likes, social_posts.comments, social_posts.views, social_posts.url, social_posts.sentiment, social_media.name')
-                ->whereNotNull('date')
-                ->when(!empty($target), function($query) use ($target) {
+                ->selectRaw('CAST(social_posts.date as DATETIME) as date, target_type.name as target_name, user_targets.name as user_target_name, social_posts.caption, social_posts.username, social_posts.hashtags, social_posts.likes, social_posts.comments, social_posts.views, social_posts.url, social_posts.sentiment, social_media.name')
+                ->whereNotNull('social_posts.date')
+                ->when(!empty($target), function($query) use ($target)  {
                     return $query->where('target_type.id', $target);
                 })
-                ->when(!empty($sentiment), function($query) use ($sentiment) {
+                ->when(!empty($sentiment), function($query) use ($sentiment)  {
                     return $query->where('social_posts.sentiment', $sentiment);
                 })
-                ->when(count($platformIds) > 0, function($query) use($platformIds) {
-                    return $query->whereIn('social_posts.id_socmed', $platformIds);
+                ->when(count($platformIDs) > 0, function($query) use($platformIDs)  {
+                    return $query->whereIn('social_posts.id_socmed', $platformIDs);
                 })
                 ->where('user_targets.id_user', $this->user->id)
                 ->whereDate('social_posts.date', '>=', $startDate)
                 ->whereDate('social_posts.date', '<=', $endDate)
-                ->orderBy($sortColumn, $sortBy)
+                // ->orderBy($sortColumn, $sortBy)
                 ->get();
                 
                 $result = $globalAnalytic->filter(function($row) {
                     return validateDate($row->date);
                 })->values();
         }
+
+        $result = collect($result)->sortBy($sortColumn, SORT_REGULAR, $sortBy == 'DESC');
 
         // return [
         //     'targets'   => $targets,
@@ -133,13 +151,12 @@ class ReportController extends Controller
         $format     = $request->input('format', 'xlsx');
 
         $sortBy     = $request->input('sort_by', 'desc');
-        $sortColumn = $request->input('sort_column', $source === 'News' ? 'media_news.date' : 'social_posts.date');
+        $sortColumn = $request->input('sort_column', 'date');
 
-        $allowedColumns = ['social_posts.date, social_posts.caption, social_posts.username, social_posts.hashtags, social_posts.likes, social_posts.comments, social_posts.views, social_posts.url, social_posts.sentiment, social_media.name',
-                            'media_news.date, media_news.title, media_news.summary, social_media.name, media_news.sentiment, media_news.images, media_news.url, media_news.journalist'];
+        $allowedColumns = ['caption', 'username', 'hashtags', 'likes', 'comments', 'views', 'url', 'title', 'summary', 'name', 'sentiment', 'images', 'url', 'journalist'];
 
         if (collect($allowedColumns)->search($sortColumn)) {
-            $sortColumn = $source == 'News' ? 'media_news.date' : 'social_posts.date';
+            $sortColumn = 'date';
         }
 
         $platformIds = [];
