@@ -117,7 +117,7 @@ class ReportController extends Controller
                 })->values();
         }
 
-        $result = collect($result)->sortBy($sortColumn, SORT_REGULAR, $sortBy == 'DESC');
+        $result = collect($result)->sortBy($sortColumn, SORT_REGULAR, $sortBy == 'DESC')->values();
 
         // return [
         //     'targets'   => $targets,
