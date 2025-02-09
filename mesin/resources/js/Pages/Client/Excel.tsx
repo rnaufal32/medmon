@@ -106,10 +106,10 @@ export default function (params: {
     return (
         <AdminLayout>
             <ToastContainer aria-label="" />
-            <Head title="Excel" />
+            <Head title="Reporting" />
 
             <div className='flex flex-row items-center justify-between'>
-                <h1 className='text-2xl font-bold'>Report Excel</h1>
+                <h1 className='text-2xl font-bold'>Reporting</h1>
                 <div className="flex flex-row gap-4 items-center">
                     <div className="hs-dropdown relative inline-flex">
                         <button id="hs-dropdown-default" type="button"
@@ -261,7 +261,7 @@ export default function (params: {
                         className="px-4 py-2  rounded-md shadow-md flex items-center bg-green-500 text-white"
                         onClick={() => exportExcel('csv')}
                     >
-                        <Icon icon='fa-solid:file-excel' className="mr-2" color="#FFFFFF" />
+                        <Icon icon='material-symbols:csv' className="mr-2" color="#FFFFFF" />
                         CSV
                     </button>
                     <button
