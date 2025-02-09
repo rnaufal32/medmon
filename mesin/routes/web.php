@@ -36,12 +36,20 @@ Route::group([
     Route::get('/menus', [\App\Http\Controllers\Client\DashboardController::class, 'index'])->name('menus.index');
     Route::get('/scrape', [\App\Http\Controllers\Client\DashboardController::class, 'index'])->name('scrape.index');
     Route::get('/keywords', [\App\Http\Controllers\Client\DashboardController::class, 'index'])->name('keywords.index');
-    Route::get('/news', [\App\Http\Controllers\Client\DashboardController::class, 'index'])->name('news.index');
     Route::get('/crawling', [\App\Http\Controllers\Client\DashboardController::class, 'index'])->name('crawling.index');
-
     Route::get('/excel', [ReportController::class, 'reportView'])->name('excel.index');
     Route::get('/excel/export', [ReportController::class, 'exportToExcel'])->name('excel.export');
     // Route::get('/excel', [ReportController::class, 'index'])->name('excel.index');
 
 
+    // ADMIN
+    Route::get('/news', [\App\Http\Controllers\Admin\NewsController::class, 'index'])->name('news.index');
+    Route::get('/news/import-sample', [\App\Http\Controllers\Admin\NewsController::class, 'importSample'])->name('news.import-sample');
+    Route::post('/news/import', [\App\Http\Controllers\Admin\NewsController::class, 'importNews'])->name('news.import');
 });
+
+Route::get('/google-crawling/v2', [\App\Http\Controllers\CrawlingController::class, 'googleV2']);
+Route::get('/news-crawling/v2', [\App\Http\Controllers\CrawlingController::class, 'newsV2']);
+Route::get('/instagram-crawling/v2', [\App\Http\Controllers\CrawlingController::class, 'instagramScrape']);
+Route::get('/tiktok-crawling/v2', [\App\Http\Controllers\CrawlingController::class, 'tiktokScrape']);
+Route::get('/news-viewership', [\App\Http\Controllers\CrawlingController::class, 'newsViewership']);

@@ -1,18 +1,18 @@
-import { Head, router, usePage } from "@inertiajs/react";
+import {Head, router, usePage} from "@inertiajs/react";
 import AdminLayout from "@/Layouts/AdminLayout";
-import { hasPermission } from "@/utils/Permission";
+import {hasPermission} from "@/utils/Permission";
 import Datepicker from "react-tailwindcss-datepicker";
 import dayjs from "dayjs";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { Line, Pie } from "react-chartjs-2";
-import { Icon } from "@iconify-icon/react";
-import { ToastContainer, toast, Bounce } from 'react-toastify';
-import { Chart, ArcElement, Tooltip, Legend, ChartData } from "chart.js";
+import {useCallback, useEffect, useRef, useState} from "react";
+import {Line, Pie} from "react-chartjs-2";
+import {Icon} from "@iconify-icon/react";
+import {ToastContainer, toast, Bounce} from 'react-toastify';
+import {Chart, ArcElement, Tooltip, Legend, ChartData} from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 
 Chart.register(ChartDataLabels, ArcElement, Tooltip, Legend);
 
-const options = {
+const options: any = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
@@ -36,7 +36,7 @@ export default function (params: {
     pieData: any,
     platforms: any,
 }) {
-    const { props: { urls } } = usePage()
+    const {props: {urls}} = usePage()
     const [date, setDate] = useState({
         startDate: dayjs().subtract(7, 'days').toDate(),
         endDate: dayjs().toDate()
@@ -53,11 +53,11 @@ export default function (params: {
 
     const getColorByLabel = (label: string) => {
         if (label === 'Corporate') return '#3B82F6';
-        if (label === 'Competitor') return '#EF4444'; 
+        if (label === 'Competitor') return '#EF4444';
         return '#22C55E';
     };
 
-    const chartData: ChartData = {
+    const chartData: any = {
         ...params.chart,
         datasets: params.chart.datasets.map((dataset: any) => ({
             ...dataset,
@@ -97,11 +97,12 @@ export default function (params: {
                 setDropdownOpen(false);
             }
         }
+
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    const pieOptions = {
+    const pieOptions: any = {
         responsive: true,
         plugins: {
             legend: {
@@ -128,7 +129,7 @@ export default function (params: {
         },
     };
 
-    const pieRanking = {
+    const pieRanking: any = {
         responsive: true,
         plugins: {
             legend: {
@@ -168,23 +169,23 @@ export default function (params: {
 
     return (
         <AdminLayout>
-            <Head title="Analythic" />
-            <ToastContainer aria-label="" />
+            <Head title="Analythic"/>
+            <ToastContainer aria-label=""/>
 
-            <div id="section-to-print" >
+            <div id="section-to-print">
 
                 <div className='flex flex-row align-middle justify-between'>
                     <h1 className='text-2xl font-bold'>Analytics</h1>
                     <div className="flex flex-row gap-4">
                         <div className="hs-dropdown relative inline-flex">
                             <button id="hs-dropdown-default" type="button"
-                                className="hs-dropdown-toggle py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
-                                aria-haspopup="menu" aria-expanded="false" aria-label="Dropdown">
+                                    className="hs-dropdown-toggle py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
+                                    aria-haspopup="menu" aria-expanded="false" aria-label="Dropdown">
                                 {type}
                                 <svg className="hs-dropdown-open:rotate-180 size-4" xmlns="http://www.w3.org/2000/svg"
-                                    width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="m6 9 6 6 6-6" />
+                                     width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                     strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="m6 9 6 6 6-6"/>
                                 </svg>
                             </button>
 
@@ -194,17 +195,17 @@ export default function (params: {
                                 <div className="p-1 space-y-0.5">
                                     {(hasPermission("User Media") || hasPermission("User Media Sosmed")) &&
                                         <a className="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-gray-100"
-                                            onClick={() => {
-                                                setType('News');
-                                            }}>
+                                           onClick={() => {
+                                               setType('News');
+                                           }}>
                                             News
                                         </a>
                                     }
                                     {(hasPermission("User Sosmed") || hasPermission("User Media Sosmed")) &&
                                         <a className="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-gray-100"
-                                            onClick={() => {
-                                                setType('Social Media');
-                                            }}>
+                                           onClick={() => {
+                                               setType('Social Media');
+                                           }}>
                                             Social Media
                                         </a>
                                     }
@@ -221,9 +222,9 @@ export default function (params: {
                               "optionClasses": "py-2 px-4 w-full text-sm text-gray-800 cursor-pointer hover:bg-gray-100 rounded-lg focus:outline-none focus:bg-gray-100",
                               "optionTemplate": "<div className=\"flex justify-between items-center w-full\"><span data-title></span><span className=\"hidden hs-selected:block\"></span></div>"
                             }' onChange={(e) => {
-                                        setTarget(e.target.value);
+                                    setTarget(e.target.value);
 
-                                    }} value={target}>
+                                }} value={target}>
                                     <option value="all">All Target</option>
                                     {params.targets.map((e: any, i: number) => (
                                         <option key={i} value={e.id}>{e.name}</option>))}
@@ -231,8 +232,8 @@ export default function (params: {
 
                                 <div className="absolute top-1/2 end-2.5 -translate-y-1/2">
                                     <svg className="shrink-0 size-4 text-gray-500" xmlns="http://www.w3.org/2000/svg"
-                                        width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                         width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                         strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                         <path d="m7 15 5 5 5-5"></path>
                                         <path d="m7 9 5-5 5 5"></path>
                                     </svg>
@@ -248,7 +249,8 @@ export default function (params: {
                             </button>
 
                             {isDropdownOpen && (
-                                <div className="absolute right-0 mt-2 w-72 bg-white shadow-lg rounded-md py-2 border z-50">
+                                <div
+                                    className="absolute right-0 mt-2 w-72 bg-white shadow-lg rounded-md py-2 border z-50">
                                     <div className="p-4">
                                         <label
                                             className="block text-sm font-medium mb-2 dark:text-white">Platforms</label>
@@ -256,13 +258,13 @@ export default function (params: {
                                             {params.platforms.map((e: any, i: number) => (
                                                 <div className="flex" key={i}>
                                                     <input type="checkbox"
-                                                        value={e.id}
-                                                        checked={platform.includes(e.id)}
-                                                        onChange={changePlatform}
-                                                        className="shrink-0 mt-0.5 border-gray-200 rounded text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800"
-                                                        id={`platforms-${e.id}`} />
+                                                           value={e.id}
+                                                           checked={platform.includes(e.id)}
+                                                           onChange={changePlatform}
+                                                           className="shrink-0 mt-0.5 border-gray-200 rounded text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800"
+                                                           id={`platforms-${e.id}`}/>
                                                     <label htmlFor={`platforms-${e.id}`}
-                                                        className="text-sm text-gray-500 ms-3 dark:text-neutral-400">{e.name}</label>
+                                                           className="text-sm text-gray-500 ms-3 dark:text-neutral-400">{e.name}</label>
                                                 </div>
                                             ))}
                                         </div>
@@ -298,7 +300,7 @@ export default function (params: {
                             className="px-4 py-2  rounded-md shadow-md flex items-center bg-green-500 text-white"
                             onClick={() => printAnalytics()}
                         >
-                            <Icon icon='material-symbols:download-rounded' className="mr-2" color="#FFFFFF" />
+                            <Icon icon='material-symbols:download-rounded' className="mr-2" color="#FFFFFF"/>
                             Download
                         </button>
                     </div>
@@ -324,25 +326,30 @@ export default function (params: {
                         <div key={index} className="col-span-6">
                             <div className="border p-7 mt-5">
                                 <div className="flex flex-col">
-                                    <p className="text-xl text-center mb-3">Stats in Summary <span className="font-semibold">{data.target}</span></p>
+                                    <p className="text-xl text-center mb-3">Stats in Summary <span
+                                        className="font-semibold">{data.target}</span></p>
                                     <div className="grid grid-cols-12 py-16">
-                                        <div className="col-span-6 border flex flex-col items-center justify-normal px-5 py-10 rounded-lg shadow-md m-2">
-                                            <Icon icon="solar:mention-square-outline" width={40} height={40} />
+                                        <div
+                                            className="col-span-6 border flex flex-col items-center justify-normal px-5 py-10 rounded-lg shadow-md m-2">
+                                            <Icon icon="solar:mention-square-outline" width={40} height={40}/>
                                             <p className="font-semibold text-green-600 text-lg mt-2">{data.counts.mention}</p>
                                             <p className="text-sm text-slate-500 text-center">{type === 'News' ? 'News' : 'Social Media'} Mentions</p>
                                         </div>
-                                        <div className="col-span-6 border flex flex-col items-center justify-center px-5 py-10 rounded-lg shadow-md m-2">
-                                            <Icon icon="solar:like-broken" width={40} height={40} />
+                                        <div
+                                            className="col-span-6 border flex flex-col items-center justify-center px-5 py-10 rounded-lg shadow-md m-2">
+                                            <Icon icon="solar:like-broken" width={40} height={40}/>
                                             <p className="font-semibold text-green-600 text-lg mt-2">{data.counts.like}</p>
                                             <p className="text-sm text-slate-500 text-center">{type === 'News' ? 'News' : 'Social Media'} Likes</p>
                                         </div>
-                                        <div className="col-span-6 border flex flex-col items-center justify-center px-5 py-10 rounded-lg shadow-md m-2">
-                                            <Icon icon="fa-regular:comments" width={40} height={40} />
+                                        <div
+                                            className="col-span-6 border flex flex-col items-center justify-center px-5 py-10 rounded-lg shadow-md m-2">
+                                            <Icon icon="fa-regular:comments" width={40} height={40}/>
                                             <p className="font-semibold text-green-600 text-lg mt-2">{data.counts.comment}</p>
                                             <p className="text-sm text-slate-500 text-center">{type === 'News' ? 'News' : 'Social Media'} Comments</p>
                                         </div>
-                                        <div className="col-span-6 border flex flex-col items-center justify-center px-5 py-10 rounded-lg shadow-md m-2">
-                                            <Icon icon="solar:eye-broken" width={40} height={40} />
+                                        <div
+                                            className="col-span-6 border flex flex-col items-center justify-center px-5 py-10 rounded-lg shadow-md m-2">
+                                            <Icon icon="solar:eye-broken" width={40} height={40}/>
                                             <p className="font-semibold text-green-600 text-lg mt-2">{data.counts.view}</p>
                                             <p className="text-sm text-slate-500 text-center">{type === 'News' ? 'News' : 'Social Media'} Views</p>
                                         </div>
@@ -355,7 +362,8 @@ export default function (params: {
                         <div key={index} className="col-span-6">
                             <div className="border p-5 mt-5">
                                 <div className="flex flex-col">
-                                    <p className="text-xl text-center mb-3">Tone Analysis <span className="font-semibold">{data.target}</span></p>
+                                    <p className="text-xl text-center mb-3">Tone Analysis <span
+                                        className="font-semibold">{data.target}</span></p>
                                     <div className="h-[40vh] w-full flex items-center justify-center">
                                         <Pie data={{
                                             labels: ['Positive', 'Neutral', 'Negative'],
@@ -372,18 +380,21 @@ export default function (params: {
                                                     borderWidth: 2,
                                                 },
                                             ],
-                                        }} options={pieOptions} />
+                                        }} options={pieOptions}/>
                                     </div>
                                     <div className="grid grid-cols-12">
-                                        <div className="col-span-4 border flex flex-col items-center justify-center px-5 py-14 rounded-lg shadow-md m-2 bg-green-500">
+                                        <div
+                                            className="col-span-4 border flex flex-col items-center justify-center px-5 py-14 rounded-lg shadow-md m-2 bg-green-500">
                                             <p className="font-semibold text-white text-2xl">{data.counts.positive}</p>
                                             <p className="text-white text-center">Positive</p>
                                         </div>
-                                        <div className="col-span-4 border flex flex-col items-center justify-center px-5 py-14 rounded-lg shadow-md m-2 bg-blue-500">
+                                        <div
+                                            className="col-span-4 border flex flex-col items-center justify-center px-5 py-14 rounded-lg shadow-md m-2 bg-blue-500">
                                             <p className="font-semibold text-white text-2xl">{data.counts.neutral}</p>
                                             <p className="text-white text-center">Neutral</p>
                                         </div>
-                                        <div className="col-span-4 border flex flex-col items-center justify-center px-5 py-14 rounded-lg shadow-md m-2 bg-red-500">
+                                        <div
+                                            className="col-span-4 border flex flex-col items-center justify-center px-5 py-14 rounded-lg shadow-md m-2 bg-red-500">
                                             <p className="font-semibold text-white text-2xl">{data.counts.negative}</p>
                                             <p className="text-white text-center">Negative</p>
                                         </div>
@@ -396,7 +407,8 @@ export default function (params: {
                         <div key={index} className="col-span-6">
                             <div className="border p-5 mt-5">
                                 <div className="flex flex-col">
-                                    <p className="text-xl text-center mb-3">Ranking <span className="font-semibold">{data.target}</span></p>
+                                    <p className="text-xl text-center mb-3">Ranking <span
+                                        className="font-semibold">{data.target}</span></p>
                                     <div className="h-[40vh] w-full flex items-center justify-center">
                                         <Pie data={{
                                             labels: data.datasets.labels,
@@ -409,7 +421,7 @@ export default function (params: {
                                                     borderWidth: 2,
                                                 },
                                             ],
-                                        }} options={pieRanking} />
+                                        }} options={pieRanking}/>
                                     </div>
                                 </div>
                             </div>

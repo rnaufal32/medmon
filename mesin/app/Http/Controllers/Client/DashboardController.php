@@ -225,6 +225,10 @@ class DashboardController extends Controller
     {
         $this->user = Auth::user();
 
+        if ($this->user->hasRole('Admin') || $this->user->hasRole('Super Admin')) {
+            return Inertia::render('Admin/Dashboard');
+        }
+
         $type = $request->input('type', 'news');
         $startDate = Carbon::parse($request->input('startDate', now()->subDays(7)->toDateString()));
         $endDate = Carbon::parse($request->input('endDate', now()->toDateString()));

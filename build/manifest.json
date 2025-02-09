@@ -1,20 +1,62 @@
 {
-  "_AdminLayout-hWpcVRUR.js": {
-    "file": "assets/AdminLayout-hWpcVRUR.js",
+  "_AdminLayout-Bc57jSwc.js": {
+    "file": "assets/AdminLayout-Bc57jSwc.js",
     "name": "AdminLayout",
     "imports": [
       "resources/js/app.tsx"
     ]
   },
-  "_Permission-B7Sp2tS8.js": {
-    "file": "assets/Permission-B7Sp2tS8.js",
+  "_Permission-DS_fgGsg.js": {
+    "file": "assets/Permission-DS_fgGsg.js",
     "name": "Permission",
     "imports": [
       "resources/js/app.tsx"
     ]
   },
+  "_index-Dk2UCbYa.js": {
+    "file": "assets/index-Dk2UCbYa.js",
+    "name": "index",
+    "imports": [
+      "resources/js/app.tsx"
+    ]
+  },
+  "_index-rsYbiZuG.js": {
+    "file": "assets/index-rsYbiZuG.js",
+    "name": "index",
+    "imports": [
+      "resources/js/app.tsx"
+    ]
+  },
+  "_index.esm-s8FoCbEa.js": {
+    "file": "assets/index.esm-s8FoCbEa.js",
+    "name": "index.esm",
+    "imports": [
+      "resources/js/app.tsx"
+    ]
+  },
+  "resources/js/Pages/Admin/Dashboard.tsx": {
+    "file": "assets/Dashboard-Dq2z89Nz.js",
+    "name": "Dashboard",
+    "src": "resources/js/Pages/Admin/Dashboard.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.tsx",
+      "_AdminLayout-Bc57jSwc.js"
+    ]
+  },
+  "resources/js/Pages/Admin/News/Index.tsx": {
+    "file": "assets/Index-EvDR0h3J.js",
+    "name": "Index",
+    "src": "resources/js/Pages/Admin/News/Index.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.tsx",
+      "_AdminLayout-Bc57jSwc.js",
+      "_index.esm-s8FoCbEa.js"
+    ]
+  },
   "resources/js/Pages/Auth/SignIn.tsx": {
-    "file": "assets/SignIn-CMbC9y5h.js",
+    "file": "assets/SignIn-B3cRh8un.js",
     "name": "SignIn",
     "src": "resources/js/Pages/Auth/SignIn.tsx",
     "isDynamicEntry": true,
@@ -22,62 +64,89 @@
       "resources/js/app.tsx"
     ]
   },
+  "resources/js/Pages/Client/Analytics.tsx": {
+    "file": "assets/Analytics-Bkt6ql19.js",
+    "name": "Analytics",
+    "src": "resources/js/Pages/Client/Analytics.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.tsx",
+      "_AdminLayout-Bc57jSwc.js",
+      "_Permission-DS_fgGsg.js",
+      "_index.esm-s8FoCbEa.js",
+      "_index-Dk2UCbYa.js",
+      "_index-rsYbiZuG.js"
+    ]
+  },
   "resources/js/Pages/Client/Dashboard.tsx": {
-    "file": "assets/Dashboard-BtYm6Ay9.js",
+    "file": "assets/Dashboard-D29H6Wi1.js",
     "name": "Dashboard",
     "src": "resources/js/Pages/Client/Dashboard.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_AdminLayout-hWpcVRUR.js",
-      "_Permission-B7Sp2tS8.js"
+      "_AdminLayout-Bc57jSwc.js",
+      "_index-Dk2UCbYa.js",
+      "_index.esm-s8FoCbEa.js",
+      "_Permission-DS_fgGsg.js"
     ]
   },
   "resources/js/Pages/Client/Excel.tsx": {
-    "file": "assets/Excel-DpN47Rwk.js",
+    "file": "assets/Excel-D8TYkrqc.js",
     "name": "Excel",
     "src": "resources/js/Pages/Client/Excel.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_AdminLayout-hWpcVRUR.js"
+      "_AdminLayout-Bc57jSwc.js",
+      "_Permission-DS_fgGsg.js",
+      "_index.esm-s8FoCbEa.js",
+      "_index-rsYbiZuG.js"
     ]
   },
   "resources/js/Pages/Client/Mention.tsx": {
-    "file": "assets/Mention-B5bwhabj.js",
+    "file": "assets/Mention-C02Pa8It.js",
     "name": "Mention",
     "src": "resources/js/Pages/Client/Mention.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_AdminLayout-hWpcVRUR.js",
-      "_Permission-B7Sp2tS8.js"
+      "_AdminLayout-Bc57jSwc.js",
+      "_Permission-DS_fgGsg.js",
+      "_index.esm-s8FoCbEa.js",
+      "_index-Dk2UCbYa.js"
     ]
   },
   "resources/js/Pages/Client/Sentiment.tsx": {
-    "file": "assets/Sentiment-2RVmD0Ex.js",
+    "file": "assets/Sentiment-CQXnRvvf.js",
     "name": "Sentiment",
     "src": "resources/js/Pages/Client/Sentiment.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_AdminLayout-hWpcVRUR.js"
+      "_AdminLayout-Bc57jSwc.js",
+      "_Permission-DS_fgGsg.js",
+      "_index.esm-s8FoCbEa.js",
+      "_index-Dk2UCbYa.js"
     ]
   },
   "resources/js/app.tsx": {
-    "file": "assets/app-ue7KBeWc.js",
+    "file": "assets/app-C-oc15UG.js",
     "name": "app",
     "src": "resources/js/app.tsx",
     "isEntry": true,
     "dynamicImports": [
+      "resources/js/Pages/Admin/Dashboard.tsx",
+      "resources/js/Pages/Admin/News/Index.tsx",
       "resources/js/Pages/Auth/SignIn.tsx",
+      "resources/js/Pages/Client/Analytics.tsx",
       "resources/js/Pages/Client/Dashboard.tsx",
       "resources/js/Pages/Client/Excel.tsx",
       "resources/js/Pages/Client/Mention.tsx",
       "resources/js/Pages/Client/Sentiment.tsx"
     ],
     "css": [
-      "assets/app-DhgBUi2l.css"
+      "assets/app-C-DYT6a2.css"
     ]
   }
 }
