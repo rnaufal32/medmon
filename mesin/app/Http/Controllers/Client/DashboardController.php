@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Client;
 
+use App\Exports\WordCloudExport;
 use App\Http\Controllers\Controller;
 use App\Models\BlockWord;
 use App\Models\SocialPost;
@@ -10,12 +11,17 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
+use Maatwebsite\Excel\Facades\Excel;
 use WordCounter\WordCounter;
 
 class DashboardController extends Controller
 {
 
     private $user;
+
+    public function __construct() {
+        $this->user = Auth::user();
+    }
 
     private function globalChart($type, $startDate, $endDate)
     {
@@ -219,6 +225,13 @@ class DashboardController extends Controller
         }, array_keys($captionWordCloud), $captionWordCloud);
 
         return $captionWordCloud;
+    }
+
+    public function exportWordCloud(Request $request) {
+        $startDate = Carbon::parse($request->input('startDate', now()->subDays(7)->toDateString()));
+        $endDate = Carbon::parse($request->input('endDate', now()->toDateString()));
+
+        return Excel::download(new WordCloudExport($this->user, $startDate, $endDate),  "word-cloud-$startDate-$endDate" .time(). ".xlsx", \Maatwebsite\Excel\Excel::XLSX);
     }
 
     public function index(Request $request)
