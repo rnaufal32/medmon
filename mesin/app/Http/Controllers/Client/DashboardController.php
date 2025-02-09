@@ -241,8 +241,18 @@ class DashboardController extends Controller
         $type = $request->input('type', 'news');
         $startDate = Carbon::parse($request->input('startDate', now()->subDays(7)->toDateString()));
         $endDate = Carbon::parse($request->input('endDate', now()->toDateString()));
+        $target     = $request->input('target', null);
+
+        $target = DB::table('target_type')
+        ->join('user_targets', 'user_targets.type', '=', 'target_type.id')
+        ->selectRaw('target_type.*')
+        ->where('user_targets.id_user', $this->user->id)
+        ->groupBy('target_type.id')
+        ->get();
+        
 
         return Inertia::render('Client/Dashboard', [
+            'target' => $target,
             'global_chart' => fn() => $this->globalChart($type, $startDate, $endDate),
             'total_chart' => fn() => $this->totalTopic($type, $startDate, $endDate),
             'sentiment_chart' => fn() => $this->sentiment($type, $startDate, $endDate),

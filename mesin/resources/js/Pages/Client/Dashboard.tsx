@@ -1,16 +1,19 @@
 import AdminLayout from "@/Layouts/AdminLayout";
-import { Bar, Line, Pie } from "react-chartjs-2";
+import { Bar, getDatasetAtEvent, getElementAtEvent, getElementsAtEvent, Line, Pie } from "react-chartjs-2";
 // @ts-ignore
 import faker from "faker";
 import { Head, router, usePage } from "@inertiajs/react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type MouseEvent } from "react";
 import Datepicker from "react-tailwindcss-datepicker";
 import { hasPermission } from "@/utils/Permission";
 import dayjs from "dayjs";
 import WordCloud from 'react-d3-cloud';
+import { Icon } from "@iconify-icon/react/dist/iconify.mjs";
+import { Chart as ChartJS, ActiveElement, ChartEvent, InteractionItem } from "chart.js";
 
 
 export default function (params: {
+    target: any,
     global_chart: any,
     total_chart: any,
     sentiment_chart: any,
@@ -28,11 +31,76 @@ export default function (params: {
 
     const [type, setType] = useState('News');
 
+    const pieChartRef = useRef<ChartJS>(null);
+
+    const navigatePieChart = (element: InteractionItem[]) => {
+        if (!element.length) return;
+
+        const { datasetIndex, index } = element[0];
+
+        router.get(route("mentions.index", {
+            start_date: dayjs(date.startDate).format('YYYY-MM-DD'),
+            end_date: dayjs(date.endDate).format('YYYY-MM-DD'),
+            type,
+            target: params.target.find((d: any) => d.name === params.total_chart.labels[index]).id,
+            platform_type: '',
+            page: 1
+        }));
+    };
+
+    const onClickPieChart = (event: MouseEvent<HTMLCanvasElement>) => {
+        const { current: chart } = pieChartRef;
+
+        if (!chart) {
+            return;
+        }
+
+        navigatePieChart(getElementAtEvent(chart, event));
+    };
+
+    const barChartRef = useRef<ChartJS>(null);
+
+    const navigateBarChart = (element: InteractionItem[]) => {
+        if (!element.length) return;
+
+        const { datasetIndex, index } = element[0];
+
+        router.get(route("sentiment.index", {
+            start_date: dayjs(date.startDate).format('YYYY-MM-DD'),
+            end_date: dayjs(date.endDate).format('YYYY-MM-DD'),
+            type,
+            target: params.target.find((d: any) => d.name === params.total_chart.labels[index]).id,
+            sentiment_type: params.sentiment_chart.datasets[datasetIndex].label.toLowerCase(),
+            platform_type: '',
+            page: 1
+        }));
+    };
+
+    const onClickBarChart = (event: MouseEvent<HTMLCanvasElement>) => {
+        const { current: chart } = barChartRef;
+
+        if (!chart) {
+            return;
+        }
+
+        navigateBarChart(getElementAtEvent(chart, event));
+    };
+
+    function exportExcel() {
+        const url = route('dashboard.wordcloud.export', {
+            type: type,
+            startDate: dayjs(date.startDate).format('YYYY-MM-DD'),
+            endDate: dayjs(date.endDate).format('YYYY-MM-DD')
+        });
+
+        window.open(url, '_blank');
+    }
+
     useEffect(() => {
         router.get(route('dashboard.index'), {
             type: type,
-            startDate: date.startDate,
-            endDate: date.endDate
+            startDate: dayjs(date.startDate).format('YYYY-MM-DD'),
+            endDate: dayjs(date.endDate).format('YYYY-MM-DD')
         }, {
             preserveState: true,
             preserveScroll: true,
@@ -131,7 +199,7 @@ export default function (params: {
                         </h3>
                     </div>
                     <div className="p-4 md:p-5 h-full">
-                        <Pie datasetIdKey='topic_chart' data={params.total_chart} options={options} />
+                        <Pie ref={pieChartRef} datasetIdKey='topic_chart' data={params.total_chart} options={options} onClick={onClickPieChart} />
                     </div>
                 </div>
                 <div className="flex flex-col bg-white border shadow-sm rounded-xl w-full">
@@ -141,10 +209,16 @@ export default function (params: {
                         </h3>
                     </div>
                     <div className="p-4 md:p-5 h-full">
-                        <Bar datasetIdKey='sentiment_chart' data={params.sentiment_chart} options={{
-                            ...options,
-                            indexAxis: 'y'
-                        }} />
+                        <Bar
+                            ref={barChartRef}
+                            datasetIdKey='sentiment_chart'
+                            data={params.sentiment_chart}
+                            options={{
+                                ...options,
+                                indexAxis: 'y'
+                            }}
+                            onClick={onClickBarChart}
+                        />
                     </div>
                 </div>
             </div>
@@ -155,14 +229,29 @@ export default function (params: {
                         <h3 className="text-lg font-bold text-gray-800">
                             Popular Words
                         </h3>
+                        <button
+                            className="px-4 py-2  rounded-md shadow-md flex items-center bg-green-500 text-white"
+                            onClick={() => exportExcel()}
+                        >
+                            <Icon icon='fa-solid:file-excel' className="mr-2" color="#FFFFFF" />
+                            Excel
+                        </button>
                     </div>
-                    <div className="p-4 md:p-5 h-full">
-                        <WordCloud
-                            data={params.wordcloud_caption}
-                            height={100}
-                            rotate={0}
-                            fontSize={(word: any) => Math.log2(word.value) * 5}
-                        />
+                    <div className="p-4 md:p-5 h-full flex items-center justify-center">
+                        {params.wordcloud_caption.length > 0 ? (
+                            <WordCloud
+                                data={params.wordcloud_caption}
+                                font="Times"
+                                fontStyle="italic"
+                                fontWeight="bold"
+                                spiral="rectangular"
+                                padding={5}
+                                random={Math.random}
+                            />
+                        ) : (
+                            <p>Loading word cloud...</p>
+                        )}
+
                     </div>
                 </div>
             </div>

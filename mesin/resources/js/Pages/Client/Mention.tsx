@@ -21,8 +21,8 @@ export default function (params: {
 }) {
     const { props: { urls } } = usePage()
     const [date, setDate] = useState({
-        startDate: dayjs().subtract(7, 'days').toDate(),
-        endDate: dayjs().toDate()
+        startDate: urls.query.start_date ?? dayjs().subtract(7, 'days').toDate(),
+        endDate: urls.query.end_date ?? dayjs().toDate()
     });
 
     const [page, setPage] = useState(params.data.current_page)

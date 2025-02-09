@@ -43,8 +43,8 @@ export default function (params: {
     const [platform, setPlatform] = useState<any>([])
 
     function sort(header: any) {
-        const column = header === 'name' ? 'social_media' : type === 'News' ? 'media_news' : 'social_posts'
-        setSortColumn(`${column}.${header}`)
+        // const column = header === 'name' ? 'social_media' : type === 'News' ? 'media_news' : 'social_posts'
+        setSortColumn(`${header}`)
         setSortBy((prevSortBy) => (prevSortBy === 'asc' ? 'desc' : 'asc'));
     }
 
@@ -84,7 +84,7 @@ export default function (params: {
     useEffect(() => {
         setPlatform([]);
         setSortBy('desc')
-        setSortColumn(type === 'News' ? 'media_news.date' : 'social_posts.date');
+        setSortColumn('date');
     }, [type]);
 
     useEffect(() => {
@@ -258,21 +258,24 @@ export default function (params: {
                     </div>
 
                     <button
-                        className="px-4 py-2  rounded-md shadow-md flex items-center bg-green-500 text-white"
+                        className="px-4 py-2  rounded-md shadow-md flex items-center bg-green-500 text-white disabled:bg-slate-300 cursor-not-allowed"
+                        disabled={params.result.length <= 0}
                         onClick={() => exportExcel('csv')}
                     >
                         <Icon icon='material-symbols:csv' className="mr-2" color="#FFFFFF" />
                         CSV
                     </button>
                     <button
-                        className="px-4 py-2  rounded-md shadow-md flex items-center bg-green-500 text-white"
+                        className="px-4 py-2  rounded-md shadow-md flex items-center bg-green-500 text-white disabled:bg-slate-300 cursor-not-allowed"
+                        disabled={params.result.length <= 0}
                         onClick={() => exportExcel('xlsx')}
                     >
                         <Icon icon='fa-solid:file-excel' className="mr-2" color="#FFFFFF" />
                         Excel
                     </button>
                     <button
-                        className="px-4 py-2  rounded-md shadow-md flex items-center bg-red-500 text-white"
+                        className="px-4 py-2  rounded-md shadow-md flex items-center bg-red-500 text-white disabled:bg-slate-300 cursor-not-allowed"
+                        disabled={params.result.length <= 0}
                         onClick={() => toast('Feature is under development !', {
                             position: "top-right",
                             autoClose: 5000,
@@ -292,97 +295,108 @@ export default function (params: {
                 </div>
             </div>
 
-            <div className="flex flex-col">
-                <div className="overflow-x-auto">
-                    <table className="w-full text-sm text-left relative">
-                        <thead className="bg-gray-50 text-xs text-gray-700 border-b">
-                            <tr >
-                                {
-                                    dataResult && dataResult.length > 0 && Object.keys(dataResult[0]).map((item, idx) => (
-                                        <th key={idx} scope="col" className="px-6 py-3 font-medium text-left whitespace-nowrap cursor-pointer" onClick={() => sort(item)} >
-                                            <div className="flex flex-row items-center">
-                                                <p>{item}</p>
-                                                <Icon icon='solar:sort-vertical-outline' className="ml-2" />
-                                            </div>
-                                        </th>
-                                    )
-                                    )}
-                            </tr>
-                        </thead>
-                        {type === "News" ? (
-                            <tbody>
-                                {paginatedData.length > 0 && paginatedData.map((item: any, index: number) => (
-                                    <tr key={index} className={index % 2 === 0 ? 'border-b text-gray-900' : 'border-b text-gray-900'}>
-                                        <td className="px-6 py-4 max-w-[200px]">{item.date}</td>
-                                        <td className="px-6 py-4 max-w-[200px]">{item.title && item.title.length > 30 ? item.title.slice(0, 30) + '...' : item.title}</td>
-                                        <td className="px-6 py-4 max-w-[200px]">{item.summary && item.summary.length > 30 ? item.summary.slice(0, 30) + '...' : item.summary}</td>
-                                        <td className="px-6 py-4 max-w-[200px]">{item.name}</td>
-                                        <td className="px-6 py-4 max-w-[200px]">
-                                            {item.sentiment === 'positive' ? (
-                                                <div className="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-green-500 text-white">Positive</div>
-                                            ) : item.sentiment === 'negative' ? (
-                                                <div className="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-red-500 text-white">Negative</div>
-                                            ) : (
-                                                <div className="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-gray-300 text-black border">Neutral</div>
-                                            )}
-                                        </td>
-                                        <td className="px-6 py-4 max-w-[200px]">
-                                            <img alt="image-news" src={item.images} />
-                                        </td>
-                                        <td className="px-6 py-4 max-w-[200px]"><a href={item.url} target="_blank" className="text-blue-500 underline">{item.url.slice(0, 20)}...</a></td>
-
-                                        <td className="px-6 py-4 max-w-[200px]">{item.journalist}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        ) : (
-                            <tbody>
-                                {paginatedData.length > 0 && paginatedData.map((item: any, index: number) => (
-                                    <tr key={index} className={index % 2 === 0 ? 'border-b text-gray-900' : 'border-b text-gray-900'}>
-                                        <td className="px-6 py-4 max-w-[200px]">{item.date}</td>
-                                        <td className="px-6 py-4 max-w-[200px]">{item.caption && item.caption.length > 30 ? item.caption.slice(0, 30) + '...' : item.caption}</td>
-                                        <td className="px-6 py-4 max-w-[200px]">{item.username}</td>
-                                        <td className="px-6 py-4 max-w-[200px]">{item.hashtags && item.hashtags.length > 30 ? item.hashtags.slice(0, 30) + '...' : item.hashtags}</td>
-                                        <td className="px-6 py-4 max-w-[200px]">{item.likes}</td>
-                                        <td className="px-6 py-4 max-w-[200px]">{item.comments}</td>
-                                        <td className="px-6 py-4 max-w-[200px]">{item.views}</td>
-                                        <td className="px-6 py-4 max-w-[200px]"><a href={item.url} target="_blank" className="text-blue-500 underline">{item.url.slice(0, 20)}...</a></td>
-                                        <td className="px-6 py-4 max-w-[200px]">
-                                            {item.sentiment === 'positive' ? (
-                                                <div className="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-green-500 text-white">Positive</div>
-                                            ) : item.sentiment === 'negative' ? (
-                                                <div className="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-red-500 text-white">Negative</div>
-                                            ) : (
-                                                <div className="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-gray-300 text-black border">Neutral</div>
-                                            )}
-                                        </td>
-                                        <td className="px-6 py-4 max-w-[200px]">{item.name}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        )}
-                    </table>
+            {params.result.length > 0 ? (
+                <div className="flex flex-col">
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-sm text-left relative">
+                            <thead className="bg-gray-50 text-xs text-gray-700 border-b">
+                                <tr >
+                                    {
+                                        dataResult && dataResult.length > 0 && Object.keys(dataResult[0]).map((item, idx) => (
+                                            <th key={idx} scope="col" className="px-6 py-3 font-medium text-left whitespace-nowrap cursor-pointer" onClick={() => sort(item)} >
+                                                <div className="flex flex-row items-center">
+                                                    <p>{item}</p>
+                                                    <Icon icon='solar:sort-vertical-outline' className="ml-2" />
+                                                </div>
+                                            </th>
+                                        )
+                                        )}
+                                </tr>
+                            </thead>
+                            {type === "News" ? (
+                                <tbody>
+                                    {paginatedData.length > 0 && paginatedData.map((item: any, index: number) => (
+                                        <tr key={index} className={index % 2 === 0 ? 'border-b text-gray-900' : 'border-b text-gray-900'}>
+                                            <td className="px-6 py-4 max-w-[200px]">{item.date}</td>
+                                            <td className="px-6 py-4 max-w-[200px]">{item.target_type}</td>
+                                            <td className="px-6 py-4 max-w-[200px]">{item.user_target}</td>
+                                            <td className="px-6 py-4 max-w-[200px]">{item.title && item.title.length > 30 ? item.title.slice(0, 30) + '...' : item.title}</td>
+                                            <td className="px-6 py-4 max-w-[200px]">{item.source && item.source.length > 10 ? item.source.slice(0, 10) + '...' : item.source}</td>
+                                            <td className="px-6 py-4 max-w-[200px]"><a href={item.url} target="_blank" className="text-blue-500 underline">{item.url.slice(0, 20)}...</a></td>
+                                            <td className="px-6 py-4 max-w-[200px]">{item.tier}</td>
+                                            <td className="px-6 py-4 max-w-[200px]">
+                                                {item.sentiment === 'positive' ? (
+                                                    <div className="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-green-500 text-white">Positive</div>
+                                                ) : item.sentiment === 'negative' ? (
+                                                    <div className="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-red-500 text-white">Negative</div>
+                                                ) : (
+                                                    <div className="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-gray-300 text-black border">Neutral</div>
+                                                )}
+                                            </td>
+                                            <td className="px-6 py-4 max-w-[200px]">{item.summary && item.summary.length > 30 ? item.summary.slice(0, 30) + '...' : item.summary}</td>
+                                            <td className="px-6 py-4 max-w-[200px]">{item.spookerperson && item.spookerperson.length > 30 ? item.spookerperson.slice(0, 30) + '...' : item.spookerperson}</td>
+                                            <td className="px-6 py-4 max-w-[200px]">{item.journalist}</td>
+                                            <td className="px-6 py-4 max-w-[200px]">{item.ad}</td>
+                                            <td className="px-6 py-4 max-w-[200px]">{item.pr}</td>
+                                            <td className="px-6 py-4 max-w-[200px]">{item.viewership}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            ) : (
+                                <tbody>
+                                    {paginatedData.length > 0 && paginatedData.map((item: any, index: number) => (
+                                        <tr key={index} className={index % 2 === 0 ? 'border-b text-gray-900' : 'border-b text-gray-900'}>
+                                            <td className="px-6 py-4 max-w-[200px]">{item.date}</td>
+                                            <td className="px-6 py-4 max-w-[200px]">{item.target_name}</td>
+                                            <td className="px-6 py-4 max-w-[200px]">{item.user_target_name}</td>
+                                            <td className="px-6 py-4 max-w-[200px]">{item.caption && item.caption.length > 30 ? item.caption.slice(0, 30) + '...' : item.caption}</td>
+                                            <td className="px-6 py-4 max-w-[200px]">{item.username}</td>
+                                            <td className="px-6 py-4 max-w-[200px]">{item.hashtags && item.hashtags.length > 30 ? item.hashtags.slice(0, 30) + '...' : item.hashtags}</td>
+                                            <td className="px-6 py-4 max-w-[200px]">{item.likes}</td>
+                                            <td className="px-6 py-4 max-w-[200px]">{item.comments}</td>
+                                            <td className="px-6 py-4 max-w-[200px]">{item.views}</td>
+                                            <td className="px-6 py-4 max-w-[200px]"><a href={item.url} target="_blank" className="text-blue-500 underline">{item.url.slice(0, 20)}...</a></td>
+                                            <td className="px-6 py-4 max-w-[200px]">
+                                                {item.sentiment === 'positive' ? (
+                                                    <div className="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-green-500 text-white">Positive</div>
+                                                ) : item.sentiment === 'negative' ? (
+                                                    <div className="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-red-500 text-white">Negative</div>
+                                                ) : (
+                                                    <div className="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-gray-300 text-black border">Neutral</div>
+                                                )}
+                                            </td>
+                                            <td className="px-6 py-4 max-w-[200px]">{item.name}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            )}
+                        </table>
+                    </div>
+                    <div className="flex justify-end items-center space-x-2 mt-4">
+                        <button
+                            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                            disabled={currentPage === 1}
+                            className="px-4 py-2  rounded-md shadow-md flex items-center"
+                        >
+                            Prev
+                        </button>
+                        <span className="px-4 py-2 font-medium text-gray-700">
+                            Page {currentPage} of {totalPages}
+                        </span>
+                        <button
+                            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                            disabled={currentPage === totalPages}
+                            className="px-4 py-2  rounded-md shadow-md flex items-center"
+                        >
+                            Next
+                        </button>
+                    </div>
                 </div>
-                <div className="flex justify-end items-center space-x-2 mt-4">
-                    <button
-                        onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                        disabled={currentPage === 1}
-                        className="px-4 py-2  rounded-md shadow-md flex items-center"
-                    >
-                        Prev
-                    </button>
-                    <span className="px-4 py-2 font-medium text-gray-700">
-                        Page {currentPage} of {totalPages}
-                    </span>
-                    <button
-                        onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                        disabled={currentPage === totalPages}
-                        className="px-4 py-2  rounded-md shadow-md flex items-center"
-                    >
-                        Next
-                    </button>
+            ) : (
+                <div className="flex flex-col items-center justify-center border shadow-sm rounded-xl p-4 md:p-5 min-h-96">
+                    <h1>Currently, There's no <span className="font-semibold">Report</span> data to display</h1>
                 </div>
-            </div>
+            )}
         </AdminLayout >
     )
 }

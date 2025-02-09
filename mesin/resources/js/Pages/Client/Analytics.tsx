@@ -51,9 +51,11 @@ export default function (params: {
 
     const [platform, setPlatform] = useState<any>([])
 
+    const [pageBreak, setPageBreak] = useState(false)
+
     const getColorByLabel = (label: string) => {
         if (label === 'Corporate') return '#3B82F6';
-        if (label === 'Competitor') return '#EF4444'; 
+        if (label === 'Competitor') return '#EF4444';
         return '#22C55E';
     };
 
@@ -222,6 +224,11 @@ export default function (params: {
                               "optionTemplate": "<div className=\"flex justify-between items-center w-full\"><span data-title></span><span className=\"hidden hs-selected:block\"></span></div>"
                             }' onChange={(e) => {
                                         setTarget(e.target.value);
+                                        if (e.target.value !== 'all') {
+                                            setPageBreak(true)
+                                        } else {
+                                            setPageBreak(false)
+                                        }
 
                                     }} value={target}>
                                     <option value="all">All Target</option>
@@ -319,6 +326,9 @@ export default function (params: {
                             </div>
                         </div>
                     </div>
+                    {pageBreak && (
+                        <div className="col-span-12 page-break" />
+                    )}
                     {params.summaries.map((data: any, index: number) => (
 
                         <div key={index} className="col-span-6">
@@ -345,12 +355,21 @@ export default function (params: {
                                             <Icon icon="solar:eye-broken" width={40} height={40} />
                                             <p className="font-semibold text-green-600 text-lg mt-2">{data.counts.view}</p>
                                             <p className="text-sm text-slate-500 text-center">{type === 'News' ? 'News' : 'Social Media'} Views</p>
+                                            {type === 'News' ? (
+                                                <></>
+                                            ) : (
+
+                                                <p className="font-light text-slate-400 text-sm mt-2">(Views only for Youtube and Tiktok)</p>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     ))}
+                    {!pageBreak && (
+                        <div className="col-span-12 page-break" />
+                    )}
                     {params.summaries.map((data: any, index: number) => (
                         <div key={index} className="col-span-6">
                             <div className="border p-5 mt-5">
@@ -392,6 +411,7 @@ export default function (params: {
                             </div>
                         </div>
                     ))}
+                    <div className="col-span-12 page-break" />
                     {params.pieData.map((data: any, index: number) => (
                         <div key={index} className="col-span-6">
                             <div className="border p-5 mt-5">
