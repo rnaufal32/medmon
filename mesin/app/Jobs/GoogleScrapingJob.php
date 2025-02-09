@@ -34,33 +34,32 @@ class GoogleScrapingJob implements ShouldQueue
             'status' => 'process',
         ]);
 
-        $res = Http::timeout(24 * 60 * 60)->post('http://127.0.0.1:5000/google', $this->search);
+        $res = Http::timeout(24 * 60 * 60)->post('https://e73f-203-194-114-177.ngrok-free.app/google', $this->search);
 
         if ($res->ok()) {
             $data = $res->json();
             $status = $data['status'];
             $urls = $data['data'];
-            $dataset = $data['dataset'];
 
             if ($status != 'ok') {
                 return;
             }
 
             foreach ($urls as $url) {
-                if (preg_match('/facebook|instagram|tiktok|threads|twitter|x\.com|youtube/', $url['url'])) {
+                if (preg_match('/facebook|instagram|tiktok|threads|twitter|x\.com|youtube/', $url['link'])) {
                     $type = 'sosmed';
                 } else {
                     $type = 'media';
                 }
                 CrawlerDetailJob::firstOrCreate(
-                    ['url' => $url['url']],
+                    ['url' => $url['link']],
                     ['id_crawler' => $crawler['id'], 'type' => $type, 'status' => 'pending', 'title' => $url['title'], 'description' => $url['description'],]
                 );
             }
 
             $crawler->update([
                 'status' => 'complete',
-                'dataset' => $dataset,
+                'dataset' => 'EMPTY',
             ]);
         } else {
             $crawler->update([

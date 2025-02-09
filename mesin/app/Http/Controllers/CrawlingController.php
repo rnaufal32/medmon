@@ -47,12 +47,13 @@ class CrawlingController extends Controller
                     'targets' => $targets,
                     'type' => 'media'
                 ]);
-                GoogleScrapingJob::dispatch([
-                    'search' => $target->keywords,
-                    'targets' => $targets,
-                    'type' => 'sosmed'
-                ]);
+//                GoogleScrapingJob::dispatch([
+//                    'search' => $target->keywords,
+//                    'targets' => $targets,
+//                    'type' => 'sosmed'
+//                ]);
             }
+            break;
         }
 
         return response()->json([
@@ -103,9 +104,10 @@ class CrawlingController extends Controller
     public function instagramScrape()
     {
         $crawlers = CrawlerDetailJob::query()
-            ->whereIn('status', ['pending'])
-            ->where('type', 'sosmed')
-            ->where('url', 'like', '%instagram%')
+            ->where('id', '=', '20894')
+//            ->whereIn('status', ['pending'])
+//            ->where('type', 'sosmed')
+//            ->where('url', 'like', '%instagram%')
             ->orderByDesc('id')
             ->get();
 

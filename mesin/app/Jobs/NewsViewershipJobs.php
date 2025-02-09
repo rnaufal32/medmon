@@ -26,7 +26,7 @@ class NewsViewershipJobs implements ShouldQueue
      */
     public function handle(): void
     {
-        $res = Http::timeout(24 * 60 * 60)->post('http://127.0.0.1:3000/news-viewership', [
+        $res = Http::timeout(24 * 60 * 60)->post('https://e73f-203-194-114-177.ngrok-free.app/news-viewership', [
             'urls' => ["https://hypestat.com/info/" . $this->url],
         ]);
 
