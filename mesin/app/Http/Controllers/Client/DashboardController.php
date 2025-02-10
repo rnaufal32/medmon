@@ -39,7 +39,7 @@ class DashboardController extends Controller
                 ->join('media_user_target', 'media_user_target.id_news', '=', 'media_news.id')
                 ->join('user_targets', 'user_targets.id', '=', 'media_user_target.id_user_target')
                 ->join('target_type', 'user_targets.type', '=', 'target_type.id')
-                ->selectRaw('COUNT(*) AS jml, target_type.name, DATE(date) AS newDate')
+                ->selectRaw('COUNT(*) AS jml, target_type.name, DATE(date) AS newDate, target_type.color')
                 ->where('user_targets.id_user', $this->user->id)
                 ->whereDate('media_news.created_at', '>=', $startDate->toDateString())
                 ->whereDate('media_news.created_at', '<=', $endDate->toDateString())
@@ -49,6 +49,7 @@ class DashboardController extends Controller
             $globalAnalyticNewsData = $globalAnalyticNews->groupBy('name')->map(function ($items, $name) {
                 return [
                     'label' => $name,
+                    'color' => $items->first()->color,
                     'data' => $items->pluck('jml')->toArray(),
                 ];
             })->values()->toArray();
@@ -93,7 +94,7 @@ class DashboardController extends Controller
                 ->join('media_user_target', 'media_user_target.id_news', '=', 'media_news.id')
                 ->join('user_targets', 'user_targets.id', '=', 'media_user_target.id_user_target')
                 ->join('target_type', 'user_targets.type', '=', 'target_type.id')
-                ->selectRaw('COUNT(*) AS jml, target_type.name')
+                ->selectRaw('COUNT(*) AS jml, target_type.name, target_type.color')
                 ->where('user_targets.id_user', $this->user->id)
                 ->whereDate('media_news.created_at', '>=', $startDate->toDateString())
                 ->whereDate('media_news.created_at', '<=', $endDate->toDateString())
@@ -112,7 +113,7 @@ class DashboardController extends Controller
             $totalAnalytic = DB::table('social_posts')
                 ->join('user_targets', 'user_targets.id', '=', 'social_posts.id_user_target')
                 ->join('target_type', 'user_targets.type', '=', 'target_type.id')
-                ->selectRaw('COUNT(*) AS jml, target_type.name')
+                ->selectRaw('COUNT(*) AS jml, target_type.name, target_type.color')
                 ->where('user_targets.id_user', $this->user->id)
                 ->whereDate('date', '>=', $startDate->toDateString())
                 ->whereDate('date', '<=', $endDate->toDateString())
