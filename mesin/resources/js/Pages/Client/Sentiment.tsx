@@ -20,12 +20,13 @@ export default function (params: {
 }) {
     const { props: { urls } } = usePage()
     const [date, setDate] = useState({
-        startDate: dayjs().subtract(7, 'days').toDate(),
-        endDate: dayjs().toDate()
+        startDate: urls.query.start_date ?? dayjs().subtract(7, 'days').toDate(),
+        endDate: urls.query.end_date ?? dayjs().toDate()
     });
 
     const [type, setType] = useState(urls.query?.type ?? 'News');
 
+    const [target, setTarget] = useState<string | undefined>(urls.query.target);
     const [sentimentType, setSentimentType] = useState(urls.query?.sentiment_type ?? '');
 
 
@@ -48,6 +49,7 @@ export default function (params: {
             start_date: dayjs(date.startDate).format('YYYY-MM-DD'),
             end_date: dayjs(date.endDate).format('YYYY-MM-DD'),
             type,
+            target: target !== "all" ? target : "",
             sentiment_type: sentimentType,
             platform_type: platform.join(','),
             page
@@ -55,7 +57,7 @@ export default function (params: {
             preserveState: true,
             preserveScroll: true
         });
-    }, [date, type, sentimentType, platform, page]);
+    }, [date, type, target, sentimentType, platform, page]);
 
     return (
         <AdminLayout>
@@ -97,6 +99,32 @@ export default function (params: {
                                     </a>
                                 }
                             </div>
+                        </div>
+                    </div>
+                    <div className="relative">
+                        <select data-hs-select='{
+                              "placeholder": "Select Target...",
+                              "toggleTag": "<button type=\"button\" aria-expanded=\"false\"></button>",
+                              "toggleClasses": "hs-select-disabled:pointer-events-none hs-select-disabled:opacity-50 relative py-3 ps-4 pe-9 flex gap-x-2 text-nowrap w-full cursor-pointer bg-white border border-gray-200 rounded-lg text-start text-sm focus:outline-none focus:ring-2 focus:ring-blue-500",
+                              "dropdownClasses": "mt-2 z-50 w-full max-h-72 p-1 space-y-0.5 bg-white border border-gray-200 rounded-lg overflow-hidden overflow-y-auto",
+                              "optionClasses": "py-2 px-4 w-full text-sm text-gray-800 cursor-pointer hover:bg-gray-100 rounded-lg focus:outline-none focus:bg-gray-100",
+                              "optionTemplate": "<div className=\"flex justify-between items-center w-full\"><span data-title></span><span className=\"hidden hs-selected:block\"></span></div>"
+                            }' onChange={(e) => {
+                                setTarget(e.target.value);
+
+                            }} value={target}>
+                            <option value="all">All Target</option>
+                            {params.target.map((e: any, i: number) => (
+                                <option key={i} value={e.id}>{e.name}</option>))}
+                        </select>
+
+                        <div className="absolute top-1/2 end-2.5 -translate-y-1/2">
+                            <svg className="shrink-0 size-4 text-gray-500" xmlns="http://www.w3.org/2000/svg"
+                                width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="m7 15 5 5 5-5"></path>
+                                <path d="m7 9 5-5 5 5"></path>
+                            </svg>
                         </div>
                     </div>
                     <div className='w-[300px]'>
@@ -363,7 +391,7 @@ export default function (params: {
                                             onClick={(_) => {
                                                 setPage(e.label)
                                             }}
-                                            className={`min-h-[38px] min-w-[38px] flex justify-center items-center py-2 px-3 text-sm rounded-lg ${e.active? 'bg-gray-200 text-gray-800 focus:outline-none focus:bg-gray-300 disabled:opacity-50 disabled:pointer-events-none' : 'text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-white dark:hover:bg-white/10 dark:focus:bg-white/10'}`}>{e.label}</button>
+                                            className={`min-h-[38px] min-w-[38px] flex justify-center items-center py-2 px-3 text-sm rounded-lg ${e.active ? 'bg-gray-200 text-gray-800 focus:outline-none focus:bg-gray-300 disabled:opacity-50 disabled:pointer-events-none' : 'text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-white dark:hover:bg-white/10 dark:focus:bg-white/10'}`}>{e.label}</button>
                                     ))}
                                 </div>
                                 {params.data.links.length > 10 && params.data.links[params.data.links.length - 1] && (
