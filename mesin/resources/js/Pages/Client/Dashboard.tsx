@@ -9,13 +9,15 @@ import { hasPermission } from "@/utils/Permission";
 import dayjs from "dayjs";
 import WordCloud from 'react-d3-cloud';
 import { Icon } from "@iconify-icon/react/dist/iconify.mjs";
-import { Chart as ChartJS, ActiveElement, ChartEvent, InteractionItem } from "chart.js";
+import { Chart as ChartJS, ActiveElement, ChartEvent, InteractionItem, ChartData } from "chart.js";
+import { generateHoverColor } from "@/utils";
 
 
 export default function (params: {
     target: any,
     global_chart: any,
     total_chart: any,
+    target_color: any,
     sentiment_chart: any,
     wordcloud_caption: any,
 }) {
@@ -30,6 +32,17 @@ export default function (params: {
     });
 
     const [type, setType] = useState('News');
+
+    const getValueByKey = (obj: any, key: any) => obj[key] || null;
+
+    const lineChartData: ChartData = {
+        ...params.global_chart,
+        datasets: params.global_chart.datasets.map((dataset: any) => ({
+            ...dataset,
+            borderColor: getValueByKey(params.target_color, dataset.label),
+            backgroundColor: generateHoverColor(getValueByKey(params.target_color, dataset.label)),
+        })),
+    };
 
     const pieChartRef = useRef<ChartJS>(null);
 
@@ -186,7 +199,7 @@ export default function (params: {
                     <div className='h-[30vh] w-full'>
                         <Line
                             datasetIdKey='global_chart'
-                            data={params.global_chart} options={options} />
+                            data={lineChartData} options={options} />
                     </div>
                 </div>
             </div>

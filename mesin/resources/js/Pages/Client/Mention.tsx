@@ -7,6 +7,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Line } from "react-chartjs-2";
 import { Icon } from "@iconify-icon/react";
 import { ChartData } from "chart.js";
+import { generateHoverColor } from "@/utils";
 
 const options = {
     responsive: true,
@@ -41,18 +42,12 @@ export default function (params: {
     }
 
 
-    const getColorByLabel = (label: string) => {
-        if (label === 'Corporate') return '#3B82F6';
-        if (label === 'Competitor') return '#EF4444';
-        return '#22C55E';
-    };
-
     const chartData: ChartData = {
         ...params.analytic,
         datasets: params.analytic.datasets.map((dataset: any) => ({
             ...dataset,
-            borderColor: getColorByLabel(dataset.label || ''),
-            backgroundColor: getColorByLabel(dataset.label || ''),
+            borderColor: dataset.color,
+            backgroundColor: generateHoverColor(dataset.color),
         })),
     };
 

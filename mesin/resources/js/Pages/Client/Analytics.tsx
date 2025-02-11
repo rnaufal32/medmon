@@ -9,6 +9,7 @@ import { Icon } from "@iconify-icon/react";
 import { ToastContainer, toast, Bounce } from 'react-toastify';
 import { Chart, ArcElement, Tooltip, Legend, ChartData } from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
+import { generateHoverColor } from "@/utils";
 
 Chart.register(ChartDataLabels, ArcElement, Tooltip, Legend);
 
@@ -35,6 +36,7 @@ export default function (params: {
     targets: any,
     pieData: any,
     platforms: any,
+    target_color: any,
 }) {
     const { props: { urls } } = usePage()
     const [date, setDate] = useState({
@@ -59,12 +61,14 @@ export default function (params: {
         return '#22C55E';
     };
 
+    const getValueByKey = (obj: any, key: any) => obj[key] || null;
+
     const chartData: ChartData = {
         ...params.chart,
         datasets: params.chart.datasets.map((dataset: any) => ({
             ...dataset,
-            borderColor: getColorByLabel(dataset.label || ''),
-            backgroundColor: getColorByLabel(dataset.label || ''),
+            borderColor: getValueByKey(params.target_color, dataset.label),
+            backgroundColor: generateHoverColor(getValueByKey(params.target_color, dataset.label)),
         })),
     };
 
