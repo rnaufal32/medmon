@@ -258,7 +258,7 @@ export default function (params: {
                     </div>
 
                     <button
-                        className="px-4 py-2  rounded-md shadow-md flex items-center bg-green-500 text-white disabled:bg-slate-300 cursor-not-allowed"
+                        className="px-4 py-2  rounded-md shadow-md flex items-center bg-green-500 text-white cursor-pointer disabled:bg-slate-300"
                         disabled={params.result.length <= 0}
                         onClick={() => exportExcel('csv')}
                     >
@@ -266,7 +266,7 @@ export default function (params: {
                         CSV
                     </button>
                     <button
-                        className="px-4 py-2  rounded-md shadow-md flex items-center bg-green-500 text-white disabled:bg-slate-300 cursor-not-allowed"
+                        className="px-4 py-2  rounded-md shadow-md flex items-center bg-green-500 text-white cursor-pointer disabled:bg-slate-300"
                         disabled={params.result.length <= 0}
                         onClick={() => exportExcel('xlsx')}
                     >
@@ -274,7 +274,7 @@ export default function (params: {
                         Excel
                     </button>
                     <button
-                        className="px-4 py-2  rounded-md shadow-md flex items-center bg-red-500 text-white disabled:bg-slate-300 cursor-not-allowed"
+                        className="px-4 py-2  rounded-md shadow-md flex items-center bg-red-500 text-white cursor-pointer disabled:bg-slate-300"
                         disabled={params.result.length <= 0}
                         onClick={() => toast('Feature is under development !', {
                             position: "top-right",
