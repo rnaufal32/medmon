@@ -7,9 +7,20 @@
         visibility: hidden;
     }
     #section-to-print {
+        display: block !important;
         visibility: visible;
         position: absolute;
         left: 0;
         top: 0;
     }
+
+    .page-break {
+        page-break-before: always; /* For older browsers */
+        break-before: page; /* Standard CSS */
+      }
+    
+      /* Ensure content does not break awkwardly inside an element */
+      .print-content {
+        break-inside: avoid;
+      }
 }

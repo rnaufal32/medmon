@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Client\AnalyticController;
+use App\Http\Controllers\Client\DashboardController;
 use App\Http\Controllers\Client\ReportController;
 use Illuminate\Support\Facades\Route;
 
@@ -40,12 +41,13 @@ Route::group([
     Route::get('/excel', [ReportController::class, 'reportView'])->name('excel.index');
     Route::get('/excel/export', [ReportController::class, 'exportToExcel'])->name('excel.export');
     // Route::get('/excel', [ReportController::class, 'index'])->name('excel.index');
+    Route::get('/word-cloud-export', [DashboardController::class, 'exportWordCloud'])->name('dashboard.wordcloud.export');
 
-
-    // ADMIN
+  // ADMIN
     Route::get('/news', [\App\Http\Controllers\Admin\NewsController::class, 'index'])->name('news.index');
     Route::get('/news/import-sample', [\App\Http\Controllers\Admin\NewsController::class, 'importSample'])->name('news.import-sample');
     Route::post('/news/import', [\App\Http\Controllers\Admin\NewsController::class, 'importNews'])->name('news.import');
+
 });
 
 Route::get('/google-crawling/v2', [\App\Http\Controllers\CrawlingController::class, 'googleV2']);

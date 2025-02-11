@@ -9,6 +9,7 @@ import {Icon} from "@iconify-icon/react";
 import {ToastContainer, toast, Bounce} from 'react-toastify';
 import {Chart, ArcElement, Tooltip, Legend, ChartData} from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
+import { generateHoverColor } from "@/utils";
 
 Chart.register(ChartDataLabels, ArcElement, Tooltip, Legend);
 
@@ -35,6 +36,7 @@ export default function (params: {
     targets: any,
     pieData: any,
     platforms: any,
+    target_color: any,
 }) {
     const {props: {urls}} = usePage()
     const [date, setDate] = useState({
@@ -51,18 +53,22 @@ export default function (params: {
 
     const [platform, setPlatform] = useState<any>([])
 
+    const [pageBreak, setPageBreak] = useState(false)
+
     const getColorByLabel = (label: string) => {
         if (label === 'Corporate') return '#3B82F6';
         if (label === 'Competitor') return '#EF4444';
         return '#22C55E';
     };
 
-    const chartData: any = {
+    const getValueByKey = (obj: any, key: any) => obj[key] || null;
+
+    const chartData: ChartData = {
         ...params.chart,
         datasets: params.chart.datasets.map((dataset: any) => ({
             ...dataset,
-            borderColor: getColorByLabel(dataset.label || ''),
-            backgroundColor: getColorByLabel(dataset.label || ''),
+            borderColor: getValueByKey(params.target_color, dataset.label),
+            backgroundColor: generateHoverColor(getValueByKey(params.target_color, dataset.label)),
         })),
     };
 
@@ -222,7 +228,12 @@ export default function (params: {
                               "optionClasses": "py-2 px-4 w-full text-sm text-gray-800 cursor-pointer hover:bg-gray-100 rounded-lg focus:outline-none focus:bg-gray-100",
                               "optionTemplate": "<div className=\"flex justify-between items-center w-full\"><span data-title></span><span className=\"hidden hs-selected:block\"></span></div>"
                             }' onChange={(e) => {
-                                    setTarget(e.target.value);
+                                        setTarget(e.target.value);
+                                        if (e.target.value !== 'all') {
+                                            setPageBreak(true)
+                                        } else {
+                                            setPageBreak(false)
+                                        }
 
                                 }} value={target}>
                                     <option value="all">All Target</option>
@@ -321,6 +332,9 @@ export default function (params: {
                             </div>
                         </div>
                     </div>
+                    {pageBreak && (
+                        <div className="col-span-12 page-break" />
+                    )}
                     {params.summaries.map((data: any, index: number) => (
 
                         <div key={index} className="col-span-6">
@@ -352,12 +366,21 @@ export default function (params: {
                                             <Icon icon="solar:eye-broken" width={40} height={40}/>
                                             <p className="font-semibold text-green-600 text-lg mt-2">{data.counts.view}</p>
                                             <p className="text-sm text-slate-500 text-center">{type === 'News' ? 'News' : 'Social Media'} Views</p>
+                                            {type === 'News' ? (
+                                                <></>
+                                            ) : (
+
+                                                <p className="font-light text-slate-400 text-sm mt-2">(Views only for Youtube and Tiktok)</p>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     ))}
+                    {!pageBreak && (
+                        <div className="col-span-12 page-break" />
+                    )}
                     {params.summaries.map((data: any, index: number) => (
                         <div key={index} className="col-span-6">
                             <div className="border p-5 mt-5">
@@ -403,6 +426,7 @@ export default function (params: {
                             </div>
                         </div>
                     ))}
+                    <div className="col-span-12 page-break" />
                     {params.pieData.map((data: any, index: number) => (
                         <div key={index} className="col-span-6">
                             <div className="border p-5 mt-5">

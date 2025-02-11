@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Client;
 
+use App\Exports\WordCloudExport;
 use App\Http\Controllers\Controller;
 use App\Models\BlockWord;
 use App\Models\SocialPost;
@@ -10,12 +11,17 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
+use Maatwebsite\Excel\Facades\Excel;
 use WordCounter\WordCounter;
 
 class DashboardController extends Controller
 {
 
     private $user;
+
+    public function __construct() {
+        $this->user = Auth::user();
+    }
 
     private function globalChart($type, $startDate, $endDate)
     {
@@ -33,7 +39,7 @@ class DashboardController extends Controller
                 ->join('media_user_target', 'media_user_target.id_news', '=', 'media_news.id')
                 ->join('user_targets', 'user_targets.id', '=', 'media_user_target.id_user_target')
                 ->join('target_type', 'user_targets.type', '=', 'target_type.id')
-                ->selectRaw('COUNT(*) AS jml, target_type.name, DATE(date) AS newDate')
+                ->selectRaw('COUNT(*) AS jml, target_type.name, DATE(date) AS newDate, target_type.color')
                 ->where('user_targets.id_user', $this->user->id)
                 ->whereDate('media_news.created_at', '>=', $startDate->toDateString())
                 ->whereDate('media_news.created_at', '<=', $endDate->toDateString())
@@ -43,6 +49,7 @@ class DashboardController extends Controller
             $globalAnalyticNewsData = $globalAnalyticNews->groupBy('name')->map(function ($items, $name) {
                 return [
                     'label' => $name,
+                    'color' => $items->first()->color,
                     'data' => $items->pluck('jml')->toArray(),
                 ];
             })->values()->toArray();
@@ -87,7 +94,7 @@ class DashboardController extends Controller
                 ->join('media_user_target', 'media_user_target.id_news', '=', 'media_news.id')
                 ->join('user_targets', 'user_targets.id', '=', 'media_user_target.id_user_target')
                 ->join('target_type', 'user_targets.type', '=', 'target_type.id')
-                ->selectRaw('COUNT(*) AS jml, target_type.name')
+                ->selectRaw('COUNT(*) AS jml, target_type.name, target_type.color')
                 ->where('user_targets.id_user', $this->user->id)
                 ->whereDate('media_news.created_at', '>=', $startDate->toDateString())
                 ->whereDate('media_news.created_at', '<=', $endDate->toDateString())
@@ -106,7 +113,7 @@ class DashboardController extends Controller
             $totalAnalytic = DB::table('social_posts')
                 ->join('user_targets', 'user_targets.id', '=', 'social_posts.id_user_target')
                 ->join('target_type', 'user_targets.type', '=', 'target_type.id')
-                ->selectRaw('COUNT(*) AS jml, target_type.name')
+                ->selectRaw('COUNT(*) AS jml, target_type.name, target_type.color')
                 ->where('user_targets.id_user', $this->user->id)
                 ->whereDate('date', '>=', $startDate->toDateString())
                 ->whereDate('date', '<=', $endDate->toDateString())
@@ -221,6 +228,13 @@ class DashboardController extends Controller
         return $captionWordCloud;
     }
 
+    public function exportWordCloud(Request $request) {
+        $startDate = Carbon::parse($request->input('startDate', now()->subDays(7)->toDateString()));
+        $endDate = Carbon::parse($request->input('endDate', now()->toDateString()));
+
+        return Excel::download(new WordCloudExport($this->user, $startDate, $endDate),  "word-cloud-$startDate-$endDate" .time(). ".xlsx", \Maatwebsite\Excel\Excel::XLSX);
+    }
+
     public function index(Request $request)
     {
         $this->user = Auth::user();
@@ -232,8 +246,20 @@ class DashboardController extends Controller
         $type = $request->input('type', 'news');
         $startDate = Carbon::parse($request->input('startDate', now()->subDays(7)->toDateString()));
         $endDate = Carbon::parse($request->input('endDate', now()->toDateString()));
+        $target     = $request->input('target', null);
+
+        $target = DB::table('target_type')
+        ->join('user_targets', 'user_targets.type', '=', 'target_type.id')
+        ->selectRaw('target_type.*')
+        ->where('user_targets.id_user', $this->user->id)
+        ->groupBy('target_type.id')
+        ->get();
+
+        $targetColor = $target->pluck('color', 'name');        
 
         return Inertia::render('Client/Dashboard', [
+            'target' => $target,
+            'target_color' => $targetColor,
             'global_chart' => fn() => $this->globalChart($type, $startDate, $endDate),
             'total_chart' => fn() => $this->totalTopic($type, $startDate, $endDate),
             'sentiment_chart' => fn() => $this->sentiment($type, $startDate, $endDate),

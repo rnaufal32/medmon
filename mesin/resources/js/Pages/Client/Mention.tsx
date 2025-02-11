@@ -3,10 +3,11 @@ import AdminLayout from "@/Layouts/AdminLayout";
 import {hasPermission} from "@/utils/Permission";
 import Datepicker from "react-tailwindcss-datepicker";
 import dayjs from "dayjs";
-import {useCallback, useEffect, useState} from "react";
-import {Line} from "react-chartjs-2";
-import {Icon} from "@iconify-icon/react";
-import {ChartData} from "chart.js";
+import { useCallback, useEffect, useState } from "react";
+import { Line } from "react-chartjs-2";
+import { Icon } from "@iconify-icon/react";
+import { ChartData } from "chart.js";
+import { generateHoverColor } from "@/utils";
 
 const options = {
     responsive: true,
@@ -21,8 +22,8 @@ export default function (params: {
 }) {
     const {props: {urls}} = usePage()
     const [date, setDate] = useState({
-        startDate: dayjs().subtract(7, 'days').toDate(),
-        endDate: dayjs().toDate()
+        startDate: urls.query.start_date ?? dayjs().subtract(7, 'days').toDate(),
+        endDate: urls.query.end_date ?? dayjs().toDate()
     });
 
     const [page, setPage] = useState(params.data.current_page)
@@ -41,18 +42,12 @@ export default function (params: {
     }
 
 
-    const getColorByLabel = (label: string) => {
-        if (label === 'Corporate') return '#3B82F6';
-        if (label === 'Competitor') return '#EF4444';
-        return '#22C55E';
-    };
-
-    const chartData: any = {
+    const chartData: ChartData = {
         ...params.analytic,
         datasets: params.analytic.datasets.map((dataset: any) => ({
             ...dataset,
-            borderColor: getColorByLabel(dataset.label || ''),
-            backgroundColor: getColorByLabel(dataset.label || ''),
+            borderColor: dataset.color,
+            backgroundColor: generateHoverColor(dataset.color),
         })),
     };
 
