@@ -250,10 +250,12 @@ class DashboardController extends Controller
         ->where('user_targets.id_user', $this->user->id)
         ->groupBy('target_type.id')
         ->get();
-        
+
+        $targetColor = $target->pluck('color', 'name');        
 
         return Inertia::render('Client/Dashboard', [
             'target' => $target,
+            'target_color' => $targetColor,
             'global_chart' => fn() => $this->globalChart($type, $startDate, $endDate),
             'total_chart' => fn() => $this->totalTopic($type, $startDate, $endDate),
             'sentiment_chart' => fn() => $this->sentiment($type, $startDate, $endDate),
