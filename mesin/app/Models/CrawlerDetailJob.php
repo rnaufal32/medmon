@@ -14,6 +14,8 @@ class CrawlerDetailJob extends Model
         'url',
         'type',
         'status',
+        'title',
+        'description',
         'created_at',
         'updated_at',
     ];

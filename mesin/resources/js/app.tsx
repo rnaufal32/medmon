@@ -1,10 +1,9 @@
 import '../css/app.css';
+import 'preline/preline'
 import {HSStaticMethods} from "preline";
-
 import {createInertiaApp} from '@inertiajs/react';
 import {resolvePageComponent} from 'laravel-vite-plugin/inertia-helpers';
 import {createRoot} from 'react-dom/client';
-
 import {
     Chart as ChartJS,
     ArcElement,
