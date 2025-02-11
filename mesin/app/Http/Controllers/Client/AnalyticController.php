@@ -188,8 +188,11 @@ class AnalyticController extends Controller
         //     'pieData'   => $pieData,
         //     'platforms' => $platformList
         // ];
+        
+        $targetColor = $targets->pluck('color', 'name');
 
         return Inertia::render('Client/Analytics', [
+            'target_color' => $targetColor,
             'chart'     => $result,
             'summaries' => $summaries,
             'targets'   => $targets,

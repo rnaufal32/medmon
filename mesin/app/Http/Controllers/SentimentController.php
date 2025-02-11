@@ -41,8 +41,11 @@ class SentimentController extends Controller
                 }
             })
             ->get();
+        
+        $targetColor = $target->pluck('color', 'name');
 
         return Inertia::render('Client/Sentiment', [
+            'target_color' => $targetColor,
             'analytic' => fn() => $this->_globalChart($type, $startDate, $endDate, $platformFilters, $sentimentType, $targets),
             'data' => fn() => $this->_dataList($targets, $type, $startDate, $endDate, $platformFilters, $sentimentType),
             'target' => $target,

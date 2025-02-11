@@ -193,7 +193,11 @@ class MentionController extends Controller
             })
             ->get();
 
+        $targetColor = $target->pluck('color', 'name');
+            
+
         return Inertia::render('Client/Mention', [
+            'target_color' => $targetColor,    
             'analytic' => fn() => $this->globalChart($type, $startDate, $endDate, $platformFilters, $targets),
             'data' => fn() => $this->dataList($targets, $type, $startDate, $endDate, $platformFilters),
             'target' => $target,
