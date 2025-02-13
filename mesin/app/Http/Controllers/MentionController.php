@@ -23,6 +23,13 @@ class MentionController extends Controller
             $platfomIds = explode(',', $platforms);
         }
 
+        $allTargets = DB::table('target_type')
+                            ->join('user_targets', 'user_targets.type', '=', 'target_type.id')
+                            ->selectRaw('target_type.*')
+                            ->where('user_targets.id_user', $this->user->id)
+                            ->groupBy('target_type.id')
+                            ->get();
+
         while ($now7 <= $now) {
             $dates->push($now7->toDateString());
             $now7->addDay();
@@ -33,7 +40,7 @@ class MentionController extends Controller
                 ->join('media_user_target', 'media_user_target.id_news', '=', 'media_news.id')
                 ->join('user_targets', 'user_targets.id', '=', 'media_user_target.id_user_target')
                 ->join('target_type', 'user_targets.type', '=', 'target_type.id')
-                ->selectRaw('target_type.name, DATE(date) AS newDate')
+                ->selectRaw('target_type.name, DATE(date) AS newDate, target_type.color')
                 ->when(count($platfomIds) > 0, function($query) use ($platfomIds) {
                     return $query->whereIn('media_news.type', $platfomIds);
                 })
@@ -60,6 +67,7 @@ class MentionController extends Controller
                 
                 $sets[] = [
                     'label'     => $t,
+                    'color'     => $allTargets->where('name', operator: $t)->first()?->color ?? '-',
                     'data'      => $dailyData
                 ];
             }
@@ -72,7 +80,7 @@ class MentionController extends Controller
             $globalAnalytic = DB::table('social_posts')
                 ->join('user_targets', 'user_targets.id', '=', 'social_posts.id_user_target')
                 ->join('target_type', 'user_targets.type', '=', 'target_type.id')
-                ->selectRaw('target_type.name, DATE(date) AS newDate')
+                ->selectRaw('target_type.name, DATE(date) AS newDate, target_type.color')
                 ->where('user_targets.id_user', $this->user->id)
                 ->when(count($platfomIds) > 0, function($query) use ($platfomIds) {
                     return $query->whereIn('id_socmed', $platfomIds);
@@ -97,9 +105,10 @@ class MentionController extends Controller
                 foreach ($dates as $dt) {
                     $dailyData[] = $globalAnalytic->where('name', $t)->where('newDate', $dt)->count();
                 }
-                
+
                 $sets[] = [
                     'label'     => $t,
+                    'color'     => $allTargets->where('name', operator: $t)->first()?->color ?? '-',
                     'data'      => $dailyData
                 ];
             }
@@ -184,7 +193,11 @@ class MentionController extends Controller
             })
             ->get();
 
+        $targetColor = $target->pluck('color', 'name');
+            
+
         return Inertia::render('Client/Mention', [
+            'target_color' => $targetColor,    
             'analytic' => fn() => $this->globalChart($type, $startDate, $endDate, $platformFilters, $targets),
             'data' => fn() => $this->dataList($targets, $type, $startDate, $endDate, $platformFilters),
             'target' => $target,

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Client\AnalyticController;
+use App\Http\Controllers\Client\DashboardController;
 use App\Http\Controllers\Client\ReportController;
 use Illuminate\Support\Facades\Route;
 
@@ -42,6 +43,6 @@ Route::group([
     Route::get('/excel', [ReportController::class, 'reportView'])->name('excel.index');
     Route::get('/excel/export', [ReportController::class, 'exportToExcel'])->name('excel.export');
     // Route::get('/excel', [ReportController::class, 'index'])->name('excel.index');
-
-
+    
+    Route::get('/word-cloud-export', [DashboardController::class, 'exportWordCloud'])->name('dashboard.wordcloud.export');
 });

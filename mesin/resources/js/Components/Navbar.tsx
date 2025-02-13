@@ -10,7 +10,7 @@ export default function () {
             className="sticky top-0 inset-x-0 flex flex-wrap md:justify-start md:flex-nowrap z-[48] w-full bg-white border-b text-sm py-2.5 lg:ps-[260px]">
             <nav className="px-4 sm:px-6 flex basis-full items-center w-full mx-auto">
                 <div className="me-5 lg:me-0 lg:hidden">
-                    <a className="flex-none rounded-md text-xl inline-block font-semibold focus:outline-none focus:opacity-80"
+                    {/* <a className="flex-none rounded-md text-xl inline-block font-semibold focus:outline-none focus:opacity-80"
                        href="#" aria-label="Preline">
                         <svg className="w-28 h-auto" width="116" height="32" viewBox="0 0 116 32" fill="none"
                              xmlns="http://www.w3.org/2000/svg">
@@ -25,7 +25,7 @@ export default function () {
                                 className="stroke-blue-600" stroke="currentColor" strokeWidth="2"/>
                             <circle cx="13" cy="16.5214" r="5" className="fill-blue-600" fill="currentColor"/>
                         </svg>
-                    </a>
+                    </a> */}
 
                     <div className="lg:hidden ms-1">
 

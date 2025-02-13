@@ -24,6 +24,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('media_news', function (Blueprint $table) {
+            $table->dropColumn('type');
             $table->enum('type', ['portal','koran','majalah','tv','radio','jurnal','buletin']);
         });
     }
