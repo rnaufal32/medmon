@@ -42,7 +42,7 @@ export default function (params: {
     }
 
 
-    const chartData: ChartData = {
+    const chartData: ChartData<"line"> = {
         ...params.analytic,
         datasets: params.analytic.datasets.map((dataset: any) => ({
             ...dataset,

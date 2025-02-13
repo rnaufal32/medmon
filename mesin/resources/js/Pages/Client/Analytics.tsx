@@ -63,7 +63,7 @@ export default function (params: {
 
     const getValueByKey = (obj: any, key: any) => obj[key] || null;
 
-    const chartData: ChartData = {
+    const chartData: ChartData<"line"> = {
         ...params.chart,
         datasets: params.chart.datasets.map((dataset: any) => ({
             ...dataset,

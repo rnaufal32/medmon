@@ -35,7 +35,7 @@ export default function (params: {
 
     const getValueByKey = (obj: any, key: any) => obj[key] || null;
 
-    const lineChartData: ChartData = {
+    const lineChartData: ChartData<"line"> = {
         ...params.global_chart,
         datasets: params.global_chart.datasets.map((dataset: any) => ({
             ...dataset,
@@ -44,9 +44,7 @@ export default function (params: {
         })),
     };
 
-    console.log('linechart', lineChartData);
-
-    const pieChartRef = useRef<ChartJS>(null);
+    const pieChartRef = useRef<ChartJS<"pie">>(null);
 
     const navigatePieChart = (element: InteractionItem[]) => {
         if (!element.length) return;
@@ -73,7 +71,7 @@ export default function (params: {
         navigatePieChart(getElementAtEvent(chart, event));
     };
 
-    const barChartRef = useRef<ChartJS>(null);
+    const barChartRef = useRef<ChartJS<"bar">>(null);
 
     const navigateBarChart = (element: InteractionItem[]) => {
         if (!element.length) return;
