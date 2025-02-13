@@ -27,6 +27,7 @@
         "vite": "^6.0"
     },
     "dependencies": {
+        "@hookstate/core": "^4.0.1",
         "@inertiajs/react": "^2.0.3",
         "@preline/select": "^2.5.2",
         "apexcharts": "^4.4.0",
