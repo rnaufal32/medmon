@@ -44,6 +44,8 @@ export default function (params: {
         })),
     };
 
+    console.log('linechart', lineChartData);
+
     const pieChartRef = useRef<ChartJS>(null);
 
     const navigatePieChart = (element: InteractionItem[]) => {
