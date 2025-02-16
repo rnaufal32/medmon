@@ -14,6 +14,7 @@ class MediaNews extends Model
     protected $fillable = [
         'url',
         'source',
+        'summary',
         'date',
         'type',
         'title',
@@ -26,5 +27,7 @@ class MediaNews extends Model
         'publisher',
         'created_at',
         'updated_at',
+        'type',
     ];
+
 }

@@ -22,8 +22,10 @@ export type PageProps<
         }>;
         type: "Media" | "Social Media";
     };
-    flash: {
-        message: string;
+    flash?: {
+        message?: string;
+        error?: string;
+        success?: string;
     } | null
     urls: {
         query: any;

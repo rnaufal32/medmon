@@ -1,0 +1,1 @@
+const i=(t,s=.1)=>{t=t.replace(/^#/,"");let n=parseInt(t.substring(0,2),16),r=parseInt(t.substring(2,4),16),a=parseInt(t.substring(4,6),16);n=Math.min(255,Math.round(n+(255-n)*s)),r=Math.min(255,Math.round(r+(255-r)*s)),a=Math.min(255,Math.round(a+(255-a)*s));const e=g=>g.toString(16).padStart(2,"0");return`#${e(n)}${e(r)}${e(a)}`};export{i as g};

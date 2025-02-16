@@ -3,11 +3,11 @@ import AdminLayout from "@/Layouts/AdminLayout";
 import {hasPermission} from "@/utils/Permission";
 import Datepicker from "react-tailwindcss-datepicker";
 import dayjs from "dayjs";
-import { useCallback, useEffect, useState } from "react";
-import { Line } from "react-chartjs-2";
-import { Icon } from "@iconify-icon/react";
-import { ChartData } from "chart.js";
-import { generateHoverColor } from "@/utils";
+import {useCallback, useEffect, useState} from "react";
+import {Line} from "react-chartjs-2";
+import {Icon} from "@iconify-icon/react";
+import {ChartData} from "chart.js";
+import {generateHoverColor} from "@/utils";
 
 const options = {
     responsive: true,
@@ -42,7 +42,7 @@ export default function (params: {
     }
 
 
-    const chartData: ChartData = {
+    const chartData: any = {
         ...params.analytic,
         datasets: params.analytic.datasets.map((dataset: any) => ({
             ...dataset,

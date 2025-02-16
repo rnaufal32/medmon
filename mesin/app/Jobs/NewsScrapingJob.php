@@ -37,7 +37,7 @@ class NewsScrapingJob implements ShouldQueue
             'status' => 'process'
         ]);
 
-        $res = Http::timeout(24 * 60 * 60)->post('https://e73f-203-194-114-177.ngrok-free.app/news', [
+        $res = Http::timeout(24 * 60 * 60)->post('https://0bbd-103-84-207-96.ngrok-free.app/news', [
             'urls' => [
                 $this->params['crawler']->url,
             ],
@@ -52,50 +52,57 @@ class NewsScrapingJob implements ShouldQueue
 
                 foreach ($data as $item) {
 
-                    NewsSource::firstOrCreate([
-                        'name' => $item['source'],
-                        'site' => $item['source'],
-                    ], [
-                        'type' => '6',
-                        'category' => 'General',
-                        'viewership' => '0',
-                        'pr_value' => '0',
-                        'ad_value' => '0',
-                        'tier' => '3',
-                    ]);
+                    if ($item['status'] == 'complete') {
+                        NewsSource::firstOrCreate([
+                            'name' => $item['source'],
+                            'site' => $item['source'],
+                        ], [
+                            'type' => '6',
+                            'category' => 'General',
+                            'viewership' => '0',
+                            'pr_value' => '0',
+                            'ad_value' => '0',
+                            'tier' => '3',
+                        ]);
 
-                    $media = MediaNews::updateOrCreate([
-                        'url' => $item['url'],
-                    ], [
-                        'source' => $item['source'],
-                        'date' => $item['date'],
-                        'type' => $item['type'],
-                        'title' => $item['title'],
-                        'content' => $item['content'],
-                        'summary' => $item['summary'],
-                        'images' => $item['images'],
-                        'sentiment' => $item['sentiment'],
-                        'journalist' => $item['journalist'],
-                        'spookerperson' => $item['spookerperson'],
-                        'status' => $item['status'],
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ]);
+                        $media = MediaNews::updateOrCreate([
+                            'url' => $item['url'],
+                        ], [
+                            'source' => $item['source'],
+                            'date' => $item['date'],
+                            'type' => $item['type'],
+                            'title' => $item['title'],
+                            'content' => $item['content'],
+                            'summary' => $item['summary'],
+                            'images' => $item['images'],
+                            'sentiment' => $item['sentiment'],
+                            'journalist' => $item['journalist'],
+                            'spookerperson' => $item['spookerperson'],
+                            'status' => $item['status'],
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ]);
 
-                    if (!empty($item['relevant'])) {
-                        foreach ($item['relevant'] as $target) {
-                            MediaUserTarget::updateOrCreate([
-                                'id_news' => $media->id,
-                                'id_user_target' => $target,
-                            ]);
+                        if (!empty($item['relevant'])) {
+                            foreach ($item['relevant'] as $target) {
+                                MediaUserTarget::updateOrCreate([
+                                    'id_news' => $media->id,
+                                    'id_user_target' => $target,
+                                ]);
+                            }
                         }
+
+                        $this->params['crawler']->update([
+                            'status' => 'complete'
+                        ]);
+
+                    } else {
+                        $this->params['crawler']->update([
+                            'status' => 'blocked'
+                        ]);
                     }
 
                 }
-
-                $this->params['crawler']->update([
-                    'status' => 'complete'
-                ]);
 
             } else {
                 $this->params['crawler']->update([

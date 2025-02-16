@@ -34,7 +34,7 @@ class GoogleScrapingJob implements ShouldQueue
             'status' => 'process',
         ]);
 
-        $res = Http::timeout(24 * 60 * 60)->post('https://e73f-203-194-114-177.ngrok-free.app/google', $this->search);
+        $res = Http::timeout(24 * 60 * 60)->post('https://0bbd-103-84-207-96.ngrok-free.app/google', $this->search);
 
         if ($res->ok()) {
             $data = $res->json();

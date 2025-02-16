@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="dddf1cab-4c26-4de9-b923-da8856bc5525" name="ak">
+        <fileTransfer rootFolder="/home/appaksaracomm/public_html" accessType="SFTP" host="103.84.206.99" port="22" sshConfigId="4053e662-2857-4bc4-b000-b29661c2e146" sshConfig="root@103.84.206.99:22 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

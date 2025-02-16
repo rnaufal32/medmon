@@ -9,7 +9,7 @@ import {Icon} from "@iconify-icon/react";
 import {ToastContainer, toast, Bounce} from 'react-toastify';
 import {Chart, ArcElement, Tooltip, Legend, ChartData} from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
-import { generateHoverColor } from "@/utils";
+import {generateHoverColor} from "@/utils";
 
 Chart.register(ChartDataLabels, ArcElement, Tooltip, Legend);
 
@@ -63,7 +63,7 @@ export default function (params: {
 
     const getValueByKey = (obj: any, key: any) => obj[key] || null;
 
-    const chartData: ChartData = {
+    const chartData: any = {
         ...params.chart,
         datasets: params.chart.datasets.map((dataset: any) => ({
             ...dataset,
@@ -228,12 +228,12 @@ export default function (params: {
                               "optionClasses": "py-2 px-4 w-full text-sm text-gray-800 cursor-pointer hover:bg-gray-100 rounded-lg focus:outline-none focus:bg-gray-100",
                               "optionTemplate": "<div className=\"flex justify-between items-center w-full\"><span data-title></span><span className=\"hidden hs-selected:block\"></span></div>"
                             }' onChange={(e) => {
-                                        setTarget(e.target.value);
-                                        if (e.target.value !== 'all') {
-                                            setPageBreak(true)
-                                        } else {
-                                            setPageBreak(false)
-                                        }
+                                    setTarget(e.target.value);
+                                    if (e.target.value !== 'all') {
+                                        setPageBreak(true)
+                                    } else {
+                                        setPageBreak(false)
+                                    }
 
                                 }} value={target}>
                                     <option value="all">All Target</option>
@@ -333,7 +333,7 @@ export default function (params: {
                         </div>
                     </div>
                     {pageBreak && (
-                        <div className="col-span-12 page-break" />
+                        <div className="col-span-12 page-break"/>
                     )}
                     {params.summaries.map((data: any, index: number) => (
 
@@ -370,7 +370,8 @@ export default function (params: {
                                                 <></>
                                             ) : (
 
-                                                <p className="font-light text-slate-400 text-sm mt-2">(Views only for Youtube and Tiktok)</p>
+                                                <p className="font-light text-slate-400 text-sm mt-2">(Views only for
+                                                    Youtube and Tiktok)</p>
                                             )}
                                         </div>
                                     </div>
@@ -379,7 +380,7 @@ export default function (params: {
                         </div>
                     ))}
                     {!pageBreak && (
-                        <div className="col-span-12 page-break" />
+                        <div className="col-span-12 page-break"/>
                     )}
                     {params.summaries.map((data: any, index: number) => (
                         <div key={index} className="col-span-6">
@@ -426,7 +427,7 @@ export default function (params: {
                             </div>
                         </div>
                     ))}
-                    <div className="col-span-12 page-break" />
+                    <div className="col-span-12 page-break"/>
                     {params.pieData.map((data: any, index: number) => (
                         <div key={index} className="col-span-6">
                             <div className="border p-5 mt-5">

@@ -1,5 +1,6 @@
 import Navbar from "@/Components/Navbar";
 import Sidebar from "@/Components/Sidebar";
+import {ToastContainer} from "react-toastify";
 
 export default function (
     props: {
@@ -9,6 +10,7 @@ export default function (
 
     return (
         <div>
+            <ToastContainer aria-label=""/>
             <Navbar/>
 
             <div className="-mt-px">
@@ -47,7 +49,7 @@ export default function (
             </div>
 
             <Sidebar/>
-            
+
             <div className="w-full lg:ps-64">
                 <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
                     {props.children}
