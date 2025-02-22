@@ -8,6 +8,7 @@ import {Bounce, toast, ToastContainer} from "react-toastify";
 import {Option} from "react-tailwindcss-select/dist/components/type";
 import {PageProps} from "@/types";
 import {HSOverlay} from "preline/preline"
+import {MySwal} from "@/Components/Swal";
 
 interface newsFormProps {
     title: string,
@@ -87,10 +88,10 @@ export default function (params: { item: any }) {
     return (
         <tr>
             <td className="px-6 py-4 text-sm font-medium text-gray-800">
-                {news.username}
+                {news.user_targets[0]?.user_target?.user?.name ?? ''}
             </td>
             <td className="px-6 py-4 text-sm font-medium text-gray-800 max-w-[100px]">
-                {news.target}
+                {news.user_targets[0]?.user_target?.name ?? ''}
             </td>
             <td className="px-6 py-4 text-sm font-medium text-gray-800">
                 <div className='grid grid-cols-1 gap-1'>
@@ -116,6 +117,42 @@ export default function (params: { item: any }) {
                     data-hs-overlay={`#media-detail-${news.id}-${news.target_id}`}
                     className='flex shrink-0 justify-center items-center size-[30px] text-sm font-medium rounded-lg border border-transparent bg-gray-500 text-white hover:bg-blue-700 focus:outline-none focus:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none'>
                     <Icon icon='solar:document-broken' width={20} height={20}/>
+                </button>
+                <button
+                    onClick={() => {
+                        MySwal.fire({
+                            title: "Are you sure?",
+                            text: `Delete ${news.title}?`,
+                            icon: "warning",
+                            showCancelButton: true,
+                            confirmButtonText: "Yes, delete it!",
+                            cancelButtonText: "No, cancel!",
+                            confirmButtonColor: "danger"
+                        }).then((result) => {
+                            console.log(result)
+                            if (result.isConfirmed) {
+                                MySwal.fire({
+                                    title: "Deleting",
+                                    didOpen: (popup: HTMLElement) => {
+                                        MySwal.showLoading()
+                                    }
+                                })
+
+                                router.delete(route('news.delete', {
+                                    id: news.id
+                                }), {
+                                    onSuccess: ({props}) => {
+                                        props.flash?.success && MySwal.fire({
+                                            title: props.flash.success,
+                                            icon: "success"
+                                        })
+                                    }
+                                })
+                            }
+                        })
+                    }}
+                    className='flex shrink-0 justify-center items-center size-[30px] text-sm font-medium rounded-lg border border-transparent bg-red-500 text-white hover:bg-red-700 focus:outline-none focus:bg-red-700 disabled:opacity-50 disabled:pointer-events-none'>
+                    <Icon icon='solar:trash-bin-2-broken' width={20} height={20}/>
                 </button>
                 <div
                     id={`media-detail-${news.id}-${news.target_id}`}

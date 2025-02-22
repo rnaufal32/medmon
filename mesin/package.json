@@ -43,6 +43,8 @@
         "react-dom": "^19.0.0",
         "react-tailwindcss-datepicker": "^1.7.2",
         "react-tailwindcss-select": "^1.8.5",
-        "react-toastify": "^11.0.3"
+        "react-toastify": "^11.0.3",
+        "sweetalert2": "^11.16.1",
+        "sweetalert2-react-content": "^5.1.0"
     }
 }
