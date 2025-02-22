@@ -132,33 +132,41 @@ class NewsController extends Controller
 
     public function index(Request $request)
     {
-
+        $search = $request->input('search');
         $user = $request->input('user');
         $dateStart = $request->input('dateStart');
         $dateEnd = $request->input('dateEnd');
 
         return Inertia::render('Admin/News/Index')
             ->with([
-                'news' => fn() => DB::table('media_news')
-                    ->join('media_user_target', 'media_user_target.id_news', '=', 'media_news.id')
-                    ->join('user_targets', 'user_targets.id', '=', 'media_user_target.id_user_target')
-                    ->join('users', 'users.id', '=', 'user_targets.id_user')
-                    ->join('news_source', 'news_source.site', '=', 'media_news.source')
-                    ->selectRaw('media_news.*, users.name AS username, user_targets.name AS target, user_targets.id AS target_id')
-                    ->orderByDesc('media_news.date')
-                    ->where(function ($query) use ($user, $dateEnd, $dateStart) {
-                        if (!empty($user)) {
-                            $query->where('users.id', $user);
-                        }
-
-                        if (!empty($dateStart) && !empty($dateEnd)) {
-                            $query->whereDate('media_news.date', '>=', Carbon::parse($dateStart)->toDateString())
-                                ->whereDate('media_news.date', '<=', Carbon::parse($dateEnd)->toDateString());
-                        } else {
-                            $query->whereDate('media_news.date', '>=', now()->subDays(7)->toDateString())
-                                ->whereDate('media_news.date', '<=', now()->toDateString());
-                        }
+                'news' => fn() => MediaNews::with(['newsSource', 'userTargets.userTarget.user'])
+                    // Filter tanggal dengan when, lebih sederhana
+                    ->when(!empty($dateStart) && !empty($dateEnd), function ($query) use ($dateStart, $dateEnd) {
+                        return $query->whereDate('media_news.date', '>=', Carbon::parse($dateStart)->toDateString())
+                            ->whereDate('media_news.date', '<=', Carbon::parse($dateEnd)->toDateString());
+                    }, function ($query) {
+                        return $query->whereDate('media_news.date', '>=', now()->subDays(7)->toDateString())
+                            ->whereDate('media_news.date', '<=', now()->toDateString());
                     })
+                    // Filter user tetap sama
+                    ->when($user, function ($query, $user) {
+                        return $query->whereHas('userTargets.userTarget', function ($query) use ($user) {
+                            $query->where('user_targets.id_user', $user);
+                        });
+                    }, function ($query) {
+                        return $query->whereHas('userTargets.userTarget.user', function ($query) {
+                            $query->where('users.status', 1);
+                        });
+                    })
+                    // Perbaikan filter pencarian, pakai where(function) untuk mengelompokkan orWhere
+                    ->when($search, function ($query, $search) {
+                        return $query->where(function ($q) use ($search) {
+                            $q->where('media_news.title', 'like', "%$search%")
+                                ->orWhere('media_news.content', 'like', "%$search%");
+                        });
+                    })
+                    ->orderByDesc('media_news.date')
+                    ->orderByDesc('media_news.id')
                     ->paginate(10),
                 'users' => fn() => User::query()
                     ->where('status', '1')
@@ -173,5 +181,11 @@ class NewsController extends Controller
                     ->get(),
                 'last_update' => fn() => Carbon::parse(MediaNews::query()->orderByDesc('created_at')->first()->only(['created_at'])['created_at'])->format('d F Y H:i:s'),
             ]);
+    }
+
+    public function delete($id)
+    {
+        MediaNews::query()->where('id', $id)->delete();
+        session()->flash('success', 'News Deleted');
     }
 }

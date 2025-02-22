@@ -47,8 +47,11 @@ Route::group([
     Route::get('/news', [\App\Http\Controllers\Admin\NewsController::class, 'index'])->name('news.index');
     Route::post('/news', [\App\Http\Controllers\Admin\NewsController::class, 'store'])->name('news.store');
     Route::get('/news/export', [\App\Http\Controllers\Admin\NewsController::class, 'exportNews'])->name('news.export');
+    Route::delete('/news/{id}', [\App\Http\Controllers\Admin\NewsController::class, 'delete'])->name('news.delete');
     Route::get('/news/import-sample', [\App\Http\Controllers\Admin\NewsController::class, 'importSample'])->name('news.import-sample');
     Route::post('/news/import', [\App\Http\Controllers\Admin\NewsController::class, 'importNews'])->name('news.import');
+    Route::get('/users', [\App\Http\Controllers\Admin\UserController::class, 'index'])->name('users.index');
+    Route::post('/users/target', [\App\Http\Controllers\Admin\UserController::class, 'update'])->name('users.target.update');
 
 });
 

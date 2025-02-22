@@ -11,6 +11,18 @@ class MediaNews extends Model
 
     protected $table = 'media_news';
 
+    // Relasi ke MediaUserTarget
+    public function userTargets()
+    {
+        return $this->hasMany(MediaUserTarget::class, 'id_news', 'id');
+    }
+
+    // Relasi ke NewsSource
+    public function newsSource()
+    {
+        return $this->belongsTo(NewsSource::class, 'source', 'site');
+    }
+
     protected $fillable = [
         'url',
         'source',
