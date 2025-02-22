@@ -124,8 +124,8 @@ export default function (props: {
             <td className="px-6 py-4 max-w-[100px] text-sm font-medium text-gray-800">{target.name}</td>
             <td className="px-6 py-4 max-w-[100px] text-sm text-gray-800">{target.keywords}</td>
             <td className="px-6 py-4 max-w-[200px] text-sm text-gray-800">{target.kata_kunci}</td>
-            <td className="px-6 py-4 max-w-[100px] text-sm text-gray-800">{target.includes}</td>
-            <td className="px-6 py-4 max-w-[100px] text-sm text-gray-800">{target.excludes}</td>
+            {/*<td className="px-6 py-4 max-w-[100px] text-sm text-gray-800">{target.includes}</td>*/}
+            {/*<td className="px-6 py-4 max-w-[100px] text-sm text-gray-800">{target.excludes}</td>*/}
             <td className="px-6 py-4 max-w-[100px] text-sm text-gray-800">
                 {target.status === 1 && (
                     <span

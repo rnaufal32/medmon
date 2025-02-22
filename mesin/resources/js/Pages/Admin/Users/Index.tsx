@@ -88,12 +88,12 @@ export default function () {
                                                             scope="col"
                                                             className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Rules
                                                         </th>
-                                                        <th scope="col"
-                                                            className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Includes
-                                                        </th>
-                                                        <th scope="col"
-                                                            className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Excludes
-                                                        </th>
+                                                        {/*<th scope="col"*/}
+                                                        {/*    className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Includes*/}
+                                                        {/*</th>*/}
+                                                        {/*<th scope="col"*/}
+                                                        {/*    className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Excludes*/}
+                                                        {/*</th>*/}
                                                         <th scope="col"
                                                             className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Status
                                                         </th>

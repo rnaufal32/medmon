@@ -1,0 +1,1 @@
+import{j as r}from"./app-BSqDKYqK.js";import{A as o}from"./AdminLayout-CvmPaO01.js";import"./index-BdOVRcdX.js";function i(){return r.jsx(o,{children:r.jsx("p",{children:"Dashboard On Progress"})})}export{i as default};
