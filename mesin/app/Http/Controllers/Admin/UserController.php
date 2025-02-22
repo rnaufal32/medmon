@@ -27,7 +27,31 @@ class UserController extends Controller
             return;
         }
 
+        UserTarget::query()
+            ->where('id', $request->input('id'))
+            ->update([
+                'keywords' => $request->input('keywords'),
+                'kata_kunci' => $request->input('kata_kunci'),
+                'includes' => $request->input('includes'),
+                'excludes' => $request->input('excludes'),
+                'status' => $request->input('status'),
+            ]);
+
         session()->flash('success', 'Target has been updated');
+    }
+
+    public function updateStatus(Request $request)
+    {
+        $target = UserTarget::find($request->input('id'));
+        $target->status = $target->status ? 0 : 1;
+        $target->save();
+
+        if ($target->status == 1) {
+            session()->flash('success', 'Target has been enabled');
+        } else {
+            session()->flash('success', 'Target has been disabled');
+        }
+        
     }
 
     public function index(Request $request)

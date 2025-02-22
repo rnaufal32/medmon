@@ -3,14 +3,11 @@ import {Head, router, usePage} from "@inertiajs/react";
 import Select from "react-tailwindcss-select";
 import {useHookstate} from "@hookstate/core";
 import {PageProps} from "@/types";
-import {Option} from "react-tailwindcss-select/dist/components/type";
-import Modal from "@/Components/Modal";
-import Input from "@/Components/Input";
-import {Icon} from "@iconify-icon/react";
 import UserTargetItem from "@/Pages/Admin/Users/Widgets/UserTargetItem";
 
 interface UsersProps extends PageProps {
     users: any[]
+    user?: number
     targets?: {
         id: number;
         name: string;
@@ -25,9 +22,12 @@ interface UsersProps extends PageProps {
 
 export default function () {
 
-    const {users, targets} = usePage<UsersProps>().props
+    const {users, targets, urls} = usePage<UsersProps>().props
 
-    const user = useHookstate<any>(null)
+    const user = useHookstate<any>({
+        label: users.find(u => u.id.toString() === urls.query['user'])?.name,
+        value: urls.query['user'],
+    })
     const userOptions = users.map(user => {
         return {
             label: user.name,

@@ -5,6 +5,7 @@ import {router, useForm, usePage} from "@inertiajs/react"
 import {State, useHookstate} from "@hookstate/core";
 import {Bounce, toast} from "react-toastify";
 import {HSOverlay} from "preline/preline";
+import {MySwal} from "@/Components/Swal";
 
 interface UserTargetFormProps {
     name: string;
@@ -19,7 +20,6 @@ export default function (props: {
     item: any
 }) {
 
-    const {flash} = usePage().props
     const target = props.item
     const form: State<UserTargetFormProps> = useHookstate({
         id: target.id,
@@ -30,6 +30,54 @@ export default function (props: {
         kata_kunci: target.kata_kunci,
         status: target.status
     } as UserTargetFormProps)
+
+    const updateStatus = (e: any) => {
+        MySwal.fire({
+            title: "Are you sure?",
+            text: `${target.status == 1 ? 'Disable' : 'Enable'} ${target.name}?`,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: `Yes, ${target.status == 1 ? 'disable' : 'enable'} it!`,
+            cancelButtonText: "No, cancel!",
+            confirmButtonColor: "danger"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                MySwal.fire({
+                    title: "Updating",
+                    didOpen: (popup: HTMLElement) => {
+                        MySwal.showLoading()
+                    }
+                })
+
+                router.post(route('users.target.status.update'), {id: target.id}, {
+                    onSuccess: ({props}) => {
+                        if (props.flash?.error) {
+                            toast(props.flash.error, {
+                                position: "top-right",
+                                autoClose: 5000,
+                                hideProgressBar: false,
+                                closeOnClick: false,
+                                pauseOnHover: true,
+                                draggable: true,
+                                progress: undefined,
+                                theme: "light",
+                                transition: Bounce,
+                                type: "error"
+                            })
+                        }
+
+                        if (props.flash?.success) {
+                            HSOverlay.close(`#target-${target.id}`)
+                            props.flash?.success && MySwal.fire({
+                                title: props.flash.success,
+                                icon: "success"
+                            })
+                        }
+                    }
+                })
+            }
+        })
+    }
 
     const submit = () => {
         router.post(route('users.target.update'), form.get(), {
@@ -81,7 +129,7 @@ export default function (props: {
             <td className="px-6 py-4 max-w-[100px] text-sm text-gray-800">
                 {target.status === 1 && (
                     <span
-                        className="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-blue-600 text-white">Enable</span>
+                        className="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-green-500 text-white">Enable</span>
                 )}
                 {target.status === 0 && (
                     <span
@@ -98,13 +146,15 @@ export default function (props: {
                     </button>
                     {target.status === 1 && (
                         <button type="button"
+                                onClick={updateStatus}
                                 className="py-3 px-2 inline-flex items-center gap-x-1 text-sm font-medium rounded-lg border border-transparent bg-red-500 text-white hover:bg-red-600 focus:outline-none focus:bg-red-600 disabled:opacity-50 disabled:pointer-events-none">
                             <Icon icon='solar:power-broken'/> Disable
                         </button>
                     )}
                     {target.status === 0 && (
                         <button type="button"
-                                className="py-1 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-green-500 text-white hover:bg-red-600 focus:outline-none focus:bg-red-600 disabled:opacity-50 disabled:pointer-events-none">
+                                onClick={updateStatus}
+                                className="py-3 px-2 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-green-500 text-white hover:bg-green-600 focus:outline-none focus:bg-red-600 disabled:opacity-50 disabled:pointer-events-none">
                             <Icon icon='solar:power-broken'/> Enable
                         </button>
                     )}
@@ -178,7 +228,8 @@ export default function (props: {
                                 onChange={(e) => {
                                     form.kata_kunci.set(e.target.value)
                                 }}
-                                className="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none">{form.kata_kunci.get()}</textarea>
+                                value={form.kata_kunci.get()}
+                                className="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"></textarea>
                         </div>
                         <div>
                             <button
