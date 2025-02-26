@@ -15,6 +15,7 @@
         "laravel/tinker": "^2.9",
         "maatwebsite/excel": "^3.1",
         "nasrulfaizin/php-word-counter": "dev-master",
+        "spatie/laravel-activitylog": "^4.10",
         "spatie/laravel-permission": "^6.10",
         "tightenco/ziggy": "^2.0"
     },

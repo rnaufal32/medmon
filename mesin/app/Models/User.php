@@ -64,4 +64,9 @@ class User extends Authenticatable
         return $this->hasMany(SocialPost::class, 'id_user');
     }
 
+    public function userValue()
+    {
+        return $this->hasMany(UserValue::class, 'id_user');
+    }
+
 }

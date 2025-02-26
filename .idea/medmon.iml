@@ -6,6 +6,8 @@
       <sourceFolder url="file://$MODULE_DIR$/mesin/database/factories" isTestSource="false" packagePrefix="Database\Factories\" />
       <sourceFolder url="file://$MODULE_DIR$/mesin/database/seeders" isTestSource="false" packagePrefix="Database\Seeders\" />
       <sourceFolder url="file://$MODULE_DIR$/mesin/tests" isTestSource="true" packagePrefix="Tests\" />
+      <excludeFolder url="file://$MODULE_DIR$/mesin/vendor/spatie/laravel-activitylog" />
+      <excludeFolder url="file://$MODULE_DIR$/mesin/vendor/spatie/laravel-package-tools" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

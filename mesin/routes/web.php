@@ -50,6 +50,10 @@ Route::group([
     Route::delete('/news/{id}', [\App\Http\Controllers\Admin\NewsController::class, 'delete'])->name('news.delete');
     Route::get('/news/import-sample', [\App\Http\Controllers\Admin\NewsController::class, 'importSample'])->name('news.import-sample');
     Route::post('/news/import', [\App\Http\Controllers\Admin\NewsController::class, 'importNews'])->name('news.import');
+    Route::get('/news/crawling', [\App\Http\Controllers\Admin\NewsController::class, 'crawling'])->name('news.crawling');
+    Route::post('/news/crawling', [\App\Http\Controllers\Admin\NewsController::class, 'crawlingSubmit'])->name('news.crawling');
+    Route::post('/news/crawling/store', [\App\Http\Controllers\Admin\NewsController::class, 'crawlingStore'])->name('news.crawling.store');
+
     Route::get('/users', [\App\Http\Controllers\Admin\UserController::class, 'index'])->name('users.index');
     Route::post('/users/target', [\App\Http\Controllers\Admin\UserController::class, 'update'])->name('users.target.update');
     Route::post('/users/target/status', [\App\Http\Controllers\Admin\UserController::class, 'updateStatus'])->name('users.target.status.update');

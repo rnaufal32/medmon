@@ -34,7 +34,11 @@ export default function (params: { item: any }) {
     const news = params.item
     const newsForm: State<newsFormProps> = useHookstate({
         ...news,
-        target_id: {label: news.target, value: news.target_id, isSelected: true}
+        target_id: {
+            label: `${news.user_targets[0]?.user_target?.user?.name} - ${news.user_targets[0]?.user_target?.name}`,
+            value: news.user_targets[0]?.user_target?.id,
+            isSelected: true
+        }
     } as newsFormProps)
     const {props} = usePage<NewsProps>()
 

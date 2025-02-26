@@ -117,18 +117,7 @@ export default function (params: {
                         </a>
                         <button type="button"
                                 onClick={(e) => {
-                                    toast('Feature is under development !', {
-                                        position: "top-right",
-                                        autoClose: 5000,
-                                        hideProgressBar: false,
-                                        closeOnClick: false,
-                                        pauseOnHover: true,
-                                        draggable: true,
-                                        progress: undefined,
-                                        theme: "light",
-                                        transition: Bounce,
-                                        type: "error"
-                                    })
+                                    router.visit(route('news.crawling'))
                                 }}
                                 className="py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-gray-100 text-gray-800 hover:bg-gray-200 focus:outline-none focus:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none">
                             <Icon icon='prime:sync' height={22} width={22}/>

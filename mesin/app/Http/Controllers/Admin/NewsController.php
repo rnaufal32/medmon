@@ -8,9 +8,11 @@ use App\Http\Controllers\Controller;
 use App\Models\MediaNews;
 use App\Models\MediaUserTarget;
 use App\Models\User;
+use App\Models\UserTarget;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
 use Maatwebsite\Excel\Facades\Excel;
@@ -48,7 +50,6 @@ class NewsController extends Controller
             'journalist' => 'required|string',
             'spookerperson' => 'required|string',
             'url' => 'required|url',
-            'images' => 'required|url',
             'content' => 'required|string',
         ]);
 
@@ -89,6 +90,7 @@ class NewsController extends Controller
             ->join('media_news as mn', 'mn.id', '=', 'mut.id_news')
             ->leftJoin('news_source as ns', 'ns.site', '=', 'mn.source')
             ->join('target_type as tt', 'tt.id', '=', 'ut.type')
+            ->join('user_values', 'user_values.id_user', '=', 'ut.id_user')
             ->select(
                 DB::raw('DATE(mn.date) AS date'),
                 'tt.name as target_type',
@@ -96,17 +98,19 @@ class NewsController extends Controller
                 'mn.title',
                 'mn.source',
                 'mn.url',
-                DB::raw('COALESCE(ns.tier, 0) as tier'),
+                DB::raw('COALESCE(ns.tier, 3) as tier'),
                 'mn.sentiment',
                 'mn.summary',
                 'mn.spookerperson',
                 'mn.journalist',
-                DB::raw('COALESCE(ns.ad_value, 0) as ad'),
-                DB::raw('COALESCE(ns.pr_value, 0) as pr'),
+                DB::raw('user_values.ad as ad'),
+                DB::raw('user_values.pr as pr'),
                 DB::raw('COALESCE(ns.viewership, 0) as viewership')
             )
             ->whereBetween(DB::raw('DATE(mn.date)'), [Carbon::parse($startDate)->toDateString(), Carbon::parse($endDate)->toDateString()])
             ->where('ut.id_user', $user)
+            ->where('user_values.tier', '=', DB::raw('ns.tier'))
+            ->whereNull('mn.deleted_at')
             ->orderBy('mn.date', 'desc')
             ->get();
 
@@ -139,7 +143,7 @@ class NewsController extends Controller
 
         return Inertia::render('Admin/News/Index')
             ->with([
-                'news' => fn() => MediaNews::with(['newsSource', 'userTargets.userTarget.user'])
+                'news' => fn() => MediaNews::with(['newsSource', 'userTargets.userTarget.user.userValue'])
                     // Filter tanggal dengan when, lebih sederhana
                     ->when(!empty($dateStart) && !empty($dateEnd), function ($query) use ($dateStart, $dateEnd) {
                         return $query->whereDate('media_news.date', '>=', Carbon::parse($dateStart)->toDateString())
@@ -187,5 +191,112 @@ class NewsController extends Controller
     {
         MediaNews::query()->where('id', $id)->delete();
         session()->flash('success', 'News Deleted');
+    }
+
+    public function crawling()
+    {
+        return Inertia::render('Admin/News/Crawling');
+    }
+
+    public function crawlingSubmit(Request $request)
+    {
+
+        $validate = Validator::make($request->all(), [
+            'url' => 'required|url',
+        ]);
+
+        if ($validate->errors()->count() > 0) {
+            session()->flash('error', $validate->errors()->first());
+            return Inertia::render('Admin/News/Crawling');
+        }
+
+        $news = MediaNews::query()
+            ->where('url', 'like', '%' . $request->input('url') . '%')
+            ->first();
+        if ($news) {
+            session()->flash('error', 'News already exist');
+            return Inertia::render('Admin/News/Crawling');
+        }
+
+        $targets = UserTarget::with(['keyword', 'user'])
+            ->whereHas('user', function ($query) {
+                $query->whereIn('id', [5, 6]);
+            })
+            ->orderBy('user_targets.id_user')
+            ->get();
+
+        $res = Http::timeout(24 * 60 * 60)->post('https://89a7-2001-4858-aaaa-70-ec4-7aff-feca-274c.ngrok-free.app/news', [
+            'urls' => [
+                $request->input('url'),
+            ],
+            'targets' => $targets,
+        ]);
+
+        if ($res->ok()) {
+            $json = $res->json();
+            if ($json['status'] != 'OK') {
+                session()->flash('error', 'Failed to crawl news');
+                return Inertia::render('Admin/News/Crawling');
+            }
+
+            $data = $json['data'][0];
+
+            return Inertia::render('Admin/News/Crawling', [
+                'data' => $data,
+                'targets' => $targets,
+            ]);
+        }
+
+        session()->flash('error', 'Failed to crawl news');
+
+        return Inertia::render('Admin/News/Crawling');
+    }
+
+    public function crawlingStore(Request $request)
+    {
+        $validate = Validator::make($request->all(), [
+            'title' => 'required|string',
+            'date' => 'required',
+            'journalist' => 'required|string',
+            'spookerperson' => 'required|string',
+            'url' => 'required|url',
+            'content' => 'required|string',
+            'target_id' => 'required',
+            'summary' => 'required|string',
+            'sentiment' => 'required',
+            'source' => 'required|string',
+        ]);
+
+        if ($validate->errors()->count() > 0) {
+            session()->flash('error', $validate->errors()->first());
+            return;
+        }
+
+        $news = MediaNews::firstOrCreate([
+            'url' => $request->input('url'),
+        ], [
+            'source' => $request->input('source'),
+            'date' => $request->input('date'),
+            'type' => 6,
+            'title' => $request->input('title'),
+            'content' => $request->input('content'),
+            'summary' => $request->input('summary'),
+            'images' => $request->input('images'),
+            'sentiment' => $request->input('sentiment'),
+            'journalist' => $request->input('journalist'),
+            'spookerperson' => $request->input('spookerperson'),
+            'status' => 'complete',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        MediaUserTarget::updateOrCreate([
+            'id_news' => $news->id,
+            'id_user_target' => $request->input('target_id.value'),
+        ]);
+
+        session()->flash('success', 'News Created');
+
+//        return redirect()->route('news.crawling');
     }
 }

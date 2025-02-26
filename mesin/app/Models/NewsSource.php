@@ -25,6 +25,7 @@ class NewsSource extends Model
         'viewership',
         'pr_value',
         'ad_value',
+        'tier',
         'created_at',
         'updated_at',
     ];

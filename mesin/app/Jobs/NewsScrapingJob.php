@@ -37,7 +37,7 @@ class NewsScrapingJob implements ShouldQueue
             'status' => 'process'
         ]);
 
-        $res = Http::timeout(24 * 60 * 60)->post('https://0bbd-103-84-207-96.ngrok-free.app/news', [
+        $res = Http::timeout(24 * 60 * 60)->post('https://89a7-2001-4858-aaaa-70-ec4-7aff-feca-274c.ngrok-free.app/news', [
             'urls' => [
                 $this->params['crawler']->url,
             ],
@@ -54,9 +54,9 @@ class NewsScrapingJob implements ShouldQueue
 
                     if ($item['status'] == 'complete') {
                         NewsSource::firstOrCreate([
-                            'name' => $item['source'],
                             'site' => $item['source'],
                         ], [
+                            'name' => $item['source'],
                             'type' => '6',
                             'category' => 'General',
                             'viewership' => '0',
@@ -65,19 +65,19 @@ class NewsScrapingJob implements ShouldQueue
                             'tier' => '3',
                         ]);
 
-                        $media = MediaNews::updateOrCreate([
+                        $media = MediaNews::firstOrCreate([
                             'url' => $item['url'],
                         ], [
                             'source' => $item['source'],
                             'date' => $item['date'],
-                            'type' => $item['type'],
+                            'type' => 6,
                             'title' => $item['title'],
                             'content' => $item['content'],
                             'summary' => $item['summary'],
                             'images' => $item['images'],
                             'sentiment' => $item['sentiment'],
                             'journalist' => $item['journalist'],
-                            'spookerperson' => $item['spookerperson'],
+                            'spookerperson' => $item['spookerperson'] ?? 'N/A',
                             'status' => $item['status'],
                             'created_at' => now(),
                             'updated_at' => now(),
@@ -85,7 +85,7 @@ class NewsScrapingJob implements ShouldQueue
 
                         if (!empty($item['relevant'])) {
                             foreach ($item['relevant'] as $target) {
-                                MediaUserTarget::updateOrCreate([
+                                MediaUserTarget::firstOrCreate([
                                     'id_news' => $media->id,
                                     'id_user_target' => $target,
                                 ]);

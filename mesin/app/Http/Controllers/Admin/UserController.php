@@ -13,31 +13,34 @@ class UserController extends Controller
 {
     public function update(Request $request)
     {
-        $validate = Validator::make($request->all(), [
-            'id' => 'required|integer',
-            'keywords' => 'required|string',
-            'kata_kunci' => 'required|string',
-            'includes' => 'string|nullable',
-            'excludes' => 'string|nullable',
-            'status' => 'required|integer',
-        ]);
+        session()->flash('error', 'Under development');
+        return;
 
-        if ($validate->errors()) {
-            session()->flash('error', $validate->errors()->first());
-            return;
-        }
-
-        UserTarget::query()
-            ->where('id', $request->input('id'))
-            ->update([
-                'keywords' => $request->input('keywords'),
-                'kata_kunci' => $request->input('kata_kunci'),
-                'includes' => $request->input('includes'),
-                'excludes' => $request->input('excludes'),
-                'status' => $request->input('status'),
-            ]);
-
-        session()->flash('success', 'Target has been updated');
+//        $validate = Validator::make($request->all(), [
+//            'id' => 'required|integer',
+//            'keywords' => 'required|string',
+//            'kata_kunci' => 'required|string',
+//            'includes' => 'string|nullable',
+//            'excludes' => 'string|nullable',
+//            'status' => 'required|integer',
+//        ]);
+//
+//        if ($validate->errors()) {
+//            session()->flash('error', $validate->errors()->first());
+//            return;
+//        }
+//
+//        UserTarget::query()
+//            ->where('id', $request->input('id'))
+//            ->update([
+//                'keywords' => $request->input('keywords'),
+//                'kata_kunci' => $request->input('kata_kunci'),
+//                'includes' => $request->input('includes'),
+//                'excludes' => $request->input('excludes'),
+//                'status' => $request->input('status'),
+//            ]);
+//
+//        session()->flash('success', 'Target has been updated');
     }
 
     public function updateStatus(Request $request)
@@ -51,7 +54,7 @@ class UserController extends Controller
         } else {
             session()->flash('success', 'Target has been disabled');
         }
-        
+
     }
 
     public function index(Request $request)

@@ -34,7 +34,7 @@ class GoogleScrapingJob implements ShouldQueue
             'status' => 'process',
         ]);
 
-        $res = Http::timeout(24 * 60 * 60)->post('https://0bbd-103-84-207-96.ngrok-free.app/google', $this->search);
+        $res = Http::timeout(24 * 60 * 60)->post('https://89a7-2001-4858-aaaa-70-ec4-7aff-feca-274c.ngrok-free.app/google', $this->search);
 
         if ($res->ok()) {
             $data = $res->json();
@@ -46,7 +46,7 @@ class GoogleScrapingJob implements ShouldQueue
             }
 
             foreach ($urls as $url) {
-                if (preg_match('/facebook|instagram|tiktok|threads|twitter|x\.com|youtube/', $url['link'])) {
+                if (preg_match('/facebook\.com|instagram\.com|tiktok\.com|threads\.com|twitter\.com|x\.com|youtube\.com/', $url['link'])) {
                     $type = 'sosmed';
                 } else {
                     $type = 'media';

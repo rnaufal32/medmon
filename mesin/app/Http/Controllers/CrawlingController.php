@@ -19,7 +19,6 @@ class CrawlingController extends Controller
     public function googleV2(Request $request)
     {
         $targets = UserTarget::with(['keyword', 'user'])
-//            ->where('id', 8)
             ->whereHas('user', function ($query) {
                 $query->whereIn('id', [5, 6]);
             })
@@ -90,6 +89,7 @@ class CrawlingController extends Controller
     public function newsViewership()
     {
         $data = DB::table('news_source')
+            ->where('viewership', '=', 0)
             ->get();
 
         foreach ($data as $item) {
