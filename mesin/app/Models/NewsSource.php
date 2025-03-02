@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class NewsSource extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, LogsActivity;
 
     protected $table = 'news_source';
 
@@ -15,6 +17,11 @@ class NewsSource extends Model
     public function mediaNews()
     {
         return $this->hasMany(MediaNews::class, 'source', 'site');
+    }
+
+    public function userValue()
+    {
+        return $this->hasOne(UserValue::class, 'tier', 'tier');
     }
 
     protected $fillable = [
@@ -29,4 +36,9 @@ class NewsSource extends Model
         'created_at',
         'updated_at',
     ];
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()->logAll();
+    }
 }

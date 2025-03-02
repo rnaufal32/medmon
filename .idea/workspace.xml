@@ -8,100 +8,33 @@
       <change beforePath="$PROJECT_DIR$/.idea/medmon.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/medmon.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/php.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/php.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/AdminLayout-BHsMOH48.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/AdminLayout-Bn3TcmTK.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/AdminLayout-CvmPaO01.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/AdminLayout-Cxgwek8g.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Analytics-CdW8pMTd.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Analytics-CgMa-jsa.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Analytics-CoO8k6SA.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Analytics-D8cMInik.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Dashboard-BNLUKYnt.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Dashboard-BXxak9y4.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Dashboard-BeOpS_NX.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Dashboard-BrH8Lf02.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Dashboard-BuSRLsFL.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Dashboard-Bx0G2qLm.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Dashboard-C66CcC8H.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Dashboard-CBYZtcFO.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Excel-B8ocAR0g.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Excel-CIK8BCHp.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Excel-CcOZDA0p.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Excel-D93c_kQx.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Index-BVvr338D.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Index-BzAPg-Vd.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Index-C-Tmtyqm.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Index-C7PLkdfv.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Index-Dfl4IN6u.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Index-Dith7bHM.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Index-DsrO8AUW.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Index-e4nRfwj3.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Input-Dpm5LD5A.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Mention-B7a7RmaU.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Mention-BEvs89fK.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Mention-BayIwvQv.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Mention-Byuj66XY.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Modal-BCOVI0P9.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Modal-BeDenzbL.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Modal-Chu5D4Tu.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Modal-o-pTbC49.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/NewsImport-B70Sjqzl.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/NewsImport-DXGgtSEi.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/NewsImport-DypKXQww.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/NewsImport-wMjo5Cyt.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/NewsItem-BrKAHrVo.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/NewsItem-C2IHXFkG.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/NewsItem-DEgPNogq.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/NewsItem-Dg9CDaT9.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Permission-BvSlosjB.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Permission-CgKf9aZf.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Permission-DclJHNnz.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Permission-Y6K_YaIU.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Sentiment-BM1WzMQ3.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Sentiment-CxEGQUH9.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Sentiment-DBH7_koS.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Sentiment-IGi_uxQB.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/SignIn-CUbB6nLW.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/SignIn-Cq0n8ElQ.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/SignIn-WLjDQkHq.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/SignIn-XCzavFtO.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Swal-CqOdYBmK.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Swal-DLG-vKHP.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Swal-OBRbRjnU.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/UserTargetItem-3DZ1hNT7.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/UserTargetItem-DtmYFZTd.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/UserTargetItem-GU7l9EG-.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/UserTargetItem-QhuitrJK.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/app-BSqDKYqK.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/app-D-zZxs0_.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/app-QBjOMmuF.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/app-XRLa7BRp.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/app-jc7bckEm.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/dayjs.min-BjQzRuFC.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/dayjs.min-BwnnCYbt.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/dayjs.min-ChZOrKx8.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/dayjs.min-D1PMC0uh.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/index-B6gOht2B.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/index-BdOVRcdX.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/index-BzeoSW1i.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/index-D0dVdMqW.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/index-DERzJeDe.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/index-DOF4UDWa.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/index-DmCzmbgE.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/assets/AdminLayout-CEWLwKlY.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/assets/Analytics-CEzgFnGY.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/assets/Crawling-DNEXNTZb.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/assets/Dashboard-C0H_iUbA.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/assets/Dashboard-vAPtH8ai.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/assets/Excel-rkDp-ndg.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/assets/Index-1HtPHXEJ.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/assets/Index-UeSxyMTn.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/assets/Input-hhpOWbwY.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/assets/Mention-MOXWBg2m.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/assets/Modal-DNZBjm95.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/assets/NewsImport-ulcstxag.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/assets/NewsItem-BJ6I_t8Y.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/assets/Permission-CrlJDsHy.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/assets/Sentiment-B3C8rc2X.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/assets/SignIn-7AYZZCOR.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/assets/Swal-B1RmtheR.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/assets/UserTargetItem-BNUh7bW4.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/assets/app-B-RYIvRY.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/assets/app-DPcsr6zi.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/assets/dayjs.min-DSCsCH81.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/assets/index-6ImNHE8I.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/assets/index-DPa05w-1.js" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/build/assets/index-QeQkOBRG.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/index-zHTW4xak.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/index.es-B9KH7NpF.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/index.es-Bwjq-pVg.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/index.es-C9pCZU2B.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/index.es-CvjchU7w.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/index.esm-2flWAPIG.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/index.esm-Ash4uPRU.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/index.esm-CAWZtuZ0.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/index.esm-DUBPybjS.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/index.esm-KnYNkyDa.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/index.esm-MxDBg-vJ.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/index.esm-v5S-5cSL.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/index.esm-yRhilmYa.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/assets/index.es-DY2R93iy.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/assets/index.esm-C_MpZT6u.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/assets/index.esm-DhDJOQEC.js" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/build/manifest.json" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -389,6 +322,14 @@
       <path value="$PROJECT_DIR$/mesin/vendor/ezyang/htmlpurifier" />
       <path value="$PROJECT_DIR$/mesin/vendor/spatie/laravel-activitylog" />
       <path value="$PROJECT_DIR$/mesin/vendor/spatie/laravel-package-tools" />
+      <path value="$PROJECT_DIR$/mesin/vendor/alajusticia/laravel-expirable" />
+      <path value="$PROJECT_DIR$/mesin/vendor/alajusticia/laravel-logins" />
+      <path value="$PROJECT_DIR$/mesin/vendor/whichbrowser/parser" />
+      <path value="$PROJECT_DIR$/mesin/vendor/psr/cache" />
+      <path value="$PROJECT_DIR$/mesin/vendor/maxmind-db/reader" />
+      <path value="$PROJECT_DIR$/mesin/vendor/maxmind/web-service-common" />
+      <path value="$PROJECT_DIR$/mesin/vendor/stevebauman/location" />
+      <path value="$PROJECT_DIR$/mesin/vendor/geoip2/geoip2" />
     </include_path>
   </component>
   <component name="ProjectColorInfo">{
@@ -478,7 +419,9 @@
       <workItem from="1740148032916" duration="14201000" />
       <workItem from="1740386761945" duration="21590000" />
       <workItem from="1740471841406" duration="20391000" />
-      <workItem from="1740562579492" duration="15050000" />
+      <workItem from="1740562579492" duration="23920000" />
+      <workItem from="1740629797853" duration="8881000" />
+      <workItem from="1740725192845" duration="37803000" />
     </task>
     <servers />
   </component>

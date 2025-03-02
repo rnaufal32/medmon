@@ -31,8 +31,8 @@ export default function (params: {
             page: page.get(),
             user: user.get(),
             search: search.get(),
-            dateStart: date.startDate.get(),
-            dateEnd: date.endDate.get(),
+            dateStart: dayjs(date.startDate.get()).format('YYYY-MM-DD'),
+            dateEnd: dayjs(date.endDate.get()).format('YYYY-MM-DD'),
         }, {
             only: ['news'],
             preserveScroll: true,
@@ -107,8 +107,8 @@ export default function (params: {
                         <a href={route('news.export', {
                             _query: {
                                 user: user.get(),
-                                dateStart: date.startDate.get(),
-                                dateEnd: date.endDate.get(),
+                                dateStart: dayjs(date.startDate.get()).format('YYYY-MM-DD'),
+                                dateEnd: dayjs(date.endDate.get()).format('YYYY-MM-DD'),
                             },
                         })} target={'_blank'}
                            className="py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-gray-100 text-gray-800 hover:bg-gray-200 focus:outline-none focus:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none">
@@ -142,6 +142,12 @@ export default function (params: {
                                             </th>
                                             <th scope="col"
                                                 className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">News
+                                            </th>
+                                            <th scope="col"
+                                                className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Crawled
+                                            </th>
+                                            <th scope="col"
+                                                className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Updated
                                             </th>
                                             <th scope="col"
                                                 className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Action

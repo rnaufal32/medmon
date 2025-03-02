@@ -1,1 +1,0 @@
-import{j as r}from"./app-B-RYIvRY.js";import{A as o}from"./AdminLayout-CEWLwKlY.js";import"./index-DPa05w-1.js";function i(){return r.jsx(o,{children:r.jsx("p",{children:"Dashboard On Progress"})})}export{i as default};

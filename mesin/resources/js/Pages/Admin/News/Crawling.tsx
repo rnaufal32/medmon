@@ -65,7 +65,7 @@ export default function () {
 
     const crawlingSubmit = () => {
         isLoading.set(true)
-        router.post(route('news.crawling'), {
+        router.post(route('news.crawling.submit'), {
             url: url.get()
         }, {
             onFinish: () => {
@@ -174,9 +174,10 @@ export default function () {
                         <div className="grid grid-cols-1 gap-4">
                             <div>
                                 <label className="block text-sm font-medium mb-2">User Target</label>
-                                <Select options={optionTarget} value={optionSelected.get()} onChange={(e) => {
-                                    optionSelected.set(e)
-                                }} primaryColor={'#FFF'}/>
+                                <Select isSearchable={true} options={optionTarget} value={optionSelected.get()}
+                                        onChange={(e) => {
+                                            optionSelected.set(e)
+                                        }} primaryColor={'#FFF'}/>
                             </div>
                             <div>
                                 <label className="block text-sm font-medium mb-2">Title</label>

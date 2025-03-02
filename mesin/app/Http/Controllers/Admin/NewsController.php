@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
 use Maatwebsite\Excel\Facades\Excel;
+use Spatie\Activitylog\Facades\LogBatch;
 
 class NewsController extends Controller
 {
@@ -57,9 +58,8 @@ class NewsController extends Controller
             session()->flash('error', $validate->errors()->first());
             return;
         }
-
-        MediaNews::query()
-            ->where('id', $request->input('id'))
+        LogBatch::startBatch();
+        MediaNews::find($request->input('id'))
             ->update([
                 'title' => $request->input('title'),
                 'date' => $request->input('date'),
@@ -70,11 +70,11 @@ class NewsController extends Controller
                 'content' => $request->input('content'),
             ]);
 
-        MediaUserTarget::query()
-            ->where('id_news', $request->input('id'))
+        MediaUserTarget::where('id_news', $request->input('id'))->first()
             ->update([
                 'id_user_target' => $request->input('target_id.value'),
             ]);
+        LogBatch::endBatch();
 
         session()->flash('success', 'News Updated');
     }
@@ -85,36 +85,64 @@ class NewsController extends Controller
         $endDate = $request->input('dateEnd');
         $user = $request->input('user');
 
-        $globalAnalyticNews = DB::table('user_targets as ut')
-            ->join('media_user_target as mut', 'mut.id_user_target', '=', 'ut.id')
-            ->join('media_news as mn', 'mn.id', '=', 'mut.id_news')
-            ->leftJoin('news_source as ns', 'ns.site', '=', 'mn.source')
-            ->join('target_type as tt', 'tt.id', '=', 'ut.type')
-            ->join('user_values', 'user_values.id_user', '=', 'ut.id_user')
-            ->select(
-                DB::raw('DATE(mn.date) AS date'),
-                'tt.name as target_type',
-                'ut.name as user_target',
-                'mn.title',
-                'mn.source',
-                'mn.url',
-                DB::raw('COALESCE(ns.tier, 3) as tier'),
-                'mn.sentiment',
-                'mn.summary',
-                'mn.spookerperson',
-                'mn.journalist',
-                DB::raw('user_values.ad as ad'),
-                DB::raw('user_values.pr as pr'),
-                DB::raw('COALESCE(ns.viewership, 0) as viewership')
-            )
-            ->whereBetween(DB::raw('DATE(mn.date)'), [Carbon::parse($startDate)->toDateString(), Carbon::parse($endDate)->toDateString()])
-            ->where('ut.id_user', $user)
-            ->where('user_values.tier', '=', DB::raw('ns.tier'))
-            ->whereNull('mn.deleted_at')
-            ->orderBy('mn.date', 'desc')
-            ->get();
+        $globalAnalyticNews = DB::select("SELECT
+    DATE(mn.date) AS date,
+    tt.name as target_type,
+    ut.name as user_target,
+    mn.title,
+    mn.source,
+    mn.url,
+    COALESCE(ns.tier, 3) as tier,
+    mn.sentiment,
+    mn.summary,
+    mn.spookerperson,
+    mn.journalist,
+    user_values.ad as ad,
+    user_values.pr as pr,
+    COALESCE(ns.viewership, 0) as viewership
+FROM user_targets as ut
+INNER JOIN media_user_target as mut ON mut.id_user_target = ut.id
+INNER JOIN media_news as mn ON mn.id = mut.id_news
+LEFT JOIN news_source as ns ON ns.site = mn.source
+INNER JOIN target_type as tt ON tt.id = ut.type
+INNER JOIN user_values ON user_values.id_user = ut.id_user
+WHERE
+    DATE(mn.date) BETWEEN '" . $startDate . "' AND '" . $endDate . "'
+    AND ut.id_user = " . $user . "
+    AND (user_values.tier = ns.tier OR ns.tier IS NULL)
+    AND mn.deleted_at IS NULL
+ORDER BY mn.date DESC");
 
-        $export = new ExcelExport($globalAnalyticNews->toArray(), [
+//        $globalAnalyticNews = DB::table('user_targets as ut')
+//            ->join('media_user_target as mut', 'mut.id_user_target', '=', 'ut.id')
+//            ->join('media_news as mn', 'mn.id', '=', 'mut.id_news')
+//            ->join('news_source as ns', 'ns.site', '=', 'mn.source')
+//            ->join('target_type as tt', 'tt.id', '=', 'ut.type')
+//            ->join('user_values', 'user_values.id_user', '=', 'ut.id_user')
+//            ->select(
+//                DB::raw('DATE(mn.date) AS date'),
+//                'tt.name as target_type',
+//                'ut.name as user_target',
+//                'mn.title',
+//                'mn.source',
+//                'mn.url',
+//                DB::raw('COALESCE(ns.tier, 3) as tier'),
+//                'mn.sentiment',
+//                'mn.summary',
+//                'mn.spookerperson',
+//                'mn.journalist',
+//                DB::raw('user_values.ad as ad'),
+//                DB::raw('user_values.pr as pr'),
+//                DB::raw('COALESCE(ns.viewership, 0) as viewership')
+//            )
+//            ->whereBetween(DB::raw('DATE(mn.date)'), [Carbon::parse($startDate)->toDateString(), Carbon::parse($endDate)->toDateString()])
+//            ->where('ut.id_user', $user)
+//            ->where('user_values.tier', '=', DB::raw('ns.tier'))
+//            ->whereNull('mn.deleted_at')
+//            ->orderBy('mn.date', 'desc')
+//            ->get();
+
+        $export = new ExcelExport($globalAnalyticNews, [
             'Date',
             'Target Type',
             'User Target',
@@ -143,7 +171,7 @@ class NewsController extends Controller
 
         return Inertia::render('Admin/News/Index')
             ->with([
-                'news' => fn() => MediaNews::with(['newsSource', 'userTargets.userTarget.user.userValue'])
+                'news' => fn() => MediaNews::with(['newsSource.userValue', 'userTargets.userTarget.user'])
                     // Filter tanggal dengan when, lebih sederhana
                     ->when(!empty($dateStart) && !empty($dateEnd), function ($query) use ($dateStart, $dateEnd) {
                         return $query->whereDate('media_news.date', '>=', Carbon::parse($dateStart)->toDateString())
@@ -165,12 +193,10 @@ class NewsController extends Controller
                     // Perbaikan filter pencarian, pakai where(function) untuk mengelompokkan orWhere
                     ->when($search, function ($query, $search) {
                         return $query->where(function ($q) use ($search) {
-                            $q->where('media_news.title', 'like', "%$search%")
-                                ->orWhere('media_news.content', 'like', "%$search%");
+                            $q->where('media_news.title', 'like', "%$search%");
                         });
                     })
                     ->orderByDesc('media_news.date')
-                    ->orderByDesc('media_news.id')
                     ->paginate(10),
                 'users' => fn() => User::query()
                     ->where('status', '1')
@@ -189,7 +215,7 @@ class NewsController extends Controller
 
     public function delete($id)
     {
-        MediaNews::query()->where('id', $id)->delete();
+        MediaNews::find($id)->delete();
         session()->flash('success', 'News Deleted');
     }
 
@@ -218,6 +244,11 @@ class NewsController extends Controller
             return Inertia::render('Admin/News/Crawling');
         }
 
+        LogBatch::startBatch();
+        activity()
+            ->withProperties($request->all())
+            ->log('Start crawling');
+
         $targets = UserTarget::with(['keyword', 'user'])
             ->whereHas('user', function ($query) {
                 $query->whereIn('id', [5, 6]);
@@ -225,7 +256,7 @@ class NewsController extends Controller
             ->orderBy('user_targets.id_user')
             ->get();
 
-        $res = Http::timeout(24 * 60 * 60)->post('https://89a7-2001-4858-aaaa-70-ec4-7aff-feca-274c.ngrok-free.app/news', [
+        $res = Http::timeout(24 * 60 * 60)->post('https://feff-2001-4858-aaaa-70-ec4-7aff-feca-274c.ngrok-free.app/news', [
             'urls' => [
                 $request->input('url'),
             ],
@@ -235,11 +266,20 @@ class NewsController extends Controller
         if ($res->ok()) {
             $json = $res->json();
             if ($json['status'] != 'OK') {
+                activity()
+                    ->withProperties($json)
+                    ->log('Failed to crawl news');
+                LogBatch::endBatch();
                 session()->flash('error', 'Failed to crawl news');
                 return Inertia::render('Admin/News/Crawling');
             }
 
             $data = $json['data'][0];
+
+            activity()
+                ->withProperties($json)
+                ->log('Success to crawl news');
+            LogBatch::endBatch();
 
             return Inertia::render('Admin/News/Crawling', [
                 'data' => $data,
@@ -247,6 +287,10 @@ class NewsController extends Controller
             ]);
         }
 
+        activity()
+            ->withProperties(['status' => $res->status()])
+            ->log('Failed to crawl news');
+        LogBatch::endBatch();
         session()->flash('error', 'Failed to crawl news');
 
         return Inertia::render('Admin/News/Crawling');
@@ -271,7 +315,7 @@ class NewsController extends Controller
             session()->flash('error', $validate->errors()->first());
             return;
         }
-
+        LogBatch::startBatch();
         $news = MediaNews::firstOrCreate([
             'url' => $request->input('url'),
         ], [
@@ -294,6 +338,7 @@ class NewsController extends Controller
             'id_news' => $news->id,
             'id_user_target' => $request->input('target_id.value'),
         ]);
+        LogBatch::endBatch();
 
         session()->flash('success', 'News Created');
 

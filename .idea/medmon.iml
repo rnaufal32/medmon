@@ -6,8 +6,16 @@
       <sourceFolder url="file://$MODULE_DIR$/mesin/database/factories" isTestSource="false" packagePrefix="Database\Factories\" />
       <sourceFolder url="file://$MODULE_DIR$/mesin/database/seeders" isTestSource="false" packagePrefix="Database\Seeders\" />
       <sourceFolder url="file://$MODULE_DIR$/mesin/tests" isTestSource="true" packagePrefix="Tests\" />
+      <excludeFolder url="file://$MODULE_DIR$/mesin/vendor/alajusticia/laravel-expirable" />
+      <excludeFolder url="file://$MODULE_DIR$/mesin/vendor/alajusticia/laravel-logins" />
+      <excludeFolder url="file://$MODULE_DIR$/mesin/vendor/geoip2/geoip2" />
+      <excludeFolder url="file://$MODULE_DIR$/mesin/vendor/maxmind-db/reader" />
+      <excludeFolder url="file://$MODULE_DIR$/mesin/vendor/maxmind/web-service-common" />
+      <excludeFolder url="file://$MODULE_DIR$/mesin/vendor/psr/cache" />
       <excludeFolder url="file://$MODULE_DIR$/mesin/vendor/spatie/laravel-activitylog" />
       <excludeFolder url="file://$MODULE_DIR$/mesin/vendor/spatie/laravel-package-tools" />
+      <excludeFolder url="file://$MODULE_DIR$/mesin/vendor/stevebauman/location" />
+      <excludeFolder url="file://$MODULE_DIR$/mesin/vendor/whichbrowser/parser" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

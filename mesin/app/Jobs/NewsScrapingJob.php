@@ -37,7 +37,7 @@ class NewsScrapingJob implements ShouldQueue
             'status' => 'process'
         ]);
 
-        $res = Http::timeout(24 * 60 * 60)->post('https://89a7-2001-4858-aaaa-70-ec4-7aff-feca-274c.ngrok-free.app/news', [
+        $res = Http::timeout(24 * 60 * 60)->post('https://feff-2001-4858-aaaa-70-ec4-7aff-feca-274c.ngrok-free.app/news', [
             'urls' => [
                 $this->params['crawler']->url,
             ],

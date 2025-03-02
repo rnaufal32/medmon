@@ -20,6 +20,7 @@ interface newsFormProps {
     url: string,
     images: string,
     content: string,
+    summary: string,
 }
 
 interface NewsProps extends PageProps {
@@ -111,14 +112,20 @@ export default function (params: { item: any }) {
                     <p className='text-sm line-clamp-2'>{news.content}</p>
                 </div>
             </td>
+            <td className="px-6 py-4 text-sm font-medium text-gray-800 w-[200px]">
+                {dayjs(news.created_at).format('DD MMM YYYY HH:mm:ss')}
+            </td>
+            <td className="px-6 py-4 text-sm font-medium text-gray-800 w-[200px]">
+                {dayjs(news.updated_at).format('DD MMM YYYY HH:mm:ss')}
+            </td>
             <td className="px-6 py-4 text-sm font-medium text-gray-800 flex flex-row gap-2">
                 <a href={news.url} target='_blank'
                    className='flex shrink-0 justify-center items-center size-[30px] text-sm font-medium rounded-lg border border-transparent bg-gray-500 text-white hover:bg-blue-700 focus:outline-none focus:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none'>
                     <Icon icon='fluent:open-12-regular' width={20} height={20}/>
                 </a>
                 <button
-                    aria-controls={`media-detail-${news.id}-${news.target_id}`}
-                    data-hs-overlay={`#media-detail-${news.id}-${news.target_id}`}
+                    aria-controls={`media-detail-${news.id}-${news.user_targets[0]?.user_target?.id}`}
+                    data-hs-overlay={`#media-detail-${news.id}-${news.user_targets[0]?.user_target?.id}`}
                     className='flex shrink-0 justify-center items-center size-[30px] text-sm font-medium rounded-lg border border-transparent bg-gray-500 text-white hover:bg-blue-700 focus:outline-none focus:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none'>
                     <Icon icon='solar:document-broken' width={20} height={20}/>
                 </button>
@@ -159,7 +166,7 @@ export default function (params: { item: any }) {
                     <Icon icon='solar:trash-bin-2-broken' width={20} height={20}/>
                 </button>
                 <div
-                    id={`media-detail-${news.id}-${news.target_id}`}
+                    id={`media-detail-${news.id}-${news.user_targets[0]?.user_target?.id}`}
                     className="hs-overlay hidden size-full fixed top-0 start-0 z-[80] overflow-x-hidden overflow-y-auto pointer-events-none"
                     role="dialog" tabIndex={-1}
                     aria-labelledby="hs-large-modal-label">
@@ -176,7 +183,7 @@ export default function (params: { item: any }) {
                                 <button type="button"
                                         className="size-8 inline-flex justify-center items-center gap-x-2 rounded-full border border-transparent bg-gray-100 text-gray-800 hover:bg-gray-200 focus:outline-none focus:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-700 dark:hover:bg-neutral-600 dark:text-neutral-400 dark:focus:bg-neutral-600"
                                         aria-label="Close"
-                                        data-hs-overlay={`#media-detail-${news.id}-${news.target_id}`}>
+                                        data-hs-overlay={`#media-detail-${news.id}-${news.user_targets[0]?.user_target?.id}`}>
                                     <span className="sr-only">Close</span>
                                     <svg className="shrink-0 size-4"
                                          xmlns="http://www.w3.org/2000/svg"
@@ -226,6 +233,89 @@ export default function (params: { item: any }) {
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="max-w-full">
                                             <label htmlFor="input-label"
+                                                   className="block text-sm font-medium mb-2">Source</label>
+                                            <Input type='text' onChange={(e) => {
+                                            }} value={params.item.news_source.site} disabled={true}/>
+                                        </div>
+                                        <div className="max-w-full">
+                                            <label htmlFor="input-label"
+                                                   className="block text-sm font-medium mb-2">Tier</label>
+                                            <Select
+                                                primaryColor="#2563EB"
+                                                value={{
+                                                    label: `Tier ${params.item.news_source.tier}`,
+                                                    value: `${params.item.news_source.tier}`
+                                                }}
+                                                onChange={(e: any) => {
+                                                    MySwal.fire({
+                                                        title: "Change tier source?",
+                                                        text: `This change will affected to all news with same site. Can't be undone.`,
+                                                        icon: "warning",
+                                                        showCancelButton: true,
+                                                        confirmButtonText: "Yes, change it!",
+                                                        cancelButtonText: "No, cancel!",
+                                                        confirmButtonColor: "danger"
+                                                    }).then((result) => {
+                                                        if (result.isConfirmed) {
+                                                            MySwal.fire({
+                                                                title: "Updating",
+                                                                didOpen: (popup: HTMLElement) => {
+                                                                    MySwal.showLoading()
+                                                                }
+                                                            })
+
+                                                            router.post(route('source.news.store'), {
+                                                                id: params.item.news_source.id,
+                                                                tier: e.value,
+                                                            }, {
+                                                                onSuccess: ({props}) => {
+                                                                    props.flash?.success && MySwal.fire({
+                                                                        title: props.flash.success,
+                                                                        icon: "success"
+                                                                    })
+                                                                }
+                                                            })
+                                                        }
+                                                    })
+                                                }}
+                                                options={[{label: 'Tier 1', value: '1',}, {
+                                                    label: 'Tier 2',
+                                                    value: '2',
+                                                }, {label: 'Tier 3', value: '3',}]}
+                                            />
+                                        </div>
+                                    </div>
+                                    <hr/>
+                                    <div className="grid grid-cols-3 gap-4">
+                                        <div className="max-w-full">
+                                            <label htmlFor="input-label"
+                                                   className="block text-sm font-medium mb-2">AD Value</label>
+                                            <Input type='number' onChange={(e) => {
+                                            }}
+                                                   disabled={true}
+                                                   value={params.item.news_source.user_value.ad}/>
+                                        </div>
+                                        <div className="max-w-full">
+                                            <label htmlFor="input-label"
+                                                   className="block text-sm font-medium mb-2">PR Value</label>
+                                            <Input type='number' onChange={(e) => {
+                                            }}
+                                                   disabled={true}
+                                                   value={params.item.news_source.user_value.pr}/>
+                                        </div>
+                                        <div className="max-w-full">
+                                            <label htmlFor="input-label"
+                                                   className="block text-sm font-medium mb-2">Viewership</label>
+                                            <Input type='number' onChange={(e) => {
+                                            }}
+                                                   disabled={true}
+                                                   value={params.item.news_source.viewership}/>
+                                        </div>
+                                    </div>
+                                    <hr/>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="max-w-full">
+                                            <label htmlFor="input-label"
                                                    className="block text-sm font-medium mb-2">Journalist</label>
                                             <Input type={'text'} onChange={(e) => newsForm.journalist.set(e)}
                                                    placeholder={"Journalist"} value={newsForm.journalist.get()}/>
@@ -263,11 +353,33 @@ export default function (params: { item: any }) {
 
                                     <hr/>
 
-                                    <textarea
-                                        className="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600"
-                                        rows={5}
-                                        placeholder="This is a textarea placeholder" value={newsForm.content.get()}
-                                        onChange={(e) => newsForm.content.set(e.target.value)}></textarea>
+                                    <div className="max-w-full">
+                                        <label htmlFor="input-label"
+                                               className="block text-sm font-medium mb-2">Content</label>
+                                        <div className="flex flex-row gap-2">
+                                            <textarea
+                                                className="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600"
+                                                rows={5}
+                                                placeholder="This is a textarea placeholder"
+                                                value={newsForm.content.get()}
+                                                onChange={(e) => newsForm.content.set(e.target.value)}></textarea>
+                                        </div>
+                                    </div>
+
+                                    <hr/>
+
+                                    <div className="max-w-full">
+                                        <label htmlFor="input-label"
+                                               className="block text-sm font-medium mb-2">Summary</label>
+                                        <div className="flex flex-row gap-2">
+                                            <textarea
+                                                className="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600"
+                                                rows={5}
+                                                placeholder="This is a textarea placeholder"
+                                                value={newsForm.summary.get()}
+                                                onChange={(e) => newsForm.summary.set(e.target.value)}></textarea>
+                                        </div>
+                                    </div>
 
                                 </div>
                             </div>

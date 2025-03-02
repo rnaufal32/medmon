@@ -51,8 +51,11 @@ Route::group([
     Route::get('/news/import-sample', [\App\Http\Controllers\Admin\NewsController::class, 'importSample'])->name('news.import-sample');
     Route::post('/news/import', [\App\Http\Controllers\Admin\NewsController::class, 'importNews'])->name('news.import');
     Route::get('/news/crawling', [\App\Http\Controllers\Admin\NewsController::class, 'crawling'])->name('news.crawling');
-    Route::post('/news/crawling', [\App\Http\Controllers\Admin\NewsController::class, 'crawlingSubmit'])->name('news.crawling');
+    Route::post('/news/crawling', [\App\Http\Controllers\Admin\NewsController::class, 'crawlingSubmit'])->name('news.crawling.submit');
     Route::post('/news/crawling/store', [\App\Http\Controllers\Admin\NewsController::class, 'crawlingStore'])->name('news.crawling.store');
+
+    Route::post('source/news/store', [\App\Http\Controllers\NewsSourceController::class, 'store'])->name('source.news.store');
+    Route::get('source/news', [\App\Http\Controllers\NewsSourceController::class, 'index'])->name('source.news');
 
     Route::get('/users', [\App\Http\Controllers\Admin\UserController::class, 'index'])->name('users.index');
     Route::post('/users/target', [\App\Http\Controllers\Admin\UserController::class, 'update'])->name('users.target.update');
@@ -65,3 +68,7 @@ Route::get('/news-crawling/v2', [\App\Http\Controllers\CrawlingController::class
 Route::get('/instagram-crawling/v2', [\App\Http\Controllers\CrawlingController::class, 'instagramScrape']);
 Route::get('/tiktok-crawling/v2', [\App\Http\Controllers\CrawlingController::class, 'tiktokScrape']);
 Route::get('/news-viewership', [\App\Http\Controllers\CrawlingController::class, 'newsViewership']);
+
+Route::get('/maintenance', function () {
+    return view('maintenance');
+})->name('maintenance');
