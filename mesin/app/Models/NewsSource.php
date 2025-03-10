@@ -9,7 +9,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class NewsSource extends Model
 {
-    use SoftDeletes, LogsActivity;
+    use SoftDeletes;
 
     protected $table = 'news_source';
 

@@ -19,7 +19,8 @@ class DashboardController extends Controller
 
     private $user;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->user = Auth::user();
     }
 
@@ -228,11 +229,12 @@ class DashboardController extends Controller
         return $captionWordCloud;
     }
 
-    public function exportWordCloud(Request $request) {
+    public function exportWordCloud(Request $request)
+    {
         $startDate = Carbon::parse($request->input('startDate', now()->subDays(7)->toDateString()));
         $endDate = Carbon::parse($request->input('endDate', now()->toDateString()));
 
-        return Excel::download(new WordCloudExport($this->user, $startDate, $endDate),  "word-cloud-$startDate-$endDate" .time(). ".xlsx", \Maatwebsite\Excel\Excel::XLSX);
+        return Excel::download(new WordCloudExport($this->user, $startDate, $endDate), "word-cloud-$startDate-$endDate" . time() . ".xlsx", \Maatwebsite\Excel\Excel::XLSX);
     }
 
     public function index(Request $request)
@@ -240,22 +242,22 @@ class DashboardController extends Controller
         $this->user = Auth::user();
 
         if ($this->user->hasRole('Admin') || $this->user->hasRole('Super Admin')) {
-            return Inertia::render('Admin/Dashboard');
+            return Inertia::render('Admin/Dashboard/Index');
         }
 
         $type = $request->input('type', 'news');
         $startDate = Carbon::parse($request->input('startDate', now()->subDays(7)->toDateString()));
         $endDate = Carbon::parse($request->input('endDate', now()->toDateString()));
-        $target     = $request->input('target', null);
+        $target = $request->input('target', null);
 
         $target = DB::table('target_type')
-        ->join('user_targets', 'user_targets.type', '=', 'target_type.id')
-        ->selectRaw('target_type.*')
-        ->where('user_targets.id_user', $this->user->id)
-        ->groupBy('target_type.id')
-        ->get();
+            ->join('user_targets', 'user_targets.type', '=', 'target_type.id')
+            ->selectRaw('target_type.*')
+            ->where('user_targets.id_user', $this->user->id)
+            ->groupBy('target_type.id')
+            ->get();
 
-        $targetColor = $target->pluck('color', 'name');        
+        $targetColor = $target->pluck('color', 'name');
 
         return Inertia::render('Client/Dashboard', [
             'target' => $target,

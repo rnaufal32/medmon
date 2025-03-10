@@ -8,7 +8,6 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class MediaUserTarget extends Model
 {
-    use LogsActivity;
 
     protected $table = 'media_user_target';
 

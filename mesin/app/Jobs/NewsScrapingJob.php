@@ -37,7 +37,7 @@ class NewsScrapingJob implements ShouldQueue
             'status' => 'process'
         ]);
 
-        $res = Http::timeout(24 * 60 * 60)->post('https://feff-2001-4858-aaaa-70-ec4-7aff-feca-274c.ngrok-free.app/news', [
+        $res = Http::timeout(24 * 60 * 60)->post('https://3cbf-2001-4858-aaaa-70-ec4-7aff-feca-274c.ngrok-free.app/news', [
             'urls' => [
                 $this->params['crawler']->url,
             ],
@@ -53,37 +53,38 @@ class NewsScrapingJob implements ShouldQueue
                 foreach ($data as $item) {
 
                     if ($item['status'] == 'complete') {
-                        NewsSource::firstOrCreate([
-                            'site' => $item['source'],
-                        ], [
-                            'name' => $item['source'],
-                            'type' => '6',
-                            'category' => 'General',
-                            'viewership' => '0',
-                            'pr_value' => '0',
-                            'ad_value' => '0',
-                            'tier' => '3',
-                        ]);
-
-                        $media = MediaNews::firstOrCreate([
-                            'url' => $item['url'],
-                        ], [
-                            'source' => $item['source'],
-                            'date' => $item['date'],
-                            'type' => 6,
-                            'title' => $item['title'],
-                            'content' => $item['content'],
-                            'summary' => $item['summary'],
-                            'images' => $item['images'],
-                            'sentiment' => $item['sentiment'],
-                            'journalist' => $item['journalist'],
-                            'spookerperson' => $item['spookerperson'] ?? 'N/A',
-                            'status' => $item['status'],
-                            'created_at' => now(),
-                            'updated_at' => now(),
-                        ]);
 
                         if (!empty($item['relevant'])) {
+                            NewsSource::firstOrCreate([
+                                'site' => $item['source'],
+                            ], [
+                                'name' => $item['source'],
+                                'type' => '6',
+                                'category' => 'General',
+                                'viewership' => '0',
+                                'pr_value' => '0',
+                                'ad_value' => '0',
+                                'tier' => '3',
+                            ]);
+
+                            $media = MediaNews::firstOrCreate([
+                                'url' => $item['url'],
+                            ], [
+                                'source' => $item['source'],
+                                'date' => $item['date'],
+                                'type' => 6,
+                                'title' => $item['title'],
+                                'content' => $item['content'],
+                                'summary' => $item['summary'],
+                                'images' => $item['images'],
+                                'sentiment' => $item['sentiment'],
+                                'journalist' => $item['journalist'],
+                                'spookerperson' => $item['spookerperson'] ?? 'N/A',
+                                'status' => $item['status'],
+                                'created_at' => now(),
+                                'updated_at' => now(),
+                            ]);
+
                             foreach ($item['relevant'] as $target) {
                                 MediaUserTarget::firstOrCreate([
                                     'id_news' => $media->id,

@@ -230,89 +230,93 @@ export default function (params: { item: any }) {
                                         </div>
                                     </div>
                                     <hr/>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="max-w-full">
-                                            <label htmlFor="input-label"
-                                                   className="block text-sm font-medium mb-2">Source</label>
-                                            <Input type='text' onChange={(e) => {
-                                            }} value={params.item.news_source.site} disabled={true}/>
-                                        </div>
-                                        <div className="max-w-full">
-                                            <label htmlFor="input-label"
-                                                   className="block text-sm font-medium mb-2">Tier</label>
-                                            <Select
-                                                primaryColor="#2563EB"
-                                                value={{
-                                                    label: `Tier ${params.item.news_source.tier}`,
-                                                    value: `${params.item.news_source.tier}`
-                                                }}
-                                                onChange={(e: any) => {
-                                                    MySwal.fire({
-                                                        title: "Change tier source?",
-                                                        text: `This change will affected to all news with same site. Can't be undone.`,
-                                                        icon: "warning",
-                                                        showCancelButton: true,
-                                                        confirmButtonText: "Yes, change it!",
-                                                        cancelButtonText: "No, cancel!",
-                                                        confirmButtonColor: "danger"
-                                                    }).then((result) => {
-                                                        if (result.isConfirmed) {
+                                    {params.item.news_sources != null && (
+                                        <>
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <div className="max-w-full">
+                                                    <label htmlFor="input-label"
+                                                           className="block text-sm font-medium mb-2">Source</label>
+                                                    <Input type='text' onChange={(e) => {
+                                                    }} value={params.item.news_source?.site ?? ''} disabled={true}/>
+                                                </div>
+                                                <div className="max-w-full">
+                                                    <label htmlFor="input-label"
+                                                           className="block text-sm font-medium mb-2">Tier</label>
+                                                    <Select
+                                                        primaryColor="#2563EB"
+                                                        value={{
+                                                            label: `Tier ${params.item.news_source?.tier ?? 3}`,
+                                                            value: `${params.item.news_source?.tier ?? 3}`
+                                                        }}
+                                                        onChange={(e: any) => {
                                                             MySwal.fire({
-                                                                title: "Updating",
-                                                                didOpen: (popup: HTMLElement) => {
-                                                                    MySwal.showLoading()
-                                                                }
-                                                            })
+                                                                title: "Change tier source?",
+                                                                text: `This change will affected to all news with same site. Can't be undone.`,
+                                                                icon: "warning",
+                                                                showCancelButton: true,
+                                                                confirmButtonText: "Yes, change it!",
+                                                                cancelButtonText: "No, cancel!",
+                                                                confirmButtonColor: "danger"
+                                                            }).then((result) => {
+                                                                if (result.isConfirmed) {
+                                                                    MySwal.fire({
+                                                                        title: "Updating",
+                                                                        didOpen: (popup: HTMLElement) => {
+                                                                            MySwal.showLoading()
+                                                                        }
+                                                                    })
 
-                                                            router.post(route('source.news.store'), {
-                                                                id: params.item.news_source.id,
-                                                                tier: e.value,
-                                                            }, {
-                                                                onSuccess: ({props}) => {
-                                                                    props.flash?.success && MySwal.fire({
-                                                                        title: props.flash.success,
-                                                                        icon: "success"
+                                                                    router.post(route('source.news.store'), {
+                                                                        id: params.item.news_source.id,
+                                                                        tier: e.value,
+                                                                    }, {
+                                                                        onSuccess: ({props}) => {
+                                                                            props.flash?.success && MySwal.fire({
+                                                                                title: props.flash.success,
+                                                                                icon: "success"
+                                                                            })
+                                                                        }
                                                                     })
                                                                 }
                                                             })
-                                                        }
-                                                    })
-                                                }}
-                                                options={[{label: 'Tier 1', value: '1',}, {
-                                                    label: 'Tier 2',
-                                                    value: '2',
-                                                }, {label: 'Tier 3', value: '3',}]}
-                                            />
-                                        </div>
-                                    </div>
-                                    <hr/>
-                                    <div className="grid grid-cols-3 gap-4">
-                                        <div className="max-w-full">
-                                            <label htmlFor="input-label"
-                                                   className="block text-sm font-medium mb-2">AD Value</label>
-                                            <Input type='number' onChange={(e) => {
-                                            }}
-                                                   disabled={true}
-                                                   value={params.item.news_source.user_value.ad}/>
-                                        </div>
-                                        <div className="max-w-full">
-                                            <label htmlFor="input-label"
-                                                   className="block text-sm font-medium mb-2">PR Value</label>
-                                            <Input type='number' onChange={(e) => {
-                                            }}
-                                                   disabled={true}
-                                                   value={params.item.news_source.user_value.pr}/>
-                                        </div>
-                                        <div className="max-w-full">
-                                            <label htmlFor="input-label"
-                                                   className="block text-sm font-medium mb-2">Viewership</label>
-                                            <Input type='number' onChange={(e) => {
-                                            }}
-                                                   disabled={true}
-                                                   value={params.item.news_source.viewership}/>
-                                        </div>
-                                    </div>
-                                    <hr/>
+                                                        }}
+                                                        options={[{label: 'Tier 1', value: '1',}, {
+                                                            label: 'Tier 2',
+                                                            value: '2',
+                                                        }, {label: 'Tier 3', value: '3',}]}
+                                                    />
+                                                </div>
+                                            </div>
+                                            <hr/>
+                                            <div className="grid grid-cols-3 gap-4">
+                                                <div className="max-w-full">
+                                                    <label htmlFor="input-label"
+                                                           className="block text-sm font-medium mb-2">AD Value</label>
+                                                    <Input type='number' onChange={(e) => {
+                                                    }}
+                                                           disabled={true}
+                                                           value={params.item.news_source.user_value.ad}/>
+                                                </div>
+                                                <div className="max-w-full">
+                                                    <label htmlFor="input-label"
+                                                           className="block text-sm font-medium mb-2">PR Value</label>
+                                                    <Input type='number' onChange={(e) => {
+                                                    }}
+                                                           disabled={true}
+                                                           value={params.item.news_source.user_value.pr}/>
+                                                </div>
+                                                <div className="max-w-full">
+                                                    <label htmlFor="input-label"
+                                                           className="block text-sm font-medium mb-2">Viewership</label>
+                                                    <Input type='number' onChange={(e) => {
+                                                    }}
+                                                           disabled={true}
+                                                           value={params.item.news_source.viewership}/>
+                                                </div>
+                                            </div>
+                                            <hr/>
+                                        </>
+                                    )}
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="max-w-full">
                                             <label htmlFor="input-label"

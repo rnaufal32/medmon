@@ -61,6 +61,7 @@ Route::group([
     Route::post('/users/target', [\App\Http\Controllers\Admin\UserController::class, 'update'])->name('users.target.update');
     Route::post('/users/target/status', [\App\Http\Controllers\Admin\UserController::class, 'updateStatus'])->name('users.target.status.update');
 
+    Route::get('/crawler', [\App\Http\Controllers\Admin\CrawlerController::class, 'index'])->name('crawler.index');
 });
 
 Route::get('/google-crawling/v2', [\App\Http\Controllers\CrawlingController::class, 'googleV2']);
@@ -70,5 +71,6 @@ Route::get('/tiktok-crawling/v2', [\App\Http\Controllers\CrawlingController::cla
 Route::get('/news-viewership', [\App\Http\Controllers\CrawlingController::class, 'newsViewership']);
 
 Route::get('/maintenance', function () {
+    dd(bcrypt('nanda-markathing'));
     return view('maintenance');
 })->name('maintenance');

@@ -7,6 +7,7 @@ use App\Exports\ImportNewsSample;
 use App\Http\Controllers\Controller;
 use App\Models\MediaNews;
 use App\Models\MediaUserTarget;
+use App\Models\NewsSource;
 use App\Models\User;
 use App\Models\UserTarget;
 use Carbon\Carbon;
@@ -190,6 +191,11 @@ ORDER BY mn.date DESC");
                             $query->where('users.status', 1);
                         });
                     })
+//                    ->when($user, function ($query, $user) {
+//                        $query->whereHas('newsSource.userValue', function ($query) use ($user) {
+//                            $query->where('user_values.id_user', $user);
+//                        });
+//                    })
                     // Perbaikan filter pencarian, pakai where(function) untuk mengelompokkan orWhere
                     ->when($search, function ($query, $search) {
                         return $query->where(function ($q) use ($search) {
@@ -197,6 +203,7 @@ ORDER BY mn.date DESC");
                         });
                     })
                     ->orderByDesc('media_news.date')
+                    ->orderByDesc('media_news.created_at')
                     ->paginate(10),
                 'users' => fn() => User::query()
                     ->where('status', '1')
@@ -256,7 +263,7 @@ ORDER BY mn.date DESC");
             ->orderBy('user_targets.id_user')
             ->get();
 
-        $res = Http::timeout(24 * 60 * 60)->post('https://feff-2001-4858-aaaa-70-ec4-7aff-feca-274c.ngrok-free.app/news', [
+        $res = Http::timeout(24 * 60 * 60)->post('https://bc2e-2001-4858-aaaa-70-ec4-7aff-feca-274c.ngrok-free.app/news', [
             'urls' => [
                 $request->input('url'),
             ],
@@ -338,6 +345,19 @@ ORDER BY mn.date DESC");
             'id_news' => $news->id,
             'id_user_target' => $request->input('target_id.value'),
         ]);
+
+        NewsSource::firstOrCreate([
+            'site' => $request->input('source'),
+        ], [
+            'name' => $request->input('source'),
+            'type' => '6',
+            'category' => 'General',
+            'viewership' => '0',
+            'pr_value' => '0',
+            'ad_value' => '0',
+            'tier' => '3',
+        ]);
+
         LogBatch::endBatch();
 
         session()->flash('success', 'News Created');
