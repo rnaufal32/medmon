@@ -101,12 +101,12 @@ class CrawlingController extends Controller
     public function instagramScrape()
     {
         $crawlers = CrawlerDetailJob::query()
-//            ->where('id', '=', '20894')
-            ->whereIn('status', ['pending'])
-            ->where('type', 'sosmed')
-            ->where('url', 'like', '%instagram%')
-            ->orderByDesc('id')
-            ->limit(5)
+            ->whereIn('id', [45957])
+//            ->whereIn('status', ['pending'])
+//            ->where('type', 'sosmed')
+//            ->where('url', 'like', '%instagram%')
+//            ->orderByDesc('id')
+//            ->limit(5)
             ->get();
 
         $keywords = UserTarget::query()

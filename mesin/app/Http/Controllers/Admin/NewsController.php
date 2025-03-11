@@ -100,7 +100,8 @@ class NewsController extends Controller
     mn.journalist,
     user_values.ad as ad,
     user_values.pr as pr,
-    COALESCE(ns.viewership, 0) as viewership
+    COALESCE(ns.viewership, 0) as viewership,
+    mn.created_at as crawled
 FROM user_targets as ut
 INNER JOIN media_user_target as mut ON mut.id_user_target = ut.id
 INNER JOIN media_news as mn ON mn.id = mut.id_news
@@ -157,7 +158,8 @@ ORDER BY mn.date DESC");
             'Journalist',
             'Ad Value',
             'PR Value',
-            'Viewership'
+            'Viewership',
+            'Crawled'
         ]);
 
         return Excel::download($export, 'news-export.xlsx');

@@ -9,7 +9,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class MediaNews extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, LogsActivity;
 
     protected $table = 'media_news';
 
@@ -49,4 +49,5 @@ class MediaNews extends Model
         return LogOptions::defaults()->logOnly(['url', 'summary', 'date', 'title', 'content', 'images', 'sentiment', 'journalist', 'spookerperson'])
             ->setDescriptionForEvent(fn(string $eventName) => "Media News has been {$eventName}");
     }
+
 }

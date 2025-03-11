@@ -33,6 +33,9 @@ class NewsScrapingJob implements ShouldQueue
      */
     public function handle(): void
     {
+
+        activity()->disableLogging();
+        
         $this->params['crawler']->update([
             'status' => 'process'
         ]);
