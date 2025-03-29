@@ -8,3 +8,4 @@ mesin/bootstrap/.DS_Store
 mesin/app/Http/.DS_Store
 mesin/app/.DS_Store
 mesin/.DS_Store
+build/
