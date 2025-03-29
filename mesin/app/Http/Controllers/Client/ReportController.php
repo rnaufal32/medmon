@@ -22,14 +22,20 @@ class ReportController extends Controller
 
     public function reportView(Request $request)
     {
-        $startDate = Carbon::parse($request->input('start_date', now()->subDays(7)->toDateString()))->toDateString();
-        $endDate = Carbon::parse($request->input('end_date', now()->toDateString()))->toDateString();
+        $startDate = Carbon::parse($request->input('start_date', now()->toDateString()));
+        $endDate = Carbon::parse($request->input('end_date', now()->toDateString()));
         $target = $request->input('target', null);
         $sentiment = $request->input('sentiment', null);
         $source = $request->input('source', 'News');
         $platforms = $request->input('platforms', '');
         $sortBy = $request->input('sort_by', 'desc');
         $sortColumn = $request->input('sort_column', 'date');
+        if ($startDate->diff($endDate)->d > 7) {
+            abort(500, 'Error');
+        }
+
+        $startDate = $startDate->toDateString();
+        $endDate = $endDate->toDateString();
 
         $allowedColumns = ['caption', 'username', 'hashtags', 'likes', 'comments', 'views', 'url', 'title', 'summary', 'name', 'sentiment', 'images', 'url', 'journalist'];
 
@@ -147,13 +153,21 @@ class ReportController extends Controller
 
     public function exportToExcel(Request $request)
     {
-        $startDate = Carbon::parse($request->input('start_date', now()->subDays(7)->toDateString()))->toDateString();
-        $endDate = Carbon::parse($request->input('end_date', now()->toDateString()))->toDateString();
+        $startDate = Carbon::parse($request->input('start_date', now()->subDays(7)->toDateString()));
+        $endDate = Carbon::parse($request->input('end_date', now()->toDateString()));
         $target = $request->input('target', null);
         $sentiment = $request->input('sentiment', null);
         $source = $request->input('source', 'News');
         $platforms = $request->input('platforms', null);
         $format = $request->input('format', 'xlsx');
+
+        if ($startDate->diff($endDate)->d > 7) {
+            abort(500, 'Error');
+        }
+
+        $startDate = $startDate->toDateString();
+        $endDate = $endDate->toDateString();
+
 
         $sortBy = $request->input('sort_by', 'desc');
         $sortColumn = $request->input('sort_column', 'date');

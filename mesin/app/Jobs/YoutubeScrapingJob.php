@@ -6,14 +6,16 @@ use App\Models\SocialPost;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
-class FacebookScrapingJob implements ShouldQueue
+class YoutubeScrapingJob implements ShouldQueue
 {
     use Queueable;
 
     public $params;
 
     public $timeout = 24 * 60 * 60;
+
 
     /**
      * Create a new job instance.
@@ -28,7 +30,7 @@ class FacebookScrapingJob implements ShouldQueue
      */
     public function handle(): void
     {
-        $res = Http::timeout(24 * 60 * 60)->post(env('CRAWLER_URL') . '/facebook', [
+        $res = Http::timeout(24 * 60 * 60)->post(env('CRAWLER_URL') . '/youtube', [
             'url' => $this->params['crawler']['url'],
             'targets' => $this->params['targets'],
         ]);
@@ -48,7 +50,7 @@ class FacebookScrapingJob implements ShouldQueue
                             'updated_at' => now(),
                             'id_user_target' => $item['relevant'],
                             'keyword' => '',
-                            'id_socmed' => '3',
+                            'id_socmed' => '5',
                             'caption' => $item['caption'],
                             'comments' => $item['comments'],
                             'date' => $item['date'],

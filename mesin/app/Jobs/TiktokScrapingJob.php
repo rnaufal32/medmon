@@ -29,8 +29,8 @@ class TiktokScrapingJob implements ShouldQueue
      */
     public function handle(): void
     {
-        $res = Http::timeout(24 * 60 * 60)->post('https://e73f-203-194-114-177.ngrok-free.app/tiktok', [
-            'url' => $this->params['crawler']->pluck('url'),
+        $res = Http::timeout(24 * 60 * 60)->post(env('CRAWLER_URL') . '/tiktok', [
+            'url' => $this->params['crawler']['url'],
             'targets' => $this->params['targets'],
         ]);
         /*
@@ -49,12 +49,12 @@ class TiktokScrapingJob implements ShouldQueue
 
                 foreach ($data as $item) {
                     if (!empty($item['relevant'])) {
-                        $media = SocialPost::updateOrCreate([
+                        $media = SocialPost::firstOrCreate([
                             'url' => $item['url'],
                         ], [
                             'created_at' => now()->toDateString(),
                             'updated_at' => now()->toDateString(),
-                            'id_user_target' => $item['relevant'][0],
+                            'id_user_target' => $item['relevant'],
                             'keyword' => '',
                             'id_socmed' => '4',
                             'caption' => $item['caption'],
@@ -72,28 +72,21 @@ class TiktokScrapingJob implements ShouldQueue
                     }
                 }
 
-                CrawlerDetailJob::query()
-                    ->whereIn('url', $this->params['crawler']->pluck('url'))
-                    ->where('status', 'pending')
-                    ->update([
-                        'status' => 'complete',
-                    ]);
+                $this->params['crawler']->update([
+                    'status' => 'complete'
+                ]);
 
             } else {
-                CrawlerDetailJob::query()
-                    ->whereIn('url', $this->params['crawler']->pluck('url'))
-                    ->where('status', 'pending')
-                    ->update([
-                        'status' => 'complete',
-                    ]);
+                $this->params['crawler']->update([
+                    'status' => 'complete'
+                ]);
             }
         } else {
-            CrawlerDetailJob::query()
-                ->whereIn('url', $this->params['crawler']->pluck('url'))
-                ->where('status', 'pending')
-                ->update([
-                    'status' => 'complete',
-                ]);
+            $this->params['crawler']->update([
+                'status' => 'blocked'
+            ]);
         }
+
+        sleep(5);
     }
 }

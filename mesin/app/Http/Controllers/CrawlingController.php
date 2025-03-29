@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\FacebookScrapingJob;
 use App\Jobs\GoogleScrapingJob;
 use App\Jobs\InstagramCrawlingJob;
 use App\Jobs\NewsScrapingJob;
 use App\Jobs\NewsViewershipJobs;
 use App\Jobs\TiktokScrapingJob;
+use App\Jobs\YoutubeScrapingJob;
 use App\Models\CrawlerDetailJob;
 use App\Models\ScrapingData;
 use App\Models\UserTarget;
@@ -18,8 +20,10 @@ class CrawlingController extends Controller
 
     public function googleV2(Request $request)
     {
+        $type = $request->input('type', 'media');
+
         $targets = UserTarget::with(['keyword', 'user'])
-//            ->whereIn('id', [33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 54])
+//            ->whereIn('id', [34])
             ->whereHas('user', function ($query) {
                 $query->whereIn('id', [5, 6]);
             })
@@ -28,28 +32,22 @@ class CrawlingController extends Controller
 
         foreach ($targets as $key => $target) {
             $roleName = $target->user->roles->pluck('name')->first();
-            if ($roleName == "User Media") {
+            if ($type == 'media' && ($roleName == "User Media" || $roleName == "User Media Sosmed")) {
                 GoogleScrapingJob::dispatch([
                     'search' => $target->keywords,
                     'targets' => $targets,
                     'type' => 'media'
                 ]);
             }
-            if ($roleName == "User Sosmed") {
+
+            if ($type == 'sosmed' && ($roleName == "User Sosmed" || $roleName == "User Media Sosmed")) {
                 GoogleScrapingJob::dispatch([
                     'search' => $target->keywords,
                     'targets' => $targets,
                     'type' => 'sosmed'
                 ]);
             }
-            if ($roleName == "User Media Sosmed") {
-                GoogleScrapingJob::dispatch([
-                    'search' => $target->keywords,
-                    'targets' => $targets,
-                    'type' => 'media, sosmed'
-                ]);
 
-            }
         }
 
         return response()->json([
@@ -60,6 +58,7 @@ class CrawlingController extends Controller
     public function newsV2(Request $request)
     {
         $crawlers = CrawlerDetailJob::query()
+//            ->whereIn('id', [49357, 49350, 49349, 49346])
             ->whereIn('status', ['pending'])
             ->where('type', 'media')
             ->orderByDesc('id')
@@ -79,7 +78,8 @@ class CrawlingController extends Controller
         }
 
         return response()->json([
-            'status' => 'ok'
+            'status' => 'ok',
+            'jml' => $crawlers->count(),
         ]);
     }
 
@@ -101,12 +101,11 @@ class CrawlingController extends Controller
     public function instagramScrape()
     {
         $crawlers = CrawlerDetailJob::query()
-            ->whereIn('id', [45957])
-//            ->whereIn('status', ['pending'])
-//            ->where('type', 'sosmed')
-//            ->where('url', 'like', '%instagram%')
-//            ->orderByDesc('id')
-//            ->limit(5)
+//            ->whereIn('id', [])
+            ->whereIn('status', ['pending'])
+            ->where('type', 'sosmed')
+            ->where('url', 'like', '%instagram.com%')
+            ->orderBy('id', 'asc')
             ->get();
 
         $keywords = UserTarget::query()
@@ -142,13 +141,71 @@ class CrawlingController extends Controller
 
         $keywords = $keywords->toArray();
 
-        TiktokScrapingJob::dispatch([
-            'crawler' => $crawlers,
-            'targets' => $keywords
-        ]);
+        foreach ($crawlers as $index => $crawler) {
+            TiktokScrapingJob::dispatch([
+                'crawler' => $crawler,
+                'targets' => $keywords
+            ])->onQueue('tiktok-crawling');
+        }
 
         return response()->json([
             'status' => 'ok'
         ]);
     }
+
+    public function facebookScrape()
+    {
+        $crawlers = CrawlerDetailJob::query()
+            ->whereIn('status', ['pending'])
+            ->where('type', 'sosmed')
+            ->where('url', 'like', '%facebook%')
+            ->orderByDesc('id')
+            ->get();
+
+        $keywords = UserTarget::query()
+            ->whereIn('id_user', [6])
+            ->get();
+
+        $keywords = $keywords->toArray();
+
+        foreach ($crawlers as $index => $crawler) {
+            FacebookScrapingJob::dispatch([
+                'crawler' => $crawler,
+                'targets' => $keywords
+            ])->onQueue('facebook-crawling');
+        }
+
+        return response()->json([
+            'status' => 'ok'
+        ]);
+    }
+
+    public function youtubeScrape()
+    {
+        $crawlers = CrawlerDetailJob::query()
+//            ->whereIn('id', [])
+            ->whereIn('status', ['pending'])
+            ->where('type', 'sosmed')
+            ->where('url', 'like', '%youtube.com%')
+            ->orderBy('id', 'asc')
+            ->get();
+
+        $keywords = UserTarget::query()
+            ->whereIn('id_user', [6])
+            ->get();
+
+        $keywords = $keywords->toArray();
+
+        foreach ($crawlers as $index => $crawler) {
+            YoutubeScrapingJob::dispatch([
+                'crawler' => $crawler,
+                'targets' => $keywords
+            ])->onQueue('youtube-crawling');
+        }
+
+        return response()->json([
+            'status' => 'ok'
+        ]);
+    }
+
 }

@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use DB;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use function Laravel\Prompts\error;
 
 class AnalyticController extends Controller
 {
@@ -22,11 +23,15 @@ class AnalyticController extends Controller
 
     public function index(Request $request)
     {
-        $startDate = Carbon::parse($request->input('start_date', now()->subDays(7)->toDateString()));
+        $startDate = Carbon::parse($request->input('start_date', now()->toDateString()));
         $endDate = Carbon::parse($request->input('end_date', now()->toDateString()));
         $target = $request->input('target', null);
         $source = $request->input('source', 'News');
         $platforms = $request->input('platform', null);
+
+        if ($startDate->diff($endDate)->days > 7) {
+            abort(500, 'Error');
+        }
 
         $platfomIds = [];
         if (!empty($platforms)) {

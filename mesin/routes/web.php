@@ -68,6 +68,8 @@ Route::get('/google-crawling/v2', [\App\Http\Controllers\CrawlingController::cla
 Route::get('/news-crawling/v2', [\App\Http\Controllers\CrawlingController::class, 'newsV2']);
 Route::get('/instagram-crawling/v2', [\App\Http\Controllers\CrawlingController::class, 'instagramScrape']);
 Route::get('/tiktok-crawling/v2', [\App\Http\Controllers\CrawlingController::class, 'tiktokScrape']);
+Route::get('/facebook-crawling/v2', [\App\Http\Controllers\CrawlingController::class, 'facebookScrape']);
+Route::get('/youtube-crawling/v2', [\App\Http\Controllers\CrawlingController::class, 'youtubeScrape']);
 Route::get('/news-viewership', [\App\Http\Controllers\CrawlingController::class, 'newsViewership']);
 
 Route::get('/maintenance', function () {

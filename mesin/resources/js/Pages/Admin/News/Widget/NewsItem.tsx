@@ -72,7 +72,7 @@ export default function (params: { item: any }) {
                 }
 
                 if (props.flash?.success) {
-                    HSOverlay.close(`#media-detail-${news.id}-${news.target_id}`)
+                    HSOverlay.close(`#media-detail-${news.id}`)
                     toast(props.flash.success, {
                         position: "top-right",
                         autoClose: 5000,
@@ -124,8 +124,8 @@ export default function (params: { item: any }) {
                     <Icon icon='fluent:open-12-regular' width={20} height={20}/>
                 </a>
                 <button
-                    aria-controls={`media-detail-${news.id}-${news.user_targets[0]?.user_target?.id}`}
-                    data-hs-overlay={`#media-detail-${news.id}-${news.user_targets[0]?.user_target?.id}`}
+                    aria-controls={`media-detail-${news.id}`}
+                    data-hs-overlay={`#media-detail-${news.id}`}
                     className='flex shrink-0 justify-center items-center size-[30px] text-sm font-medium rounded-lg border border-transparent bg-gray-500 text-white hover:bg-blue-700 focus:outline-none focus:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none'>
                     <Icon icon='solar:document-broken' width={20} height={20}/>
                 </button>
@@ -166,7 +166,7 @@ export default function (params: { item: any }) {
                     <Icon icon='solar:trash-bin-2-broken' width={20} height={20}/>
                 </button>
                 <div
-                    id={`media-detail-${news.id}-${news.user_targets[0]?.user_target?.id}`}
+                    id={`media-detail-${news.id}`}
                     className="hs-overlay hidden size-full fixed top-0 start-0 z-[80] overflow-x-hidden overflow-y-auto pointer-events-none"
                     role="dialog" tabIndex={-1}
                     aria-labelledby="hs-large-modal-label">
@@ -183,7 +183,7 @@ export default function (params: { item: any }) {
                                 <button type="button"
                                         className="size-8 inline-flex justify-center items-center gap-x-2 rounded-full border border-transparent bg-gray-100 text-gray-800 hover:bg-gray-200 focus:outline-none focus:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-700 dark:hover:bg-neutral-600 dark:text-neutral-400 dark:focus:bg-neutral-600"
                                         aria-label="Close"
-                                        data-hs-overlay={`#media-detail-${news.id}-${news.user_targets[0]?.user_target?.id}`}>
+                                        data-hs-overlay={`#media-detail-${news.id}`}>
                                     <span className="sr-only">Close</span>
                                     <svg className="shrink-0 size-4"
                                          xmlns="http://www.w3.org/2000/svg"
@@ -391,7 +391,7 @@ export default function (params: { item: any }) {
                                 className="flex justify-end items-center gap-x-2 py-3 px-4 border-t dark:border-neutral-700">
                                 <button type="button"
                                         className="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700"
-                                        data-hs-overlay={`#media-detail-${news.id}-${news.target_id}`}>
+                                        data-hs-overlay={`#media-detail-${news.id}`}>
                                     Close
                                 </button>
                                 <button type="button"

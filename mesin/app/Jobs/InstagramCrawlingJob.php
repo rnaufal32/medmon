@@ -34,7 +34,7 @@ class InstagramCrawlingJob implements ShouldQueue
      */
     public function handle(): void
     {
-        $res = Http::timeout(24 * 60 * 60)->post('https://3cbf-2001-4858-aaaa-70-ec4-7aff-feca-274c.ngrok-free.app/instagram', [
+        $res = Http::timeout(24 * 60 * 60)->post(env('CRAWLER_URL') . '/instagram', [
             'url' => $this->params['crawler']['url'],
             'targets' => $this->params['targets'],
         ]);

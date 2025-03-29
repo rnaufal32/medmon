@@ -8,7 +8,7 @@ export default function () {
         <AdminLayout>
             <Head title="Dashboard"/>
 
-            <p>Dashboard On</p>
+            <p>Dashboard On Progress</p>
         </AdminLayout>
     )
 }

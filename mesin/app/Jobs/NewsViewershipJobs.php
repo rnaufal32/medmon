@@ -26,7 +26,7 @@ class NewsViewershipJobs implements ShouldQueue
      */
     public function handle(): void
     {
-        $res = Http::timeout(24 * 60 * 60)->post('https://e73f-203-194-114-177.ngrok-free.app/news-viewership', [
+        $res = Http::timeout(24 * 60 * 60)->post(env('CRAWLER_URL') . '/viewerShip', [
             'urls' => ["https://hypestat.com/info/" . $this->url],
         ]);
 
@@ -38,6 +38,8 @@ class NewsViewershipJobs implements ShouldQueue
                     ->where('site', $this->url)
                     ->update([
                         'viewership' => $data['data']['viewership'],
+                        'daily_reach' => $data['data']['daily'],
+                        'updated_at' => now(),
                     ]);
             }
         }

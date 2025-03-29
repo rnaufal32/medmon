@@ -40,7 +40,7 @@ export default function (params: {
 }) {
     const {props: {urls}} = usePage()
     const [date, setDate] = useState({
-        startDate: dayjs().subtract(7, 'days').toDate(),
+        startDate: dayjs().toDate(),
         endDate: dayjs().toDate()
     });
 

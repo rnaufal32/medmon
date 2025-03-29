@@ -5,7 +5,40 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2030a958-24d8-4747-8057-62afae0238e6" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/assets/images/demo.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/images/white.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/assets/AdminLayout-BddUhaDd.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/assets/Analytics-CO__kFuY.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/assets/Crawling-BDM6_4UX.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/assets/Dashboard-BuwSp8yV.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/assets/Dashboard-DxZ_dhTa.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/assets/Excel-CT-rQ-HH.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/assets/Index-Baf4jJU3.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/assets/Index-D37YBixj.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/assets/Index-DfH3TYtL.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/assets/Input-CqxUXQay.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/assets/Maintenance-ZO2tiFau.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/assets/Mention-CsM0gdVn.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/assets/Modal-AcJ75upu.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/assets/NewsImport-CnC8SXmv.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/assets/NewsItem-Cka5k8KH.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/assets/Permission-BmGkPdwH.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/assets/Sentiment-CpF6LE5y.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/assets/SignIn-CVRh46mG.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/assets/Swal-DoTsxdcA.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/assets/UserTargetItem-oAMO8VBX.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/assets/app-BCi72HwG.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/assets/app-BqyLgq1m.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/assets/dayjs.min-VIi3ypAF.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/assets/index-B4TiAaRi.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/assets/index-QeQkOBRG.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/assets/index-RorAJn7q.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/assets/index.es-C0714uSK.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/assets/index.esm-BTWK7HdG.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/assets/index.esm-BY2t7LtF.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/manifest.json" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -334,8 +367,12 @@
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/mesin/public" />
+      <recent name="$PROJECT_DIR$/mesin/resources/js/Pages/Admin" />
       <recent name="$PROJECT_DIR$/mesin/app/Jobs" />
       <recent name="$PROJECT_DIR$" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/assets/images" />
     </key>
   </component>
   <component name="RunManager" selected="PHPUnit.Main">
@@ -346,6 +383,9 @@
     <configuration name="Main" type="PestRunConfigurationType">
       <option name="pestRunnerSettings">
         <PestRunner configuration_file="$PROJECT_DIR$/mesin/phpunit.xml" scope="ConfigurationFile" use_alternative_configuration_file="true" />
+      </option>
+      <option name="runnerSettings">
+        <PhpTestRunnerSettings configuration_file="$PROJECT_DIR$/mesin/phpunit.xml" scope="ConfigurationFile" use_alternative_configuration_file="true" />
       </option>
       <method v="2" />
     </configuration>
@@ -394,7 +434,18 @@
       <workItem from="1740725192845" duration="48018000" />
       <workItem from="1741049208706" duration="31002000" />
       <workItem from="1741175973675" duration="6000" />
-      <workItem from="1741276158498" duration="48339000" />
+      <workItem from="1741276158498" duration="49446000" />
+      <workItem from="1741681328593" duration="36553000" />
+      <workItem from="1741877389599" duration="27034000" />
+      <workItem from="1742174428732" duration="892000" />
+      <workItem from="1742346364050" duration="3949000" />
+      <workItem from="1742391230214" duration="10201000" />
+      <workItem from="1742545198941" duration="7420000" />
+      <workItem from="1742810681789" duration="1851000" />
+      <workItem from="1742828466659" duration="2806000" />
+      <workItem from="1742890061157" duration="11006000" />
+      <workItem from="1742950298810" duration="1263000" />
+      <workItem from="1743166970376" duration="3802000" />
     </task>
     <servers />
   </component>

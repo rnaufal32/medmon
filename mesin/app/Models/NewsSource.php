@@ -35,6 +35,7 @@ class NewsSource extends Model
         'tier',
         'created_at',
         'updated_at',
+        'daily_reach',
     ];
 
     public function getActivitylogOptions(): LogOptions

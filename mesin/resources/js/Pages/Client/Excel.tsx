@@ -1,11 +1,11 @@
-import { Head, router, usePage } from "@inertiajs/react";
+import {Head, router, usePage} from "@inertiajs/react";
 import AdminLayout from "@/Layouts/AdminLayout";
-import { hasPermission } from "@/utils/Permission";
+import {hasPermission} from "@/utils/Permission";
 import Datepicker from "react-tailwindcss-datepicker";
 import dayjs from "dayjs";
-import { createElement, useCallback, useEffect, useRef, useState } from "react";
-import { Icon } from "@iconify-icon/react/dist/iconify.mjs";
-import { ToastContainer, toast, Bounce } from 'react-toastify';
+import {createElement, useCallback, useEffect, useRef, useState} from "react";
+import {Icon} from "@iconify-icon/react/dist/iconify.mjs";
+import {ToastContainer, toast, Bounce} from 'react-toastify';
 
 
 export default function (params: {
@@ -14,10 +14,10 @@ export default function (params: {
     result: any,
 }) {
 
-    const { props: { urls } } = usePage()
+    const {props: {urls}} = usePage()
 
     const [date, setDate] = useState({
-        startDate: dayjs().subtract(7, 'days').toDate(),
+        startDate: dayjs().toDate(),
         endDate: dayjs().toDate()
     });
 
@@ -61,6 +61,7 @@ export default function (params: {
                 setDropdownOpen(false);
             }
         }
+
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
@@ -105,21 +106,21 @@ export default function (params: {
 
     return (
         <AdminLayout>
-            <ToastContainer aria-label="" />
-            <Head title="Reporting" />
+            <ToastContainer aria-label=""/>
+            <Head title="Reporting"/>
 
             <div className='flex flex-row items-center justify-between'>
                 <h1 className='text-2xl font-bold'>Reporting</h1>
                 <div className="flex flex-row gap-4 items-center">
                     <div className="hs-dropdown relative inline-flex">
                         <button id="hs-dropdown-default" type="button"
-                            className="hs-dropdown-toggle py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
-                            aria-haspopup="menu" aria-expanded="false" aria-label="Dropdown">
+                                className="hs-dropdown-toggle py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
+                                aria-haspopup="menu" aria-expanded="false" aria-label="Dropdown">
                             {type}
                             <svg className="hs-dropdown-open:rotate-180 size-4" xmlns="http://www.w3.org/2000/svg"
-                                width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="m6 9 6 6 6-6" />
+                                 width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                 strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="m6 9 6 6 6-6"/>
                             </svg>
                         </button>
 
@@ -129,17 +130,17 @@ export default function (params: {
                             <div className="p-1 space-y-0.5">
                                 {(hasPermission("User Media") || hasPermission("User Media Sosmed")) &&
                                     <a className="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-gray-100"
-                                        onClick={() => {
-                                            setType('News');
-                                        }}>
+                                       onClick={() => {
+                                           setType('News');
+                                       }}>
                                         News
                                     </a>
                                 }
                                 {(hasPermission("User Sosmed") || hasPermission("User Media Sosmed")) &&
                                     <a className="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-gray-100"
-                                        onClick={() => {
-                                            setType('Social Media');
-                                        }}>
+                                       onClick={() => {
+                                           setType('Social Media');
+                                       }}>
                                         Social Media
                                     </a>
                                 }
@@ -156,9 +157,9 @@ export default function (params: {
                               "optionClasses": "py-2 px-4 w-full text-sm text-gray-800 cursor-pointer hover:bg-gray-100 rounded-lg focus:outline-none focus:bg-gray-100",
                               "optionTemplate": "<div className=\"flex justify-between items-center w-full\"><span data-title></span><span className=\"hidden hs-selected:block\"></span></div>"
                             }' onChange={(e) => {
-                                    setTarget(e.target.value);
+                                setTarget(e.target.value);
 
-                                }} value={target}>
+                            }} value={target}>
                                 <option value="all">All Target</option>
                                 {params.targets.map((e: any, i: number) => (
                                     <option key={i} value={e.id}>{e.name}</option>))}
@@ -166,8 +167,8 @@ export default function (params: {
 
                             <div className="absolute top-1/2 end-2.5 -translate-y-1/2">
                                 <svg className="shrink-0 size-4 text-gray-500" xmlns="http://www.w3.org/2000/svg"
-                                    width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                     width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                     strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                     <path d="m7 15 5 5 5-5"></path>
                                     <path d="m7 9 5-5 5 5"></path>
                                 </svg>
@@ -183,8 +184,8 @@ export default function (params: {
                               "optionClasses": "py-2 px-4 w-full text-sm text-gray-800 cursor-pointer hover:bg-gray-100 rounded-lg focus:outline-none focus:bg-gray-100",
                               "optionTemplate": "<div className=\"flex justify-between items-center w-full\"><span data-title></span><span className=\"hidden hs-selected:block\"></span></div>"
                             }' onChange={(e) => {
-                                setSentimentType(e.target.value);
-                            }} value={sentimentType}>
+                            setSentimentType(e.target.value);
+                        }} value={sentimentType}>
                             <option value='all'>All Sentiment</option>
                             <option value='positive'>Positive</option>
                             <option value='neutral'>Neutral</option>
@@ -193,8 +194,8 @@ export default function (params: {
 
                         <div className="absolute top-1/2 end-2.5 -translate-y-1/2">
                             <svg className="shrink-0 size-4 text-gray-500" xmlns="http://www.w3.org/2000/svg"
-                                width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                 width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                 strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="m7 15 5 5 5-5"></path>
                                 <path d="m7 9 5-5 5 5"></path>
                             </svg>
@@ -242,13 +243,13 @@ export default function (params: {
                                         {params.platforms.map((e: any, i: number) => (
                                             <div className="flex" key={i}>
                                                 <input type="checkbox"
-                                                    value={e.id}
-                                                    checked={platform.includes(e.id)}
-                                                    onChange={changePlatform}
-                                                    className="shrink-0 mt-0.5 border-gray-200 rounded text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800"
-                                                    id={`platforms-${e.id}`} />
+                                                       value={e.id}
+                                                       checked={platform.includes(e.id)}
+                                                       onChange={changePlatform}
+                                                       className="shrink-0 mt-0.5 border-gray-200 rounded text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800"
+                                                       id={`platforms-${e.id}`}/>
                                                 <label htmlFor={`platforms-${e.id}`}
-                                                    className="text-sm text-gray-500 ms-3 dark:text-neutral-400">{e.name}</label>
+                                                       className="text-sm text-gray-500 ms-3 dark:text-neutral-400">{e.name}</label>
                                             </div>
                                         ))}
                                     </div>
@@ -262,7 +263,7 @@ export default function (params: {
                         disabled={params.result.length <= 0}
                         onClick={() => exportExcel('csv')}
                     >
-                        <Icon icon='material-symbols:csv' className="mr-2" color="#FFFFFF" />
+                        <Icon icon='material-symbols:csv' className="mr-2" color="#FFFFFF"/>
                         CSV
                     </button>
                     <button
@@ -270,7 +271,7 @@ export default function (params: {
                         disabled={params.result.length <= 0}
                         onClick={() => exportExcel('xlsx')}
                     >
-                        <Icon icon='fa-solid:file-excel' className="mr-2" color="#FFFFFF" />
+                        <Icon icon='fa-solid:file-excel' className="mr-2" color="#FFFFFF"/>
                         Excel
                     </button>
                     <button
@@ -289,7 +290,7 @@ export default function (params: {
                             type: "error"
                         })}
                     >
-                        <Icon icon='material-symbols:picture-as-pdf' className="mr-2" color="#FFFFFF" />
+                        <Icon icon='material-symbols:picture-as-pdf' className="mr-2" color="#FFFFFF"/>
                         PDF
                     </button>
                 </div>
@@ -300,74 +301,88 @@ export default function (params: {
                     <div className="overflow-x-auto">
                         <table className="w-full text-sm text-left relative">
                             <thead className="bg-gray-50 text-xs text-gray-700 border-b">
-                                <tr >
-                                    {
-                                        dataResult && dataResult.length > 0 && Object.keys(dataResult[0]).map((item, idx) => (
-                                            <th key={idx} scope="col" className="px-6 py-3 font-medium text-left whitespace-nowrap cursor-pointer" onClick={() => sort(item)} >
+                            <tr>
+                                {
+                                    dataResult && dataResult.length > 0 && Object.keys(dataResult[0]).map((item, idx) => (
+                                            <th key={idx} scope="col"
+                                                className="px-6 py-3 font-medium text-left whitespace-nowrap cursor-pointer"
+                                                onClick={() => sort(item)}>
                                                 <div className="flex flex-row items-center">
                                                     <p>{item}</p>
-                                                    <Icon icon='solar:sort-vertical-outline' className="ml-2" />
+                                                    <Icon icon='solar:sort-vertical-outline' className="ml-2"/>
                                                 </div>
                                             </th>
                                         )
-                                        )}
-                                </tr>
+                                    )}
+                            </tr>
                             </thead>
                             {type === "News" ? (
                                 <tbody>
-                                    {paginatedData.length > 0 && paginatedData.map((item: any, index: number) => (
-                                        <tr key={index} className={index % 2 === 0 ? 'border-b text-gray-900' : 'border-b text-gray-900'}>
-                                            <td className="px-6 py-4 max-w-[200px]">{item.date}</td>
-                                            <td className="px-6 py-4 max-w-[200px]">{item.target_type}</td>
-                                            <td className="px-6 py-4 max-w-[200px]">{item.user_target}</td>
-                                            <td className="px-6 py-4 max-w-[200px]">{item.title && item.title.length > 30 ? item.title.slice(0, 30) + '...' : item.title}</td>
-                                            <td className="px-6 py-4 max-w-[200px]">{item.source && item.source.length > 10 ? item.source.slice(0, 10) + '...' : item.source}</td>
-                                            <td className="px-6 py-4 max-w-[200px]"><a href={item.url} target="_blank" className="text-blue-500 underline">{item.url.slice(0, 20)}...</a></td>
-                                            <td className="px-6 py-4 max-w-[200px]">{item.tier}</td>
-                                            <td className="px-6 py-4 max-w-[200px]">
-                                                {item.sentiment === 'positive' ? (
-                                                    <div className="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-green-500 text-white">Positive</div>
-                                                ) : item.sentiment === 'negative' ? (
-                                                    <div className="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-red-500 text-white">Negative</div>
-                                                ) : (
-                                                    <div className="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-gray-300 text-black border">Neutral</div>
-                                                )}
-                                            </td>
-                                            <td className="px-6 py-4 max-w-[200px]">{item.summary && item.summary.length > 30 ? item.summary.slice(0, 30) + '...' : item.summary}</td>
-                                            <td className="px-6 py-4 max-w-[200px]">{item.spookerperson && item.spookerperson.length > 30 ? item.spookerperson.slice(0, 30) + '...' : item.spookerperson}</td>
-                                            <td className="px-6 py-4 max-w-[200px]">{item.journalist}</td>
-                                            <td className="px-6 py-4 max-w-[200px]">{item.ad}</td>
-                                            <td className="px-6 py-4 max-w-[200px]">{item.pr}</td>
-                                            <td className="px-6 py-4 max-w-[200px]">{item.viewership}</td>
-                                        </tr>
-                                    ))}
+                                {paginatedData.length > 0 && paginatedData.map((item: any, index: number) => (
+                                    <tr key={index}
+                                        className={index % 2 === 0 ? 'border-b text-gray-900' : 'border-b text-gray-900'}>
+                                        <td className="px-6 py-4 max-w-[200px]">{item.date}</td>
+                                        <td className="px-6 py-4 max-w-[200px]">{item.target_type}</td>
+                                        <td className="px-6 py-4 max-w-[200px]">{item.user_target}</td>
+                                        <td className="px-6 py-4 max-w-[200px]">{item.title && item.title.length > 30 ? item.title.slice(0, 30) + '...' : item.title}</td>
+                                        <td className="px-6 py-4 max-w-[200px]">{item.source && item.source.length > 10 ? item.source.slice(0, 10) + '...' : item.source}</td>
+                                        <td className="px-6 py-4 max-w-[200px]"><a href={item.url} target="_blank"
+                                                                                   className="text-blue-500 underline">{item.url.slice(0, 20)}...</a>
+                                        </td>
+                                        <td className="px-6 py-4 max-w-[200px]">{item.tier}</td>
+                                        <td className="px-6 py-4 max-w-[200px]">
+                                            {item.sentiment === 'positive' ? (
+                                                <div
+                                                    className="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-green-500 text-white">Positive</div>
+                                            ) : item.sentiment === 'negative' ? (
+                                                <div
+                                                    className="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-red-500 text-white">Negative</div>
+                                            ) : (
+                                                <div
+                                                    className="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-gray-300 text-black border">Neutral</div>
+                                            )}
+                                        </td>
+                                        <td className="px-6 py-4 max-w-[200px]">{item.summary && item.summary.length > 30 ? item.summary.slice(0, 30) + '...' : item.summary}</td>
+                                        <td className="px-6 py-4 max-w-[200px]">{item.spookerperson && item.spookerperson.length > 30 ? item.spookerperson.slice(0, 30) + '...' : item.spookerperson}</td>
+                                        <td className="px-6 py-4 max-w-[200px]">{item.journalist}</td>
+                                        <td className="px-6 py-4 max-w-[200px]">{item.ad}</td>
+                                        <td className="px-6 py-4 max-w-[200px]">{item.pr}</td>
+                                        <td className="px-6 py-4 max-w-[200px]">{item.viewership}</td>
+                                    </tr>
+                                ))}
                                 </tbody>
                             ) : (
                                 <tbody>
-                                    {paginatedData.length > 0 && paginatedData.map((item: any, index: number) => (
-                                        <tr key={index} className={index % 2 === 0 ? 'border-b text-gray-900' : 'border-b text-gray-900'}>
-                                            <td className="px-6 py-4 max-w-[200px]">{item.date}</td>
-                                            <td className="px-6 py-4 max-w-[200px]">{item.target_name}</td>
-                                            <td className="px-6 py-4 max-w-[200px]">{item.user_target_name}</td>
-                                            <td className="px-6 py-4 max-w-[200px]">{item.caption && item.caption.length > 30 ? item.caption.slice(0, 30) + '...' : item.caption}</td>
-                                            <td className="px-6 py-4 max-w-[200px]">{item.username}</td>
-                                            <td className="px-6 py-4 max-w-[200px]">{item.hashtags && item.hashtags.length > 30 ? item.hashtags.slice(0, 30) + '...' : item.hashtags}</td>
-                                            <td className="px-6 py-4 max-w-[200px]">{item.likes}</td>
-                                            <td className="px-6 py-4 max-w-[200px]">{item.comments}</td>
-                                            <td className="px-6 py-4 max-w-[200px]">{item.views}</td>
-                                            <td className="px-6 py-4 max-w-[200px]"><a href={item.url} target="_blank" className="text-blue-500 underline">{item.url.slice(0, 20)}...</a></td>
-                                            <td className="px-6 py-4 max-w-[200px]">
-                                                {item.sentiment === 'positive' ? (
-                                                    <div className="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-green-500 text-white">Positive</div>
-                                                ) : item.sentiment === 'negative' ? (
-                                                    <div className="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-red-500 text-white">Negative</div>
-                                                ) : (
-                                                    <div className="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-gray-300 text-black border">Neutral</div>
-                                                )}
-                                            </td>
-                                            <td className="px-6 py-4 max-w-[200px]">{item.name}</td>
-                                        </tr>
-                                    ))}
+                                {paginatedData.length > 0 && paginatedData.map((item: any, index: number) => (
+                                    <tr key={index}
+                                        className={index % 2 === 0 ? 'border-b text-gray-900' : 'border-b text-gray-900'}>
+                                        <td className="px-6 py-4 max-w-[200px]">{item.date}</td>
+                                        <td className="px-6 py-4 max-w-[200px]">{item.target_name}</td>
+                                        <td className="px-6 py-4 max-w-[200px]">{item.user_target_name}</td>
+                                        <td className="px-6 py-4 max-w-[200px]">{item.caption && item.caption.length > 30 ? item.caption.slice(0, 30) + '...' : item.caption}</td>
+                                        <td className="px-6 py-4 max-w-[200px]">{item.username}</td>
+                                        <td className="px-6 py-4 max-w-[200px]">{item.hashtags && item.hashtags.length > 30 ? item.hashtags.slice(0, 30) + '...' : item.hashtags}</td>
+                                        <td className="px-6 py-4 max-w-[200px]">{item.likes}</td>
+                                        <td className="px-6 py-4 max-w-[200px]">{item.comments}</td>
+                                        <td className="px-6 py-4 max-w-[200px]">{item.views}</td>
+                                        <td className="px-6 py-4 max-w-[200px]"><a href={item.url} target="_blank"
+                                                                                   className="text-blue-500 underline">{item.url.slice(0, 20)}...</a>
+                                        </td>
+                                        <td className="px-6 py-4 max-w-[200px]">
+                                            {item.sentiment === 'positive' ? (
+                                                <div
+                                                    className="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-green-500 text-white">Positive</div>
+                                            ) : item.sentiment === 'negative' ? (
+                                                <div
+                                                    className="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-red-500 text-white">Negative</div>
+                                            ) : (
+                                                <div
+                                                    className="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-gray-300 text-black border">Neutral</div>
+                                            )}
+                                        </td>
+                                        <td className="px-6 py-4 max-w-[200px]">{item.name}</td>
+                                    </tr>
+                                ))}
                                 </tbody>
                             )}
                         </table>
@@ -393,10 +408,11 @@ export default function (params: {
                     </div>
                 </div>
             ) : (
-                <div className="flex flex-col items-center justify-center border shadow-sm rounded-xl p-4 md:p-5 min-h-96">
+                <div
+                    className="flex flex-col items-center justify-center border shadow-sm rounded-xl p-4 md:p-5 min-h-96">
                     <h1>Currently, There's no <span className="font-semibold">Report</span> data to display</h1>
                 </div>
             )}
-        </AdminLayout >
+        </AdminLayout>
     )
 }

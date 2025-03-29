@@ -7,6 +7,7 @@ use App\Models\MediaUserTarget;
 use App\Models\NewsSource;
 use App\Models\ScrapingData;
 use App\Models\SocialPost;
+use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Http;
@@ -35,12 +36,12 @@ class NewsScrapingJob implements ShouldQueue
     {
 
         activity()->disableLogging();
-        
+
         $this->params['crawler']->update([
             'status' => 'process'
         ]);
 
-        $res = Http::timeout(24 * 60 * 60)->post('https://3cbf-2001-4858-aaaa-70-ec4-7aff-feca-274c.ngrok-free.app/news', [
+        $res = Http::timeout(24 * 60 * 60)->post(env('CRAWLER_URL') . '/news', [
             'urls' => [
                 $this->params['crawler']->url,
             ],
@@ -58,7 +59,7 @@ class NewsScrapingJob implements ShouldQueue
                     if ($item['status'] == 'complete') {
 
                         if (!empty($item['relevant'])) {
-                            NewsSource::firstOrCreate([
+                            $newsSource = NewsSource::firstOrCreate([
                                 'site' => $item['source'],
                             ], [
                                 'name' => $item['source'],
@@ -88,9 +89,14 @@ class NewsScrapingJob implements ShouldQueue
                                 'updated_at' => now(),
                             ]);
 
+                            if ($newsSource != null && (Carbon::parse($newsSource->created_at)->isToday() || !Carbon::parse($newsSource->updated_at)->isToday())) {
+                                NewsViewershipJobs::dispatch($newsSource->site);
+                            }
+
                             foreach ($item['relevant'] as $target) {
                                 MediaUserTarget::firstOrCreate([
                                     'id_news' => $media->id,
+                                ], [
                                     'id_user_target' => $target,
                                 ]);
                             }

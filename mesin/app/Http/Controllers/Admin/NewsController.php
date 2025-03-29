@@ -82,9 +82,13 @@ class NewsController extends Controller
 
     public function exportNews(Request $request)
     {
-        $startDate = $request->input('dateStart');
-        $endDate = $request->input('dateEnd');
+        $startDate = Carbon::parse($request->input('dateStart'));
+        $endDate = Carbon::parse($request->input('dateEnd'));
         $user = $request->input('user');
+
+        if ($startDate->diffInDays($endDate) > 30) {
+            abort(500, 'Tidak boleh melebihi 30 hari');
+        }
 
         $globalAnalyticNews = DB::select("SELECT
     DATE(mn.date) AS date,
@@ -100,7 +104,8 @@ class NewsController extends Controller
     mn.journalist,
     user_values.ad as ad,
     user_values.pr as pr,
-    COALESCE(ns.viewership, 0) as viewership,
+    COALESCE(ns.viewership, '0') as viewership,
+    COALESCE(ns.daily_reach, '0') as daily_reach,
     mn.created_at as crawled
 FROM user_targets as ut
 INNER JOIN media_user_target as mut ON mut.id_user_target = ut.id
@@ -109,7 +114,7 @@ LEFT JOIN news_source as ns ON ns.site = mn.source
 INNER JOIN target_type as tt ON tt.id = ut.type
 INNER JOIN user_values ON user_values.id_user = ut.id_user
 WHERE
-    DATE(mn.date) BETWEEN '" . $startDate . "' AND '" . $endDate . "'
+    DATE(mn.date) BETWEEN '" . $startDate->toDateString() . "' AND '" . $endDate->toDateString() . "'
     AND ut.id_user = " . $user . "
     AND (user_values.tier = ns.tier OR ns.tier IS NULL)
     AND mn.deleted_at IS NULL
@@ -159,6 +164,7 @@ ORDER BY mn.date DESC");
             'Ad Value',
             'PR Value',
             'Viewership',
+            'Daily Reach',
             'Crawled'
         ]);
 
@@ -169,8 +175,8 @@ ORDER BY mn.date DESC");
     {
         $search = $request->input('search');
         $user = $request->input('user');
-        $dateStart = $request->input('dateStart');
-        $dateEnd = $request->input('dateEnd');
+        $dateStart = Carbon::parse($request->input('dateStart'));
+        $dateEnd = Carbon::parse($request->input('dateEnd'));
 
         return Inertia::render('Admin/News/Index')
             ->with([
@@ -265,7 +271,7 @@ ORDER BY mn.date DESC");
             ->orderBy('user_targets.id_user')
             ->get();
 
-        $res = Http::timeout(24 * 60 * 60)->post('https://bc2e-2001-4858-aaaa-70-ec4-7aff-feca-274c.ngrok-free.app/news', [
+        $res = Http::timeout(24 * 60 * 60)->post(env('CRAWLER_URL') . '/news', [
             'urls' => [
                 $request->input('url'),
             ],
