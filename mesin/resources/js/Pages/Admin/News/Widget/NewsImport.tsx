@@ -2,6 +2,7 @@ import {useHookstate} from "@hookstate/core";
 import {Icon} from "@iconify-icon/react";
 import Modal from "@/Components/Modal";
 import {Bounce, toast} from "react-toastify";
+import {useForm} from "@inertiajs/react";
 
 const ImportNews = (params: any) => {
 
@@ -9,6 +10,16 @@ const ImportNews = (params: any) => {
     const importForm = useHookstate({
         user: '',
     })
+
+    const {data, setData, post, progress} = useForm({
+        user: null,
+        file: null as File | null,
+    })
+
+    async function submit(e: any) {
+        e.preventDefault()
+        post(route('news.import'))
+    }
 
     return (
         <>
@@ -20,7 +31,7 @@ const ImportNews = (params: any) => {
                 Import
             </button>
             <Modal id='modal-import' title='Import News'>
-                <div className='grid grid-cols-1 gap-4'>
+                <form onSubmit={submit} className='grid grid-cols-1 gap-4'>
                     <div className='grid grid-cols-2 gap-4'>
                         <select
                             value={importForm.user.get()}
@@ -48,31 +59,22 @@ const ImportNews = (params: any) => {
                             <label className="block">
                                 <span className="sr-only">Choose file</span>
                                 <input type="file"
+                                       onChange={(e) => {
+                                           if (e.target.files && e.target.files[0]) {
+                                               setData('file', e.target.files[0]);
+                                           }
+                                       }}
                                        className="block w-full text-sm text-gray-500 file:me-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700 file:disabled:opacity-50 file:disabled:pointer-events-none "/>
                             </label>
                         </div>
                     </div>
                     <div>
-                        <button type="button"
-                                onClick={() => {
-                                    toast('Feature is under development !', {
-                                        position: "top-right",
-                                        autoClose: 5000,
-                                        hideProgressBar: false,
-                                        closeOnClick: false,
-                                        pauseOnHover: true,
-                                        draggable: true,
-                                        progress: undefined,
-                                        theme: "light",
-                                        transition: Bounce,
-                                        type: "error"
-                                    })
-                                }}
+                        <button type="submit"
                                 className="py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none">
                             Submit
                         </button>
                     </div>
-                </div>
+                </form>
             </Modal>
         </>
     )
@@ -81,3 +83,4 @@ const ImportNews = (params: any) => {
 export {
     ImportNews
 }
+

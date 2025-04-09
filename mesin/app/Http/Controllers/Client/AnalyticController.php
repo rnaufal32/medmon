@@ -78,10 +78,10 @@ class AnalyticController extends Controller
                 ->when(count($platfomIds) > 0, function ($query) use ($platfomIds) {
                     return $query->whereIn('media_news.type', $platfomIds);
                 })
-                ->whereDate('media_news.created_at', '>=', $startDate->toDateString())
-                ->whereDate('media_news.created_at', '<=', $endDate->toDateString())
+                ->whereDate('media_news.date', '>=', $startDate->toDateString())
+                ->whereDate('media_news.date', '<=', $endDate->toDateString())
                 ->get();
-
+            
             $globalAnalyticNews = $globalAnalyticNews->filter(function ($row) {
                 return validateDate($row->date_label);
             });

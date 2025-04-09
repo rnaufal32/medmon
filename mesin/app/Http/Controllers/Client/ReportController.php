@@ -30,9 +30,9 @@ class ReportController extends Controller
         $platforms = $request->input('platforms', '');
         $sortBy = $request->input('sort_by', 'desc');
         $sortColumn = $request->input('sort_column', 'date');
-        if ($startDate->diff($endDate)->d > 7) {
-            abort(500, 'Error');
-        }
+//        if ($startDate->diff($endDate)->d > 7) {
+//            abort(500, 'Error');
+//        }
 
         $startDate = $startDate->toDateString();
         $endDate = $endDate->toDateString();
@@ -161,9 +161,9 @@ class ReportController extends Controller
         $platforms = $request->input('platforms', null);
         $format = $request->input('format', 'xlsx');
 
-        if ($startDate->diff($endDate)->d > 7) {
-            abort(500, 'Error');
-        }
+//        if ($startDate->diff($endDate)->d > 7) {
+//            abort(500, 'Error');
+//        }
 
         $startDate = $startDate->toDateString();
         $endDate = $endDate->toDateString();

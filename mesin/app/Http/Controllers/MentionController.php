@@ -19,16 +19,16 @@ class MentionController extends Controller
         $now7 = $startDate->copy();
         $dates = collect([]);
         $platfomIds = [];
-        if(!empty($platforms)) {
+        if (!empty($platforms)) {
             $platfomIds = explode(',', $platforms);
         }
 
         $allTargets = DB::table('target_type')
-                            ->join('user_targets', 'user_targets.type', '=', 'target_type.id')
-                            ->selectRaw('target_type.*')
-                            ->where('user_targets.id_user', $this->user->id)
-                            ->groupBy('target_type.id')
-                            ->get();
+            ->join('user_targets', 'user_targets.type', '=', 'target_type.id')
+            ->selectRaw('target_type.*')
+            ->where('user_targets.id_user', $this->user->id)
+            ->groupBy('target_type.id')
+            ->get();
 
         while ($now7 <= $now) {
             $dates->push($now7->toDateString());
@@ -41,10 +41,10 @@ class MentionController extends Controller
                 ->join('user_targets', 'user_targets.id', '=', 'media_user_target.id_user_target')
                 ->join('target_type', 'user_targets.type', '=', 'target_type.id')
                 ->selectRaw('target_type.name, DATE(date) AS newDate, target_type.color')
-                ->when(count($platfomIds) > 0, function($query) use ($platfomIds) {
+                ->when(count($platfomIds) > 0, function ($query) use ($platfomIds) {
                     return $query->whereIn('media_news.type', $platfomIds);
                 })
-                ->when(!empty($target), function($query) use ($target) {
+                ->when(!empty($target), function ($query) use ($target) {
                     return $query->where('target_type.id', $target);
                 })
                 ->where('user_targets.id_user', $this->user->id)
@@ -52,7 +52,7 @@ class MentionController extends Controller
                 ->whereDate('media_news.created_at', '<=', $endDate->toDateString())
                 ->get();
 
-            $globalAnalyticNews = $globalAnalyticNews->filter(function($row) {
+            $globalAnalyticNews = $globalAnalyticNews->filter(function ($row) {
                 return validateDate($row->newDate);
             });
 
@@ -64,11 +64,11 @@ class MentionController extends Controller
                 foreach ($dates as $dt) {
                     $dailyData[] = $globalAnalyticNews->where('name', $t)->where('newDate', $dt)->count();
                 }
-                
+
                 $sets[] = [
-                    'label'     => $t,
-                    'color'     => $allTargets->where('name', operator: $t)->first()?->color ?? '-',
-                    'data'      => $dailyData
+                    'label' => $t,
+                    'color' => $allTargets->where('name', operator: $t)->first()?->color ?? '-',
+                    'data' => $dailyData
                 ];
             }
 
@@ -82,17 +82,17 @@ class MentionController extends Controller
                 ->join('target_type', 'user_targets.type', '=', 'target_type.id')
                 ->selectRaw('target_type.name, DATE(date) AS newDate, target_type.color')
                 ->where('user_targets.id_user', $this->user->id)
-                ->when(count($platfomIds) > 0, function($query) use ($platfomIds) {
+                ->when(count($platfomIds) > 0, function ($query) use ($platfomIds) {
                     return $query->whereIn('id_socmed', $platfomIds);
                 })
-                ->when(!empty($target), function($query) use ($target) {
+                ->when(!empty($target), function ($query) use ($target) {
                     return $query->where('target_type.id', $target);
                 })
                 ->whereDate('date', '>=', $startDate->toDateString())
                 ->whereDate('date', '<=', $endDate->toDateString())
                 ->get();
 
-            $globalAnalytic = $globalAnalytic->filter(function($row) {
+            $globalAnalytic = $globalAnalytic->filter(function ($row) {
                 return validateDate($row->newDate);
             });
 
@@ -107,9 +107,9 @@ class MentionController extends Controller
                 }
 
                 $sets[] = [
-                    'label'     => $t,
-                    'color'     => $allTargets->where('name', operator: $t)->first()?->color ?? '-',
-                    'data'      => $dailyData
+                    'label' => $t,
+                    'color' => $allTargets->where('name', operator: $t)->first()?->color ?? '-',
+                    'data' => $dailyData
                 ];
             }
 
@@ -125,7 +125,7 @@ class MentionController extends Controller
     private function dataList($target, $type, $startDate, $endDate, $platforms)
     {
         $platfomIds = [];
-        if(!empty($platforms)) {
+        if (!empty($platforms)) {
             $platfomIds = explode(',', $platforms);
         }
         if ($type == 'News') {
@@ -135,11 +135,11 @@ class MentionController extends Controller
                 ->join('target_type', 'user_targets.type', '=', 'target_type.id')
                 ->leftJoin('news_source', 'news_source.site', '=', 'media_news.source')
                 ->selectRaw('media_news.id, COALESCE(news_source.viewership, 0) AS viewership, COALESCE(news_source.pr_value, 0) AS pr_value, COALESCE(news_source.ad_value, 0) AS ad_value, COALESCE(news_source.tier, 3) AS tier, media_news.title, media_news.source AS username, media_news.content AS caption, media_news.created_at AS date, media_news.images, media_news.journalist, media_news.spookerperson, media_news.sentiment, media_news.url, "Media Online" AS platform')
-                ->when(!empty($target), function($query) use ($target) {
+                ->when(!empty($target), function ($query) use ($target) {
                     return $query->where('target_type.id', $target);
                 })
                 ->where('user_targets.id_user', $this->user->id)
-                ->when(count($platfomIds) > 0, function($query) use ($platfomIds) {
+                ->when(count($platfomIds) > 0, function ($query) use ($platfomIds) {
                     return $query->whereIn('media_news.type', $platfomIds);
                 })
                 ->whereDate('media_news.created_at', '>=', $startDate->toDateString())
@@ -152,16 +152,16 @@ class MentionController extends Controller
                 ->join('target_type', 'user_targets.type', '=', 'target_type.id')
                 ->join('social_media', 'social_media.id', '=', 'social_posts.id_socmed')
                 ->selectRaw('social_posts.username, social_posts.caption, social_posts.date, social_posts.sentiment, social_posts.likes, social_posts.comments, social_posts.views, social_media.name AS platform, social_posts.url')
-                ->when(!empty($target), function($query) use ($target) {
+                ->when(!empty($target), function ($query) use ($target) {
                     return $query->where('target_type.id', $target);
                 })
                 ->where('user_targets.id_user', $this->user->id)
-                ->when(count($platfomIds) > 0, function($query) use ($platfomIds) {
+                ->when(count($platfomIds) > 0, function ($query) use ($platfomIds) {
                     return $query->whereIn('id_socmed', $platfomIds);
                 })
                 ->whereDate('date', '>=', $startDate->toDateString())
                 ->whereDate('date', '<=', $endDate->toDateString())
-                ->orderByDesc('social_posts.id')
+                ->orderByDesc('social_posts.likes')
                 ->paginate(10)->onEachSide(2);
         }
     }
@@ -194,10 +194,10 @@ class MentionController extends Controller
             ->get();
 
         $targetColor = $target->pluck('color', 'name');
-            
+
 
         return Inertia::render('Client/Mention', [
-            'target_color' => $targetColor,    
+            'target_color' => $targetColor,
             'analytic' => fn() => $this->globalChart($type, $startDate, $endDate, $platformFilters, $targets),
             'data' => fn() => $this->dataList($targets, $type, $startDate, $endDate, $platformFilters),
             'target' => $target,

@@ -23,10 +23,10 @@ class CrawlingController extends Controller
         $type = $request->input('type', 'media');
 
         $targets = UserTarget::with(['keyword', 'user'])
-//            ->whereIn('id', [34])
-            ->whereHas('user', function ($query) {
-                $query->whereIn('id', [5, 6]);
-            })
+            ->whereIn('id', [40, 41, 42, 43, 44, 45, 46, 47, 48, 54])
+//            ->whereHas('user', function ($query) {
+//                $query->whereIn('id', [5, 6]);
+//            })
             ->orderBy('user_targets.id_user')
             ->get();
 
@@ -58,7 +58,6 @@ class CrawlingController extends Controller
     public function newsV2(Request $request)
     {
         $crawlers = CrawlerDetailJob::query()
-//            ->whereIn('id', [49357, 49350, 49349, 49346])
             ->whereIn('status', ['pending'])
             ->where('type', 'media')
             ->orderByDesc('id')

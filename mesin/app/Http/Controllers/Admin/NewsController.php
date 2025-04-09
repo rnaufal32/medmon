@@ -24,8 +24,22 @@ class NewsController extends Controller
 
     public function importNews(Request $request)
     {
-        sleep(3);
-        session()->flash('message', 'Failed to import data. Please check your file and try again.');
+        $validate = Validator::make($request->all(), [
+            'file' => 'required|mimes:xlsx,xls,csv',
+        ]);
+
+        if ($validate->errors()->count() > 0) {
+            session()->flash('error', $validate->errors()->first());
+            return;
+        }
+
+        $file = $request->file('file');
+        $import = Excel::import(new \App\Imports\NewsImport(), $file);
+
+        if ($import) {
+            session()->flash('success', 'Data imported successfully.');
+        }
+        session()->flash('success', 'News Imported');
     }
 
     public function importSample(Request $request)
@@ -39,7 +53,7 @@ class NewsController extends Controller
 
         return Excel::download(new ImportNewsSample([
             [
-                $user->name, now()->toDateString(), $user->target_type, $user->target, "Online", "Title from news", "kompas.com", "https://kompas.com", "Neutral"
+                $user->name, now()->toDateString(), $user->target_type, $user->target, "Online", "Title from news", "Content from news", "kompas.com", "https://kompas.com", "Neutral"
             ]
         ]), 'import-news-sample.xlsx');
     }

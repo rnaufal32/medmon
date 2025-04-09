@@ -21,7 +21,7 @@ class ImportNewsSample implements FromArray
      */
     public function array(): array
     {
-        $headers = ["User", "Date", "Target Type", "Target", "Category", "Title", "Source", "URL", "Sentiment"];
+        $headers = ["User", "Date", "Target Type", "Target", "Category", "Title", "Content", "Source", "URL", "Sentiment"];
         return array_merge([$headers], $this->data);
     }
 }

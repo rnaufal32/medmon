@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Client;
 use App\Exports\WordCloudExport;
 use App\Http\Controllers\Controller;
 use App\Models\BlockWord;
+use App\Models\MediaNews;
 use App\Models\SocialPost;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -242,7 +244,33 @@ class DashboardController extends Controller
         $this->user = Auth::user();
 
         if ($this->user->hasRole('Admin') || $this->user->hasRole('Super Admin')) {
-            return Inertia::render('Admin/Dashboard/Index');
+
+            return Inertia::render('Admin/Dashboard/Index', [
+                'totalNews' => fn() => MediaNews::count(),
+                'todayNews' => fn() => MediaNews::whereDate('date', now()->toDateString())->count(),
+                'totalSocial' => fn() => SocialPost::count(),
+                'todaySocial' => fn() => SocialPost::whereDate('date', now()->toDateString())->count(),
+                'latestNews' => fn() => MediaNews::with(['userTargets.userTarget.user'])->limit(5)->orderByDesc('created_at')->get(),
+                'todayAnalytic' => function () {
+                    $response = User::select('id', 'name')->withCount([
+                        'target' => function ($query) {
+                            $query->whereHas('mediaUserTargets', function ($query) {
+                                $query->whereHas('news', function ($query) {
+                                    $query->whereDate('date', now()->toDateString());
+                                });
+                            });
+                        }
+                    ])->where('status', '1')
+                        ->where('type', 'client')
+                        ->get();
+
+                    return [
+                        'labels' => $response->pluck('name')->toArray(),
+                        'data' => $response->pluck('target_count')->toArray(),
+                    ];
+                },
+            ]);
+
         }
 
         $type = $request->input('type', 'news');

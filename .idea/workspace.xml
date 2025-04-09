@@ -5,40 +5,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2030a958-24d8-4747-8057-62afae0238e6" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/assets/images/demo.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/images/white.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/AdminLayout-BddUhaDd.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Analytics-CO__kFuY.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Crawling-BDM6_4UX.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Dashboard-BuwSp8yV.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Dashboard-DxZ_dhTa.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Excel-CT-rQ-HH.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Index-Baf4jJU3.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Index-D37YBixj.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Index-DfH3TYtL.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Input-CqxUXQay.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Maintenance-ZO2tiFau.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Mention-CsM0gdVn.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Modal-AcJ75upu.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/NewsImport-CnC8SXmv.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/NewsItem-Cka5k8KH.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Permission-BmGkPdwH.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Sentiment-CpF6LE5y.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/SignIn-CVRh46mG.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/Swal-DoTsxdcA.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/UserTargetItem-oAMO8VBX.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/app-BCi72HwG.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/app-BqyLgq1m.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/dayjs.min-VIi3ypAF.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/index-B4TiAaRi.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/index-QeQkOBRG.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/index-RorAJn7q.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/index.es-C0714uSK.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/index.esm-BTWK7HdG.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/assets/index.esm-BY2t7LtF.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/manifest.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mesin/app/Exports/ImportNewsSample.php" beforeDir="false" afterPath="$PROJECT_DIR$/mesin/app/Exports/ImportNewsSample.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mesin/app/Http/Controllers/Admin/NewsController.php" beforeDir="false" afterPath="$PROJECT_DIR$/mesin/app/Http/Controllers/Admin/NewsController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mesin/app/Http/Controllers/Client/AnalyticController.php" beforeDir="false" afterPath="$PROJECT_DIR$/mesin/app/Http/Controllers/Client/AnalyticController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mesin/app/Http/Controllers/Client/DashboardController.php" beforeDir="false" afterPath="$PROJECT_DIR$/mesin/app/Http/Controllers/Client/DashboardController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mesin/app/Http/Controllers/Client/ReportController.php" beforeDir="false" afterPath="$PROJECT_DIR$/mesin/app/Http/Controllers/Client/ReportController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mesin/app/Http/Controllers/CrawlingController.php" beforeDir="false" afterPath="$PROJECT_DIR$/mesin/app/Http/Controllers/CrawlingController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mesin/app/Http/Controllers/MentionController.php" beforeDir="false" afterPath="$PROJECT_DIR$/mesin/app/Http/Controllers/MentionController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mesin/resources/js/Pages/Admin/Dashboard/Index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/mesin/resources/js/Pages/Admin/Dashboard/Index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mesin/resources/js/Pages/Admin/News/Widget/NewsImport.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/mesin/resources/js/Pages/Admin/News/Widget/NewsImport.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mesin/routes/web.php" beforeDir="false" afterPath="$PROJECT_DIR$/mesin/routes/web.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -339,6 +317,7 @@
   &quot;associatedIndex&quot;: 4
 }</component>
   <component name="ProjectId" id="2sCDpP8cxpmujcrxxuH2jAYiVdj" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -359,7 +338,7 @@
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
     &quot;php.override.implement.member.chooser.php.doc&quot;: &quot;NONE&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;web.server&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;project.propVCSSupport.DirectoryMappings&quot;,
     &quot;ts.external.directory.path&quot;: &quot;/Applications/XAMPP/xamppfiles/htdocs/medmon/mesin/node_modules/typescript/lib&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
@@ -384,17 +363,14 @@
       <option name="pestRunnerSettings">
         <PestRunner configuration_file="$PROJECT_DIR$/mesin/phpunit.xml" scope="ConfigurationFile" use_alternative_configuration_file="true" />
       </option>
-      <option name="runnerSettings">
-        <PhpTestRunnerSettings configuration_file="$PROJECT_DIR$/mesin/phpunit.xml" scope="ConfigurationFile" use_alternative_configuration_file="true" />
-      </option>
       <method v="2" />
     </configuration>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-7c0b70fcd90d-JavaScript-PS-242.21829.154" />
-        <option value="bundled-php-predefined-a98d8de5180a-4d9f4c849d09-com.jetbrains.php.sharedIndexes-PS-242.21829.154" />
+        <option value="bundled-js-predefined-d6986cc7102b-5c90d61e3bab-JavaScript-PS-242.24807.17" />
+        <option value="bundled-php-predefined-a98d8de5180a-90914f2295cb-com.jetbrains.php.sharedIndexes-PS-242.24807.17" />
       </set>
     </attachedChunks>
   </component>
@@ -445,12 +421,24 @@
       <workItem from="1742828466659" duration="2806000" />
       <workItem from="1742890061157" duration="11006000" />
       <workItem from="1742950298810" duration="1263000" />
-      <workItem from="1743166970376" duration="3802000" />
+      <workItem from="1743166970376" duration="8082000" />
+      <workItem from="1743306280815" duration="20827000" />
+      <workItem from="1743776486644" duration="3701000" />
+      <workItem from="1743842593262" duration="6385000" />
+      <workItem from="1744006491878" duration="3809000" />
+      <workItem from="1744110291713" duration="2373000" />
+      <workItem from="1744181024390" duration="763000" />
+      <workItem from="1744200357016" duration="3637000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <ignored-roots>
+      <path value="$PROJECT_DIR$/mesin" />
+    </ignored-roots>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
