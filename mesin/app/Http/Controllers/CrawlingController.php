@@ -23,10 +23,9 @@ class CrawlingController extends Controller
         $type = $request->input('type', 'media');
 
         $targets = UserTarget::with(['keyword', 'user'])
-            ->whereIn('id', [40, 41, 42, 43, 44, 45, 46, 47, 48, 54])
-//            ->whereHas('user', function ($query) {
-//                $query->whereIn('id', [5, 6]);
-//            })
+            ->whereHas('user', function ($query) {
+                $query->whereIn('id', [22]);
+            })
             ->orderBy('user_targets.id_user')
             ->get();
 
@@ -64,11 +63,11 @@ class CrawlingController extends Controller
             ->get();
 
         $keywords = UserTarget::query()
-            ->whereIn('id_user', [5, 6])
+            ->whereIn('id_user', [22])
             ->get();
 
         $keywords = $keywords->toArray();
-
+        
         foreach ($crawlers as $index => $crawler) {
             NewsScrapingJob::dispatch([
                 'crawler' => $crawler,
@@ -108,7 +107,7 @@ class CrawlingController extends Controller
             ->get();
 
         $keywords = UserTarget::query()
-            ->whereIn('id_user', [6])
+            ->whereIn('id_user', [22])
             ->get();
 
         $keywords = $keywords->toArray();
@@ -117,7 +116,7 @@ class CrawlingController extends Controller
             InstagramCrawlingJob::dispatch([
                 'crawler' => $crawler,
                 'targets' => $keywords
-            ])->onQueue('instagram-crawling');
+            ]);
         }
 
         return response()->json([
@@ -135,7 +134,7 @@ class CrawlingController extends Controller
             ->get();
 
         $keywords = UserTarget::query()
-            ->whereIn('id_user', [6])
+            ->whereIn('id_user', [22])
             ->get();
 
         $keywords = $keywords->toArray();
@@ -144,7 +143,7 @@ class CrawlingController extends Controller
             TiktokScrapingJob::dispatch([
                 'crawler' => $crawler,
                 'targets' => $keywords
-            ])->onQueue('tiktok-crawling');
+            ]);
         }
 
         return response()->json([
@@ -162,7 +161,7 @@ class CrawlingController extends Controller
             ->get();
 
         $keywords = UserTarget::query()
-            ->whereIn('id_user', [6])
+            ->whereIn('id_user', [22])
             ->get();
 
         $keywords = $keywords->toArray();
@@ -171,7 +170,7 @@ class CrawlingController extends Controller
             FacebookScrapingJob::dispatch([
                 'crawler' => $crawler,
                 'targets' => $keywords
-            ])->onQueue('facebook-crawling');
+            ]);
         }
 
         return response()->json([
@@ -190,7 +189,7 @@ class CrawlingController extends Controller
             ->get();
 
         $keywords = UserTarget::query()
-            ->whereIn('id_user', [6])
+            ->whereIn('id_user', [22])
             ->get();
 
         $keywords = $keywords->toArray();
@@ -199,7 +198,7 @@ class CrawlingController extends Controller
             YoutubeScrapingJob::dispatch([
                 'crawler' => $crawler,
                 'targets' => $keywords
-            ])->onQueue('youtube-crawling');
+            ]);
         }
 
         return response()->json([

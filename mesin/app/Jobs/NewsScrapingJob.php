@@ -89,9 +89,9 @@ class NewsScrapingJob implements ShouldQueue
                                 'updated_at' => now(),
                             ]);
 
-                            if ($newsSource != null && (Carbon::parse($newsSource->created_at)->isToday() || !Carbon::parse($newsSource->updated_at)->isToday())) {
-                                NewsViewershipJobs::dispatch($newsSource->site);
-                            }
+//                            if ($newsSource != null && (Carbon::parse($newsSource->created_at)->isToday() || !Carbon::parse($newsSource->updated_at)->isToday())) {
+//                                NewsViewershipJobs::dispatch($newsSource->site);
+//                            }
 
                             foreach ($item['relevant'] as $target) {
                                 MediaUserTarget::firstOrCreate([

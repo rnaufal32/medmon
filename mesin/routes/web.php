@@ -46,8 +46,8 @@ Route::group([
     // ADMIN
     Route::get('/news', [\App\Http\Controllers\Admin\NewsController::class, 'index'])->name('news.index');
     Route::post('/news', [\App\Http\Controllers\Admin\NewsController::class, 'store'])->name('news.store');
-    Route::get('/news/export', [\App\Http\Controllers\Admin\NewsExportController::class, 'index'])->name('news.export');
-//    Route::get('/news/export', [\App\Http\Controllers\Admin\NewsController::class, 'exportNews'])->name('news.export');
+//    Route::get('/news/export', [\App\Http\Controllers\Admin\NewsExportController::class, 'index'])->name('news.export');
+    Route::get('/news/export', [\App\Http\Controllers\Admin\NewsController::class, 'exportNews'])->name('news.export');
     Route::delete('/news/{id}', [\App\Http\Controllers\Admin\NewsController::class, 'delete'])->name('news.delete');
     Route::get('/news/import-sample', [\App\Http\Controllers\Admin\NewsController::class, 'importSample'])->name('news.import-sample');
     Route::post('/news/import', [\App\Http\Controllers\Admin\NewsController::class, 'importNews'])->name('news.import');
@@ -63,6 +63,9 @@ Route::group([
     Route::post('/users/target/status', [\App\Http\Controllers\Admin\UserController::class, 'updateStatus'])->name('users.target.status.update');
 
     Route::get('/crawler', [\App\Http\Controllers\Admin\CrawlerController::class, 'index'])->name('crawler.index');
+
+    Route::post('/set-category', [\App\Http\Controllers\SessionController::class, 'setCategorySession'])->name('set-category');
+    Route::post('/set-date-range', [\App\Http\Controllers\SessionController::class, 'setDateRangeSession'])->name('set-date-range');
 });
 
 Route::get('/google-crawling/v2', [\App\Http\Controllers\CrawlingController::class, 'googleV2']);

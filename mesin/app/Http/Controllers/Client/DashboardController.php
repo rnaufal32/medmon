@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Maatwebsite\Excel\Facades\Excel;
 use WordCounter\WordCounter;
+use Carbon\CarbonPeriod;
 
 class DashboardController extends Controller
 {
@@ -239,6 +240,149 @@ class DashboardController extends Controller
         return Excel::download(new WordCloudExport($this->user, $startDate, $endDate), "word-cloud-$startDate-$endDate" . time() . ".xlsx", \Maatwebsite\Excel\Excel::XLSX);
     }
 
+    public function newsGlobalChart($idUser, $startDate, $endDate)
+    {
+        $allRelevantTypeNames = DB::table('user_targets as ut')
+            ->join('target_type as tt', 'ut.type', '=', 'tt.id')
+            ->where('ut.id_user', '=', $idUser)
+            ->distinct()
+            ->orderBy('tt.name', 'asc')
+            ->pluck('tt.name') // Mengambil hanya kolom tt.name
+            ->all(); // Mengubah collection menjadi array
+
+        // 3. Mengambil data agregat dari database
+        $query = DB::table('media_news as mn')
+            ->join('media_user_target as mut', 'mn.id', '=', 'mut.id_news')
+            ->join('user_targets as ut', function ($join) use ($idUser) {
+                $join->on('mut.id_user_target', '=', 'ut.id')
+                    ->where('ut.id_user', '=', $idUser);
+            })
+            ->join('target_type as tt', 'ut.type', '=', 'tt.id') // JOIN ke target_type
+            ->select(
+                DB::raw('DATE(mn.date) as report_date'),
+                'tt.name as type_name', // Gunakan tt.name sebagai type_name
+                DB::raw('COUNT(mn.id) as news_count')
+            )
+            ->whereRaw('DATE(mn.date) BETWEEN ? AND ?', [
+                $startDate->format('Y-m-d'),
+                $endDate->format('Y-m-d')
+            ])
+            ->groupBy('report_date', 'tt.name') // Group by tanggal dan tt.name
+            ->orderBy('report_date', 'asc')
+            ->orderBy('tt.name', 'asc'); // Order by tt.name
+
+        $rawData = $query->get();
+
+        // 4. Pre-proses data dari DB untuk lookup yang lebih mudah
+        $processedDbData = [];
+        foreach ($rawData as $row) {
+            $processedDbData[$row->report_date][$row->type_name] = $row->news_count;
+        }
+
+        // 5. Buat rentang tanggal (CarbonPeriod)
+        $period = CarbonPeriod::create($startDate, $endDate);
+
+        // 6. Bangun data chart akhir
+        $chartData = [];
+
+        foreach ($period as $date) {
+            $currentDateString = $date->format('Y-m-d');
+            $dailyData = ['date' => $currentDateString];
+
+            // Untuk setiap nama TIPE TARGET yang relevan untuk user ini
+            foreach ($allRelevantTypeNames as $typeName) {
+                // Cek apakah ada data untuk tanggal dan TIPE TARGET ini
+                if (isset($processedDbData[$currentDateString][$typeName])) {
+                    $dailyData[$typeName] = (int)$processedDbData[$currentDateString][$typeName];
+                } else {
+                    // Jika tidak ada data, set count menjadi [0]
+                    $dailyData[$typeName] = 0;
+                }
+            }
+
+            // Hanya tambahkan ke chart jika ada tipe target yang relevan,
+            // atau jika Anda ingin selalu menyertakan tanggal bahkan jika user tidak punya tipe target.
+            if (!empty($allRelevantTypeNames)) {
+                $chartData[] = $dailyData;
+            } else if (empty($allRelevantTypeNames) && $period->count() > 0) {
+                // Jika user tidak memiliki target_type sama sekali,
+                // kita kirim array tanggal saja (atau bisa juga array kosong).
+                // $chartData[] = ['date' => $currentDateString]; // Baris ini akan menghasilkan [{"date":"..."}]
+            }
+        }
+
+        // Jika $allRelevantTypeNames kosong (user tidak punya target/tipe target)
+        // dan $chartData masih kosong, kita mungkin ingin mengembalikan array tanggal saja.
+        if (empty($allRelevantTypeNames) && empty($chartData) && $period->count() > 0) {
+            foreach ($period as $date) {
+                $chartData[] = ['date' => $date->format('Y-m-d')];
+            }
+        }
+
+        return $chartData;
+    }
+
+    public function newsTopicChart($idUser, $startDate, $endDate)
+    {
+        $relevantTypesInfo = DB::table('user_targets as ut')
+            ->join('target_type as tt', 'ut.type', '=', 'tt.id')
+            ->where('ut.id_user', '=', $idUser)
+            ->select('tt.name as type_name', 'tt.color as type_color') // Pilih nama dan warna
+            ->distinct() // Pastikan kombinasi nama & warna unik jika ada duplikasi data aneh
+            ->orderBy('tt.name', 'asc')
+            ->get(); // Mengambil Collection of Objects
+
+        // Jika user tidak memiliki target_type sama sekali, kembalikan array kosong.
+        if ($relevantTypesInfo->isEmpty()) {
+            return response()->json([]);
+        }
+
+        // 3. Mengambil data agregat (total count) dari database
+        $aggregatedDataQuery = DB::table('media_news as mn')
+            ->join('media_user_target as mut', 'mn.id', '=', 'mut.id_news')
+            ->join('user_targets as ut', function ($join) use ($idUser) {
+                $join->on('mut.id_user_target', '=', 'ut.id')
+                    ->where('ut.id_user', '=', $idUser);
+            })
+            ->join('target_type as tt', 'ut.type', '=', 'tt.id')
+            ->select(
+                'tt.name as type_name', // Kita tetap butuh type_name untuk grouping dan lookup
+                DB::raw('COUNT(mn.id) as total_news_count')
+            )
+            ->whereRaw('DATE(mn.date) BETWEEN ? AND ?', [
+                $startDate->format('Y-m-d'),
+                $endDate->format('Y-m-d')
+            ])
+            ->groupBy('tt.id', 'tt.name') // Group by ID dan nama tipe
+            ->orderBy('tt.name', 'asc');
+
+        $rawData = $aggregatedDataQuery->get();
+
+        // 4. Pre-proses hasil query database (jumlah berita) ke dalam lookup array
+        $dbCounts = [];
+        foreach ($rawData as $row) {
+            $dbCounts[$row->type_name] = $row->total_news_count;
+        }
+
+        // 5. Bangun data ringkasan akhir dengan format baru
+        $summaryData = [];
+        // Iterasi melalui informasi tipe yang relevan (yang sudah ada nama dan warnanya)
+        foreach ($relevantTypesInfo as $typeInfo) {
+            $typeName = $typeInfo->type_name;
+            $typeColor = $typeInfo->type_color; // Ambil warna dari hasil query $relevantTypesInfo
+
+            $count = isset($dbCounts[$typeName]) ? (int)$dbCounts[$typeName] : 0;
+
+            $summaryData[] = [
+                'target_type_name' => $typeName,
+                'total_news_count' => $count,
+                'fill' => $typeColor // Gunakan nilai dari kolom target_type.color
+            ];
+        }
+
+        return $summaryData;
+    }
+
     public function index(Request $request)
     {
         $this->user = Auth::user();
@@ -273,27 +417,19 @@ class DashboardController extends Controller
 
         }
 
-        $type = $request->input('type', 'news');
-        $startDate = Carbon::parse($request->input('startDate', now()->subDays(7)->toDateString()));
-        $endDate = Carbon::parse($request->input('endDate', now()->toDateString()));
-        $target = $request->input('target', null);
-
-        $target = DB::table('target_type')
-            ->join('user_targets', 'user_targets.type', '=', 'target_type.id')
-            ->selectRaw('target_type.*')
-            ->where('user_targets.id_user', $this->user->id)
-            ->groupBy('target_type.id')
-            ->get();
-
-        $targetColor = $target->pluck('color', 'name');
+        $category = session()->get('category');
 
         return Inertia::render('Client/Dashboard', [
-            'target' => $target,
-            'target_color' => $targetColor,
-            'global_chart' => fn() => $this->globalChart($type, $startDate, $endDate),
-            'total_chart' => fn() => $this->totalTopic($type, $startDate, $endDate),
-            'sentiment_chart' => fn() => $this->sentiment($type, $startDate, $endDate),
-            'wordcloud_caption' => fn() => $this->wordCloud($type, $startDate, $endDate),
+            'global_analytic' => fn() => $this->newsGlobalChart(
+                $this->user->id,
+                Carbon::parse($request->session()->get('start_date')),
+                Carbon::parse($request->session()->get('end_date')),
+            ),
+            'topic_analytic' => fn() => $this->newsTopicChart(
+                $this->user->id,
+                Carbon::parse($request->session()->get('start_date')),
+                Carbon::parse($request->session()->get('end_date')),
+            ),
         ]);
     }
 }

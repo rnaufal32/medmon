@@ -1,272 +1,157 @@
 import AdminLayout from "@/Layouts/AdminLayout";
-import {Bar, getDatasetAtEvent, getElementAtEvent, getElementsAtEvent, Line, Pie} from "react-chartjs-2";
-// @ts-ignore
-import faker from "faker";
 import {Head, router, usePage} from "@inertiajs/react";
-import {useCallback, useEffect, useRef, useState, type MouseEvent} from "react";
-import Datepicker from "react-tailwindcss-datepicker";
-import {hasPermission} from "@/utils/Permission";
-import dayjs from "dayjs";
-import WordCloud from 'react-d3-cloud';
-import {Icon} from "@iconify-icon/react/dist/iconify.mjs";
-import {Chart as ChartJS, ActiveElement, ChartEvent, InteractionItem, ChartData} from "chart.js";
-import {generateHoverColor} from "@/utils";
+import {
+    type ChartConfig,
+    ChartContainer,
+    ChartLegend,
+    ChartLegendContent,
+    ChartTooltip,
+    ChartTooltipContent
+} from "@/Components/ui/chart"
+import {Area, AreaChart, Pie, PieChart, CartesianGrid, XAxis, YAxis, Brush} from "recharts"
+import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/Components/ui/card";
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/Components/ui/select";
+import {DatePickerWithRange} from "@/Components/date-range-picker";
+import {toast} from "react-toastify"
+import {PageProps} from "@/types";
+import {toDate} from "date-fns"
+import CategorySelect from "@/Components/CategorySelect";
+import DateRangePickerState from "@/Components/DateRangePickerState";
+import {TrendingUp} from "lucide-react";
 
 
-export default function (params: {
-    target: any,
-    global_chart: any,
-    total_chart: any,
-    target_color: any,
-    sentiment_chart: any,
-    wordcloud_caption: any,
-}) {
-    const options = {
-        responsive: true,
-        maintainAspectRatio: false,
-    };
+interface DashboardProps extends PageProps {
+    global_analytic: Array<any>;
+    topic_analytic: Array<{
+        "target_type_name": string,
+        "total_news_count": number,
+        "fill": string,
+    }>
+}
 
-    const [date, setDate] = useState({
-        startDate: dayjs().subtract(7, 'days').toDate(),
-        endDate: dayjs().toDate()
-    });
+export default function () {
 
-    const [type, setType] = useState('News');
-
-    const getValueByKey = (obj: any, key: any) => obj[key] || null;
-
-    const lineChartData: any = {
-        ...params.global_chart,
-        datasets: params.global_chart.datasets.map((dataset: any) => ({
-            ...dataset,
-            // borderColor: getValueByKey(params.target_color, dataset.label),
-            // backgroundColor: generateHoverColor(getValueByKey(params.target_color, dataset.label)),
-        })),
-    };
-
-    const pieChartRef = useRef<any>(null);
-
-    const navigatePieChart = (element: InteractionItem[]) => {
-        if (!element.length) return;
-
-        const {datasetIndex, index} = element[0];
-
-        router.get(route("mentions.index", {
-            start_date: dayjs(date.startDate).format('YYYY-MM-DD'),
-            end_date: dayjs(date.endDate).format('YYYY-MM-DD'),
-            type,
-            target: params.target.find((d: any) => d.name === params.total_chart.labels[index]).id,
-            platform_type: '',
-            page: 1
-        }));
-    };
-
-    const onClickPieChart = (event: MouseEvent<HTMLCanvasElement>) => {
-        const {current: chart} = pieChartRef;
-
-        if (!chart) {
-            return;
-        }
-
-        navigatePieChart(getElementAtEvent(chart, event));
-    };
-
-    const barChartRef = useRef<any>(null);
-
-    const navigateBarChart = (element: InteractionItem[]) => {
-        if (!element.length) return;
-
-        const {datasetIndex, index} = element[0];
-
-        router.get(route("sentiment.index", {
-            start_date: dayjs(date.startDate).format('YYYY-MM-DD'),
-            end_date: dayjs(date.endDate).format('YYYY-MM-DD'),
-            type,
-            target: params.target.find((d: any) => d.name === params.total_chart.labels[index]).id,
-            sentiment_type: params.sentiment_chart.datasets[datasetIndex].label.toLowerCase(),
-            platform_type: '',
-            page: 1
-        }));
-    };
-
-    const onClickBarChart = (event: MouseEvent<HTMLCanvasElement>) => {
-        const {current: chart} = barChartRef;
-
-        if (!chart) {
-            return;
-        }
-
-        navigateBarChart(getElementAtEvent(chart, event));
-    };
-
-    function exportExcel() {
-        const url = route('dashboard.wordcloud.export', {
-            type: type,
-            startDate: dayjs(date.startDate).format('YYYY-MM-DD'),
-            endDate: dayjs(date.endDate).format('YYYY-MM-DD')
-        });
-
-        window.open(url, '_blank');
-    }
-
-    useEffect(() => {
-        router.get(route('dashboard.index'), {
-            type: type,
-            startDate: dayjs(date.startDate).format('YYYY-MM-DD'),
-            endDate: dayjs(date.endDate).format('YYYY-MM-DD')
-        }, {
-            preserveState: true,
-            preserveScroll: true,
-        })
-    }, [type, date])
+    const {
+        global_analytic,
+        user_targets,
+        topic_analytic,
+    } = usePage<DashboardProps>().props
 
     return (
-        <AdminLayout>
+        <AdminLayout breadcumb="Dashboard">
             <Head title="Dashboard"/>
-
-            <div className='flex flex-row align-middle justify-between'>
-                <h1 className='text-2xl font-bold'>Dashboard</h1>
-                <div className="flex flex-row gap-4">
-                    <div className="hs-dropdown relative inline-flex">
-                        <button id="hs-dropdown-default" type="button"
-                                className="hs-dropdown-toggle py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
-                                aria-haspopup="menu" aria-expanded="false" aria-label="Dropdown">
-                            {type}
-                            <svg className="hs-dropdown-open:rotate-180 size-4" xmlns="http://www.w3.org/2000/svg"
-                                 width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                 strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="m6 9 6 6 6-6"/>
-                            </svg>
-                        </button>
-
-                        <div
-                            className="hs-dropdown-menu transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden min-w-60 bg-white shadow-md rounded-lg mt-2 after:h-4 after:absolute after:-bottom-4 after:start-0 after:w-full before:h-4 before:absolute before:-top-4 before:start-0 before:w-full"
-                            role="menu" aria-orientation="vertical" aria-labelledby="hs-dropdown-default">
-                            <div className="p-1 space-y-0.5">
-                                {(hasPermission("User Media") || hasPermission("User Media Sosmed")) &&
-                                    <a className="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-gray-100"
-                                       href="#" onClick={(e) => {
-                                        setType('News');
-                                    }}>
-                                        News
-                                    </a>
-                                }
-                                {(hasPermission("User Sosmed") || hasPermission("User Media Sosmed")) &&
-                                    <a className="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-gray-100"
-                                       href="#" onClick={(e) => {
-                                        setType('Social Media');
-                                    }}>
-                                        Social Media
-                                    </a>
-                                }
-                            </div>
+            <div className="grid gap-6">
+                <Card>
+                    <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
+                        <div className="grid flex-1 gap-1 text-center sm:text-left">
+                            <CardTitle>Global Topic Trends</CardTitle>
                         </div>
-                    </div>
-                    <div className='w-[300px]'>
-                        <Datepicker
-                            showShortcuts={true}
-                            showFooter={true}
-                            primaryColor={"blue"}
-                            value={date}
-                            onChange={(newValue) => {
-                                if (newValue != null) {
-                                    const startDate = dayjs(newValue.startDate);
-                                    const endDate = dayjs(newValue.endDate);
-                                    const diffInDays = endDate.diff(startDate, 'day');
-
-                                    if (diffInDays > 30) {
-                                        alert("The maximum allowed date range is 30 days.");
-                                    } else {
-                                        setDate({
-                                            startDate: startDate.toDate(),
-                                            endDate: endDate.toDate()
-                                        });
-                                    }
+                        <div className="md:flex gap-4 hidden">
+                            <CategorySelect/>
+                            <DateRangePickerState/>
+                        </div>
+                    </CardHeader>
+                    <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
+                        <ChartContainer
+                            config={{
+                                ...user_targets.reduce((acc: any, item) => {
+                                    acc[item.target_type_name] = {
+                                        label: item.target_type_name,
+                                        color: item.target_type_color,
+                                    };
+                                    return acc;
+                                }, {}),
+                                date: {
+                                    label: "Date",
                                 }
-                            }}
-                        />
-                    </div>
-                </div>
-            </div>
-
-            <div className="flex flex-col bg-white border shadow-sm rounded-xl">
-                <div className="flex justify-between items-center border-b rounded-t-xl py-3 px-4 md:px-5">
-                    <h3 className="text-lg font-bold text-gray-800">
-                        Global Topic Trends
-                    </h3>
-                </div>
-                <div className="p-4 md:p-5">
-                    <div className='h-[30vh] w-full'>
-                        <Line
-                            datasetIdKey='global_chart'
-                            data={lineChartData} options={options}/>
-                    </div>
-                </div>
-            </div>
-
-            <div className='grid grid-cols-2 h-[40vh] gap-4'>
-                <div className="flex flex-col bg-white border shadow-sm rounded-xl w-full">
-                    <div className="flex justify-between items-center border-b rounded-t-xl py-3 px-4 md:px-5">
-                        <h3 className="text-lg font-bold text-gray-800">
-                            Topic Trends
-                        </h3>
-                    </div>
-                    <div className="p-4 md:p-5 h-full">
-                        <Pie ref={pieChartRef} datasetIdKey='topic_chart' data={params.total_chart} options={options}
-                             onClick={onClickPieChart}/>
-                    </div>
-                </div>
-                <div className="flex flex-col bg-white border shadow-sm rounded-xl w-full">
-                    <div className="flex justify-between items-center border-b rounded-t-xl py-3 px-4 md:px-5">
-                        <h3 className="text-lg font-bold text-gray-800">
-                            Sentiment
-                        </h3>
-                    </div>
-                    <div className="p-4 md:p-5 h-full">
-                        <Bar
-                            ref={barChartRef}
-                            datasetIdKey='sentiment_chart'
-                            data={params.sentiment_chart}
-                            options={{
-                                ...options,
-                                indexAxis: 'y'
-                            }}
-                            onClick={onClickBarChart}
-                        />
-                    </div>
-                </div>
-            </div>
-
-            <div className='grid grid-cols-1 h-[30vh] gap-4'>
-                <div className="flex flex-col bg-white border shadow-sm rounded-xl w-full">
-                    <div className="flex justify-between items-center border-b rounded-t-xl py-3 px-4 md:px-5">
-                        <h3 className="text-lg font-bold text-gray-800">
-                            Popular Words
-                        </h3>
-                        <button
-                            className="px-4 py-2  rounded-md shadow-md flex items-center bg-green-500 text-white"
-                            onClick={() => exportExcel()}
+                            } satisfies ChartConfig}
+                            className="aspect-auto lg:h-[38vh] h-[25vh] md:h-[80vh] w-full"
                         >
-                            <Icon icon='fa-solid:file-excel' className="mr-2" color="#FFFFFF"/>
-                            Excel
-                        </button>
-                    </div>
-                    <div className="p-4 md:p-5 h-full flex items-center justify-center">
-                        {params.wordcloud_caption.length > 0 ? (
-                            <WordCloud
-                                data={params.wordcloud_caption}
-                                font="Times"
-                                fontStyle="italic"
-                                fontWeight="bold"
-                                spiral="rectangular"
-                                padding={5}
-                                random={Math.random}
-                            />
-                        ) : (
-                            <p>Loading word cloud...</p>
-                        )}
+                            <AreaChart data={global_analytic} margin={{
+                                left: -20,
+                                right: 12,
+                            }}>
+                                <CartesianGrid vertical={false}/>
+                                <XAxis
+                                    dataKey="date"
+                                    tickLine={false}
+                                    axisLine={false}
+                                    tickMargin={8}
+                                    minTickGap={32}
+                                    tickFormatter={(value) => {
+                                        const date = new Date(value)
+                                        return date.toLocaleDateString("en-US", {
+                                            month: "short",
+                                            day: "numeric",
+                                        })
+                                    }}
+                                />
+                                <YAxis
+                                    tickCount={5}
+                                />
+                                <ChartTooltip
+                                    cursor={false}
+                                    content={
+                                        <ChartTooltipContent
+                                            labelFormatter={(value) => {
+                                                return new Date(value).toLocaleDateString("en-US", {
+                                                    month: "short",
+                                                    day: "numeric",
+                                                })
+                                            }}
+                                            indicator="dot"
+                                        />
+                                    }
+                                />
+                                {user_targets.map((e) => (
+                                    <Area
+                                        key={e.target_type_name}
+                                        dataKey={e.target_type_name}
+                                        type="natural"
+                                        fill={e.target_type_color}
+                                        fillOpacity={0.4}
+                                        stroke={e.target_type_color}
+                                    />
+                                ))}
+                                <ChartLegend content={<ChartLegendContent/>}/>
+                            </AreaChart>
+                        </ChartContainer>
+                    </CardContent>
+                </Card>
 
-                    </div>
+                <div className="grid gap-6 lg:grid-cols-2">
+                    <Card className="flex flex-col">
+                        <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
+                            <div className="grid flex-1 gap-1 text-center sm:text-left">
+                                <CardTitle>Global Topic Trends</CardTitle>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="flex-1 pb-0">
+                            <ChartContainer
+                                config={{
+                                    ...user_targets.reduce((acc: any, item) => {
+                                        acc[item.target_type_name] = {
+                                            label: item.target_type_name,
+                                            color: item.target_type_color,
+                                        };
+                                        return acc;
+                                    }, {}),
+                                    date: {
+                                        label: "Date",
+                                    }
+                                } satisfies ChartConfig}
+                                className="mx-auto aspect-square lg:h-[35vh] h-[25vh] md:h-[80vh] pb-0 [&_.recharts-pie-label-text]:fill-foreground"
+                            >
+                                <PieChart>
+                                    <ChartTooltip content={<ChartTooltipContent/>}/>
+                                    <Pie data={topic_analytic} dataKey="total_news_count" label
+                                         nameKey="target_type_name"/>
+                                    <ChartLegend content={<ChartLegendContent nameKey="target_type_name"/>}/>
+                                </PieChart>
+                            </ChartContainer>
+                        </CardContent>
+                    </Card>
+
                 </div>
             </div>
         </AdminLayout>

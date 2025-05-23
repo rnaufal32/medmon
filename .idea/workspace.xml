@@ -5,18 +5,24 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2030a958-24d8-4747-8057-62afae0238e6" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mesin/resources/js/Components/CategorySelect.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mesin/resources/js/Components/DateRangePickerState.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mesin/resources/js/Components/date-range-picker.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mesin/app/Exports/ImportNewsSample.php" beforeDir="false" afterPath="$PROJECT_DIR$/mesin/app/Exports/ImportNewsSample.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mesin/app/Http/Controllers/Admin/NewsController.php" beforeDir="false" afterPath="$PROJECT_DIR$/mesin/app/Http/Controllers/Admin/NewsController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mesin/app/Http/Controllers/Client/AnalyticController.php" beforeDir="false" afterPath="$PROJECT_DIR$/mesin/app/Http/Controllers/Client/AnalyticController.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mesin/app/Http/Controllers/Client/DashboardController.php" beforeDir="false" afterPath="$PROJECT_DIR$/mesin/app/Http/Controllers/Client/DashboardController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mesin/app/Http/Controllers/Client/ReportController.php" beforeDir="false" afterPath="$PROJECT_DIR$/mesin/app/Http/Controllers/Client/ReportController.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mesin/app/Http/Controllers/CrawlingController.php" beforeDir="false" afterPath="$PROJECT_DIR$/mesin/app/Http/Controllers/CrawlingController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mesin/app/Http/Controllers/MentionController.php" beforeDir="false" afterPath="$PROJECT_DIR$/mesin/app/Http/Controllers/MentionController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mesin/resources/js/Pages/Admin/Dashboard/Index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/mesin/resources/js/Pages/Admin/Dashboard/Index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mesin/resources/js/Pages/Admin/News/Widget/NewsImport.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/mesin/resources/js/Pages/Admin/News/Widget/NewsImport.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mesin/app/Http/Middleware/HandleInertiaRequests.php" beforeDir="false" afterPath="$PROJECT_DIR$/mesin/app/Http/Middleware/HandleInertiaRequests.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mesin/app/Jobs/NewsScrapingJob.php" beforeDir="false" afterPath="$PROJECT_DIR$/mesin/app/Jobs/NewsScrapingJob.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mesin/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/mesin/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mesin/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/mesin/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mesin/resources/css/app.css" beforeDir="false" afterPath="$PROJECT_DIR$/mesin/resources/css/app.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mesin/resources/js/Layouts/AdminLayout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/mesin/resources/js/Layouts/AdminLayout.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mesin/resources/js/Pages/Client/Dashboard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/mesin/resources/js/Pages/Client/Dashboard.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mesin/resources/js/types/index.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/mesin/resources/js/types/index.d.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mesin/routes/web.php" beforeDir="false" afterPath="$PROJECT_DIR$/mesin/routes/web.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mesin/tailwind.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/mesin/tailwind.config.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,6 +37,11 @@
     <option name="myRunOnSave" value="true" />
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="main" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="PhpWorkspaceProjectConfiguration" interpreter_name="/opt/homebrew/Cellar/php@8.2/8.2.23/bin/php">
@@ -330,7 +341,7 @@
     &quot;WebServerToolWindowPanel.toolwindow.show.date&quot;: &quot;false&quot;,
     &quot;WebServerToolWindowPanel.toolwindow.show.permissions&quot;: &quot;false&quot;,
     &quot;WebServerToolWindowPanel.toolwindow.show.size&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;update&quot;,
     &quot;last_opened_file_path&quot;: &quot;/Applications/XAMPP/xamppfiles/htdocs/medmon/mesin/public&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
@@ -362,6 +373,9 @@
     <configuration name="Main" type="PestRunConfigurationType">
       <option name="pestRunnerSettings">
         <PestRunner configuration_file="$PROJECT_DIR$/mesin/phpunit.xml" scope="ConfigurationFile" use_alternative_configuration_file="true" />
+      </option>
+      <option name="runnerSettings">
+        <PhpTestRunnerSettings configuration_file="$PROJECT_DIR$/mesin/phpunit.xml" scope="ConfigurationFile" use_alternative_configuration_file="true" />
       </option>
       <method v="2" />
     </configuration>
@@ -428,8 +442,24 @@
       <workItem from="1744006491878" duration="3809000" />
       <workItem from="1744110291713" duration="2373000" />
       <workItem from="1744181024390" duration="763000" />
-      <workItem from="1744200357016" duration="3637000" />
+      <workItem from="1744200357016" duration="6819000" />
+      <workItem from="1744266003710" duration="32000" />
+      <workItem from="1745191149982" duration="1833000" />
+      <workItem from="1747487171786" duration="9852000" />
+      <workItem from="1747656096511" duration="3186000" />
+      <workItem from="1747746978331" duration="3441000" />
+      <workItem from="1747753298839" duration="4454000" />
+      <workItem from="1747811800700" duration="35801000" />
     </task>
+    <task id="LOCAL-00001" summary="udah fix import news">
+      <option name="closed" value="true" />
+      <created>1744209081776</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1744209081776</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -439,6 +469,8 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$/mesin" />
     </ignored-roots>
+    <MESSAGE value="udah fix import news" />
+    <option name="LAST_COMMIT_MESSAGE" value="udah fix import news" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

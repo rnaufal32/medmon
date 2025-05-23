@@ -31,4 +31,13 @@ export type PageProps<
         query: any;
         params: any;
     }
+    category: "news" | "social_media";
+    date: {
+        start: any;
+        end: any;
+    }
+    user_targets: Array<{
+        "target_type_name": "Industry and Regulation",
+        "target_type_color": "#B1F0F7"
+    }>
 };
