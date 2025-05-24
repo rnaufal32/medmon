@@ -2,11 +2,11 @@
 
 import * as React from "react"
 import {subDays, format} from "date-fns"
-import {Calendar as CalendarIcon} from "lucide-react"
+import {Calendar as CalendarIcon, Loader2} from "lucide-react"
 import {DateRange} from "react-day-picker"
 
 import {cn} from "@/lib/utils"
-import {Button} from "@/components/ui/button"
+import {Button} from "@/Components/ui/button"
 import {Calendar} from "@/Components/ui/calendar"
 import {
     Popover,
@@ -14,9 +14,13 @@ import {
     PopoverTrigger,
 } from "@/Components/ui/popover"
 import {PopoverClose} from "@radix-ui/react-popover";
+import {useState} from "react";
+import {useHookstate} from "@hookstate/core";
+import {toast} from "react-toastify";
 
 export function DatePickerWithRange(props: {
     className?: string,
+    loading?: boolean,
     onChange?: (date: DateRange | undefined) => void,
     fromDate?: Date,
     toDate?: Date,
@@ -26,9 +30,19 @@ export function DatePickerWithRange(props: {
         to: props.toDate ?? new Date(),
     })
 
+    const popoverState = useHookstate(false)
+
+    React.useEffect(() => {
+        if (props.loading == false) {
+            popoverState.set(false)
+        }
+    }, [props.loading])
+
     return (
         <div className={cn("grid gap-2", props.className)}>
-            <Popover>
+            <Popover open={popoverState.get()} onOpenChange={(popover) => {
+                popoverState.set(popover)
+            }}>
                 <PopoverTrigger asChild>
                     <Button
                         id="date"
@@ -37,6 +51,9 @@ export function DatePickerWithRange(props: {
                             "w-[300px] justify-start text-left font-normal",
                             !date && "text-muted-foreground"
                         )}
+                        onClick={() => {
+                            popoverState.set(true)
+                        }}
                     >
                         <CalendarIcon/>
                         {date?.from ? (
@@ -64,14 +81,15 @@ export function DatePickerWithRange(props: {
                             numberOfMonths={2}
                         />
                         <div className="p-4 flex justify-end gap-4">
-                            <PopoverClose asChild>
-                                <Button variant="secondary">Batal</Button>
-                            </PopoverClose>
-                            <PopoverClose asChild>
-                                <Button onClick={() => {
-                                    props.onChange?.(date)
-                                }}>Simpan</Button>
-                            </PopoverClose>
+                            <Button variant="secondary" onClick={() => {
+                                popoverState.set(false)
+                            }}>Batal</Button>
+                            <Button disabled={props.loading} onClick={() => {
+                                props.onChange?.(date)
+                            }}>
+                                {props.loading && <Loader2 className="animate-spin"/>}
+                                Simpan
+                            </Button>
                         </div>
                     </div>
                 </PopoverContent>

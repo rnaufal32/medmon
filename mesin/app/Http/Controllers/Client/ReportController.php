@@ -4,10 +4,10 @@ namespace App\Http\Controllers\Client;
 
 use App\Exports\AnalyticExport;
 use App\Http\Controllers\Controller;
-use Auth;
 use Carbon\Carbon;
-use DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Maatwebsite\Excel\Facades\Excel;
 

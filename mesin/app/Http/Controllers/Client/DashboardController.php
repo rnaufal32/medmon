@@ -20,7 +20,7 @@ use Carbon\CarbonPeriod;
 class DashboardController extends Controller
 {
 
-    private $user;
+    private ?User $user;
 
     public function __construct()
     {
@@ -209,7 +209,7 @@ class DashboardController extends Controller
         }
     }
 
-    private function wordCloud($type, $startDate, $endDate)
+    private function wordCloud($startDate, $endDate)
     {
         $skipWords = BlockWord::all()->pluck('name')->toArray();
         $socialCaption = SocialPost::query()
@@ -242,6 +242,7 @@ class DashboardController extends Controller
 
     public function newsGlobalChart($idUser, $startDate, $endDate)
     {
+        sleep(3);
         $allRelevantTypeNames = DB::table('user_targets as ut')
             ->join('target_type as tt', 'ut.type', '=', 'tt.id')
             ->where('ut.id_user', '=', $idUser)
@@ -324,6 +325,7 @@ class DashboardController extends Controller
 
     public function newsTopicChart($idUser, $startDate, $endDate)
     {
+        sleep(1);
         $relevantTypesInfo = DB::table('user_targets as ut')
             ->join('target_type as tt', 'ut.type', '=', 'tt.id')
             ->where('ut.id_user', '=', $idUser)
@@ -383,6 +385,65 @@ class DashboardController extends Controller
         return $summaryData;
     }
 
+    public function newsSentiment($idUser, $startDate, $endDate)
+    {
+        // 2. Ambil semua nama TIPE TARGET yang relevan untuk user ini sebagai dasar 'key'
+        $relevantTypes = DB::table('user_targets as ut')
+            ->join('target_type as tt', 'ut.type', '=', 'tt.id')
+            ->where('ut.id_user', '=', $idUser)
+            ->select('tt.name as key') // Kolom 'name' dari target_type akan menjadi 'key'
+            ->distinct()
+            ->orderBy('key', 'asc')
+            ->get();
+
+        // Jika user tidak memiliki target_type sama sekali, kembalikan array kosong.
+        if ($relevantTypes->isEmpty()) {
+            return response()->json([]);
+        }
+
+        // 3. Mengambil data agregat sentimen dari database
+        $sentimentAggregatesQuery = DB::table('media_news as mn')
+            ->join('media_user_target as mut', 'mn.id', '=', 'mut.id_news')
+            ->join('user_targets as ut', 'mut.id_user_target', '=', 'ut.id')
+            ->where('ut.id_user', '=', $idUser) // Filter berdasarkan id_user
+            ->join('target_type as tt', 'ut.type', '=', 'tt.id')
+            ->select(
+                'tt.name as key', // Untuk mencocokkan dengan $relevantTypes
+                DB::raw("SUM(CASE WHEN mn.sentiment = 'positive' THEN 1 ELSE 0 END) as positive"),
+                DB::raw("SUM(CASE WHEN mn.sentiment = 'negative' THEN 1 ELSE 0 END) as negative"),
+                DB::raw("SUM(CASE WHEN mn.sentiment = 'neutral' THEN 1 ELSE 0 END) as neutral")
+            )
+            ->groupBy('tt.id', 'tt.name'); // Group by ID dan nama tipe
+
+        // Terapkan filter tanggal jika ada
+        if ($startDate && $endDate) {
+            $sentimentAggregatesQuery->whereRaw('DATE(mn.date) BETWEEN ? AND ?', [
+                $startDate->format('Y-m-d'),
+                $endDate->format('Y-m-d')
+            ]);
+        }
+
+        $sentimentAggregates = $sentimentAggregatesQuery->orderBy('tt.name', 'asc')->get()->keyBy('key');
+        // Menggunakan keyBy('key') untuk membuat hasil query menjadi associative array
+        // dengan 'key' (target_type.name) sebagai kuncinya agar mudah di-lookup.
+
+        // 4. Bangun data respons akhir
+        $responseData = [];
+        foreach ($relevantTypes as $type) {
+            $typeName = $type->key;
+            $aggregates = $sentimentAggregates->get($typeName); // Ambil data agregat untuk tipe ini
+
+            $responseData[] = [
+                'key' => $typeName,
+                'positive' => $aggregates ? (int)$aggregates->positive : 0,
+                'negative' => $aggregates ? (int)$aggregates->negative : 0,
+                'neutral' => $aggregates ? (int)$aggregates->neutral : 0,
+            ];
+        }
+
+        return $responseData;
+    }
+
     public function index(Request $request)
     {
         $this->user = Auth::user();
@@ -419,17 +480,29 @@ class DashboardController extends Controller
 
         $category = session()->get('category');
 
+        $start_date = Carbon::parse($request->session()->get('start_date', now()->subDays(7)->toDateString()));
+        $end_date = Carbon::parse($request->session()->get('end_date', now()->toDateString()));
+
         return Inertia::render('Client/Dashboard', [
-            'global_analytic' => fn() => $this->newsGlobalChart(
+            'global_analytic' => Inertia::defer(fn() => $this->newsGlobalChart(
                 $this->user->id,
-                Carbon::parse($request->session()->get('start_date')),
-                Carbon::parse($request->session()->get('end_date')),
-            ),
-            'topic_analytic' => fn() => $this->newsTopicChart(
+                $start_date,
+                $end_date,
+            ), 'global_analytic'),
+            'topic_analytic' => Inertia::defer(fn() => $this->newsTopicChart(
                 $this->user->id,
-                Carbon::parse($request->session()->get('start_date')),
-                Carbon::parse($request->session()->get('end_date')),
-            ),
+                $start_date,
+                $end_date,
+            ), 'topic_analytic'),
+            'sentiment' => Inertia::defer(fn() => $this->newsSentiment(
+                $this->user->id,
+                $start_date,
+                $end_date,
+            ), 'sentiment'),
+            'word_cloud' => Inertia::defer(fn() => $this->wordCloud(
+                $start_date,
+                $end_date,
+            ), 'word_cloud'),
         ]);
     }
 }

@@ -5,10 +5,10 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use App\Models\MediaNews;
 use App\Models\SocialPost;
-use Auth;
 use Carbon\Carbon;
-use DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use function Laravel\Prompts\error;
 
@@ -81,7 +81,7 @@ class AnalyticController extends Controller
                 ->whereDate('media_news.date', '>=', $startDate->toDateString())
                 ->whereDate('media_news.date', '<=', $endDate->toDateString())
                 ->get();
-            
+
             $globalAnalyticNews = $globalAnalyticNews->filter(function ($row) {
                 return validateDate($row->date_label);
             });

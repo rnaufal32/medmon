@@ -1,16 +1,26 @@
 import {router, usePage} from "@inertiajs/react";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/Components/ui/select";
+import {useHookstate} from "@hookstate/core"
 
 export default function CategorySelect() {
+
+    const loading = useHookstate(false)
 
     const {
         category,
     } = usePage().props
 
     return (
-        <Select value={category} onValueChange={(value) => {
+        <Select value={category} disabled={loading.get()} onValueChange={(value) => {
             router.post(route('set-category'), {
                 category: value,
+            }, {
+                onStart: () => {
+                    loading.set(true)
+                },
+                onFinish: (_) => {
+                    loading.set(false)
+                }
             })
         }}>
             <SelectTrigger

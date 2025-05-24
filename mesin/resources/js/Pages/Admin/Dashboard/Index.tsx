@@ -17,7 +17,7 @@ interface DashboardPageProps extends PageProps {
     }
 }
 
-export default function () {
+export default function Dashboard() {
 
     const {
         totalNews,
